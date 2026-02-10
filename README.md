@@ -1,17 +1,5 @@
 # SMASH - Simple Modern Advanced SHell
 
-```
-# Install
-# Make it executable
-chmod +x smash
-
-# Test it
-./smash examples/hello.smash
-
-# Install it
-sudo ./install.sh
-```
-
 JavaScript-style shell scripting that doesn't suck.
 
 Tired of bash's 1977 syntax? Write shell scripts with modern JavaScript-like syntax that transpiles to bash.
@@ -46,6 +34,18 @@ wget https://raw.githubusercontent.com/flaneurette/smash/main/smash
 chmod +x smash
 ```
 
+Test it:
+
+```
+./smash examples/hello.smash
+```
+
+Install it
+
+```
+sudo ./install.sh
+```
+
 Write your first script:
 
 ```
@@ -63,7 +63,7 @@ smash hello.smash
 
 ## Features
 
-- JavaScript- like syntax. Familiar to millions of developers
+- JavaScript-like syntax. Familiar to millions of developers
 - All Linux commands work. Pipes, redirects, grep, awk, everything
 - Transpiles to bash. Works everywhere bash works
 - No runtime dependencies. Just Python 3 and bash
