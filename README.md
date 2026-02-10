@@ -15,7 +15,7 @@ Tired of bash's `seventies` syntax? Write shell scripts with modern JavaScript-l
 
 ## How it works
 
-SMASH is a runtime transpiler -it converts your JavaScript .smash- like syntax to bash, instantly in memory:
+SMASH is a runtime transpiler `it converts your JavaScript .smash` like syntax to bash, instantly in memory and executes it:
 
 ```
 Your SMASH code
