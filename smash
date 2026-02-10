@@ -438,7 +438,7 @@ def main():
         sys.exit(0)
     
     # Check for debug/dry-run flags
-    debug = '--debug' in sys.argv or '-debug' in sys.argv or '-d' in sys.argv
+    debug = '-debug' in sys.argv or '-debug' in sys.argv or '-d' in sys.argv
     dry_run = '--dry-run' in sys.argv or '-test' in sys.argv
     
     # Get filename (first non-flag argument)

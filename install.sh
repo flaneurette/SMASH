@@ -73,13 +73,13 @@ fi
 # Test installation
 echo ""
 echo "Testing installation..."
-if "$INSTALL_DIR/smash" --version &> /dev/null; then
+if "$INSTALL_DIR/smash" -v &> /dev/null; then
     echo "SMASH installed successfully!"
     echo ""
-    "$INSTALL_DIR/smash" --version
+    "$INSTALL_DIR/smash" -v
     echo ""
     echo "Try it out:"
-    echo "    smash --help"
+    echo "    smash -h"
     echo ""
     echo "Create your first script:"
     echo "    echo 'let name = \"world\"; echo \"Hello, \" + name;' > hello.smash"

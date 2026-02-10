@@ -299,8 +299,8 @@ for (let logfile in /var/log/*.log) {
 smash script.smash
 
 # See generated bash code (debug)
+smash script.smash -d
 smash script.smash -debug
-smash script.smash --debug
 
 # Dry run (show code without executing)
 smash script.smash -test
@@ -438,7 +438,7 @@ Q: Can I mix SMASH and bash?
 A: Yes! Any bash command works in SMASH. You can gradually migrate scripts.
 
 Q: What about errors?  
-A: SMASH shows bash errors directly. Use `--debug` to see the generated bash code.
+A: SMASH shows bash errors directly. Use `-debug` to see the generated bash code.
 
 Q: Is this production- ready?  
 A: v1.0-1 is experimental. Use for new projects, automation scripts. Test thoroughly for critical systems.

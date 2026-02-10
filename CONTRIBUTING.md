@@ -7,10 +7,10 @@ Thanks for your interest in contributing to SMASH!
 ### Reporting Bugs
 
 Found a bug? Please open an issue with:
-- SMASH version (`smash --version`)
+- SMASH version (`smash -v`)
 - Your OS and bash version
 - The SMASH code that's causing the issue
-- The generated bash code (`smash script.smash --debug`)
+- The generated bash code (`smash script.smash -debug`)
 - Expected vs actual behavior
 
 ### Suggesting Features
@@ -54,7 +54,7 @@ Before submitting a PR, test your changes:
 ./smash examples/hello.smash
 
 # Test with debug mode
-./smash examples/deploy.smash --debug
+./smash examples/deploy.smash -debug
 
 # Test all examples
 for example in examples/*.smash; do
