@@ -4,6 +4,20 @@ JavaScript-style shell scripting.
 
 Tired of bash's 1977 syntax? Write shell scripts with modern JavaScript-like syntax that transpiles to bash.
 
+## How It Works
+
+SMASH is a transpiler -it converts your JavaScript- like syntax to bash:
+
+```
+Your SMASH code
+      |
+Python transpiler (regex-based)
+      |
+Generated bash code
+      |
+Executed by bash
+```
+
 ## Features
 
 - JavaScript-like syntax. Familiar to millions of developers
@@ -268,9 +282,11 @@ smash script.smash --debug
 smash script.smash --dry-run
 
 # Show help
+smash -h
 smash --help
 
 # Show version
+smash -v
 smash --version
 ```
 
@@ -289,36 +305,6 @@ chmod +x myscript.smash
 
 # Run it directly
 ./myscript.smash
-```
-
-## How It Works
-
-SMASH is a transpiler -it converts your JavaScript- like syntax to bash:
-
-```
-Your SMASH code
-      |
-Python transpiler (regex-based)
-      |
-Generated bash code
-      |
-Executed by bash
-```
-
-Example:
-
-```
-// Input (SMASH):
-let x = "hello";
-if (x == "hello") {
-    echo "Found: " + x;
-}
-
-// Output (bash):
-x="hello"
-if [[ "$x" == "hello" ]]; then
-    echo "Found: $x"
-fi
 ```
 
 The beauty: You get modern syntax, but it runs as plain bash everywhere!
