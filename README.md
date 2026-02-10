@@ -11,7 +11,7 @@ Introducing: SMASH! - a JavaScript-style shell scripting.
     ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
 ```
 
-Tired of bash's 1977 syntax? Write shell scripts with modern JavaScript-like syntax that transpiles to bash.
+Tired of bash's `seventies` syntax? Write shell scripts with modern JavaScript-like syntax that transpiles to bash.
 
 ## How it works
 
