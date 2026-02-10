@@ -9,6 +9,20 @@ Introducing: SMASH! - a JavaScript-style shell scripting.
     ╚════██║██║╚██╔╝██║██╔══██║╚════██║██╔══██║
     ███████║██║ ╚═╝ ██║██║  ██║███████║██║  ██║
     ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
+
+    Usage:
+        smash <script.smash>            Run a SMASH script
+        smash <script.smash> --debug    Show generated bash code
+        smash <script.smash> --dry-run  Show generated code without running
+        smash -v						Show version
+        smash -h                   		Show this help
+    
+    Features:
+     JavaScript-like syntax for shell scripts
+     All Linux commands work (pipes, redirects, everything)
+     Transpiles to bash (works everywhere)
+     No dependencies except Python 3 and bash
+	 
 ```
 
 Tired of bash's `seventies` syntax? Write shell scripts with modern JavaScript-like syntax that transpiles to bash.
