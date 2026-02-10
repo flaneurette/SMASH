@@ -26,6 +26,9 @@ def transpile_smash(code):
     - All bash commands pass through unchanged
     """
     
+    # Preprocess first
+    code = preprocess_code(code)
+    
     original_code = code
     
     # Remove comments carefully
@@ -317,6 +320,24 @@ def run_smash(filename, debug=False, dry_run=False):
             traceback.print_exc()
         sys.exit(1)
 
+def preprocess_code(code):
+    """Normalize whitespace before transpilation"""
+    # Convert tabs to spaces (4 spaces standard)
+    code = code.replace('\t', '    ')
+    
+    # Normalize line endings (Windows/Mac/Linux)
+    code = code.replace('\r\n', '\n').replace('\r', '\n')
+    
+    # Remove trailing whitespace from each line
+    lines = code.split('\n')
+    lines = [line.rstrip() for line in lines]
+    code = '\n'.join(lines)
+    
+    # Remove excessive blank lines (more than 2 consecutive)
+    code = re.sub(r'\n{3,}', '\n\n', code)
+    
+    return code
+    
 def show_help():
     """Display help message"""
     print("""
