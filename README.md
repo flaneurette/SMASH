@@ -12,8 +12,8 @@ Introducing: SMASH! - a JavaScript-style shell scripting.
 
     Usage:
         smash <script.smash>            Run a SMASH script
-        smash <script.smash> --debug    Show generated bash code
-        smash <script.smash> --dry-run  Show generated code without running
+        smash <script.smash> -debug     Show generated bash code
+        smash <script.smash> -test      Show generated code without running
         smash -v						Show version
         smash -h                   		Show this help
     
@@ -299,9 +299,11 @@ for (let logfile in /var/log/*.log) {
 smash script.smash
 
 # See generated bash code (debug)
+smash script.smash -debug
 smash script.smash --debug
 
 # Dry run (show code without executing)
+smash script.smash -test
 smash script.smash --dry-run
 
 # Show help
