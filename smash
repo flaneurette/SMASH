@@ -25,6 +25,95 @@ def transpile_smash(code):
     - Functions: function name() { }
     - All bash commands pass through unchanged
     """
+
+    # SMASH HELPER FUNCTIONS
+    
+    def heal_code(code):
+        """Fix patterns broken by comment conversion"""
+        
+        # Fix protocols (greedy to catch multiple on same line)
+        protocols = ['http', 'https', 'ftp', 'sftp', 'ssh', 'git', 'file']
+        
+        for protocol in protocols:
+            # Match protocol:# followed by non-space (likely part of URL)
+            code = re.sub(
+                f'{protocol}:#([^\s])',
+                f'{protocol}://\\1',
+                code
+            )
+            
+        # Fix shebang if it got mangled: #!#usr#bin#env -> #!/usr/bin/env
+        code = code.replace('#!#usr#bin#env', '#!/usr/bin/env')
+        code = code.replace('#!#bin#bash', '#!/bin/bash')
+    
+        return code
+    
+    def convert_comments(code):
+        """Convert // comments to # (only at line start)"""
+        lines = code.split('\n')
+        result = []
+        
+        for line in lines:
+            stripped = line.lstrip()
+            if stripped.startswith('//'):
+                # Get original indentation
+                indent = line[:len(line) - len(stripped)]
+                comment_text = stripped[2:]  # Remove //
+                line = indent + '#' + comment_text
+            
+            result.append(line)
+        
+        return '\n'.join(result)
+
+    def convert_block_comment(match):
+        """Convert /* */ to # block comments for bash"""
+        comment_text = match.group(1)
+        lines = comment_text.split('\n')
+        return '\n'.join('# ' + line.strip() for line in lines)
+        
+    def convert_array_elements(elements):
+        """Convert ["a", "b", "c"] to "a" "b" "c" for bash"""
+        # Split by comma, strip quotes, re-quote for bash
+        items = [item.strip() for item in elements.split(',')]
+        return ' '.join(items)
+        
+    def preprocess_code(code):
+        """Normalize whitespace before transpilation"""
+        # Convert tabs to spaces (4 spaces standard)
+        code = code.replace('\t', '    ')
+        
+        # Normalize line endings (Windows/Mac/Linux)
+        code = code.replace('\r\n', '\n').replace('\r', '\n')
+        
+        # Remove trailing whitespace from each line
+        lines = code.split('\n')
+        lines = [line.rstrip() for line in lines]
+        code = '\n'.join(lines)
+        
+        # Remove excessive blank lines (more than 2 consecutive)
+        code = re.sub(r'\n{3,}', '\n\n', code)
+        
+        return code
+    
+    # String concatenation: "text" + var + "more"
+    # Strategy: Find all echo statements with + operators and rebuild them
+    def fix_echo_concat(match):
+        parts = match.group(1).split('+')
+        result = []
+        for i, part in enumerate(parts):
+            part = part.strip()
+            # If it's a quoted string, remove quotes and add to result
+            if part.startswith('"') and part.endswith('"'):
+                result.append(part[1:-1])
+            # If it's a variable, add with $ prefix
+            elif part and not part.startswith('"'):
+                result.append(f'${part}')
+            # If it's just a string part, add as-is
+            elif part:
+                result.append(part.strip('"'))
+        return f'echo "{"".join(result)}"'
+
+    # --------------------------------- BEGIN SMASH ---------------------------------
     
     # Preprocess first
     code = preprocess_code(code)
@@ -33,9 +122,10 @@ def transpile_smash(code):
 
     # Convert all comments to bash # comments
     code = convert_comments(code)
+    
     # Convert all block-comments to bash # comments
     code = re.sub(r'/\*(.*?)\*/', convert_block_comment, code, flags=re.DOTALL)
-  
+    
     # Variable declarations: let/const/var x = value -> x=value
     code = re.sub(r'\b(let|const|var)\s+(\w+)\s*=\s*([^;]+);?', r'\2=\3', code)
     
@@ -221,73 +311,6 @@ def transpile_smash(code):
         code
     )
     
-    # SMASH HELPER FUNCTIONS
-
-    def convert_comments(code):
-        """Convert // comments to # (only at line start)"""
-        lines = code.split('\n')
-        result = []
-        
-        for line in lines:
-            stripped = line.lstrip()
-            if stripped.startswith('//'):
-                # Get original indentation
-                indent = line[:len(line) - len(stripped)]
-                comment_text = stripped[2:]  # Remove //
-                line = indent + '#' + comment_text
-            
-            result.append(line)
-        
-        return '\n'.join(result)
-
-    def convert_block_comment(match):
-        """Convert /* */ to # block comments for bash"""
-        comment_text = match.group(1)
-        lines = comment_text.split('\n')
-        return '\n'.join('# ' + line.strip() for line in lines)
-        
-    def convert_array_elements(elements):
-        """Convert ["a", "b", "c"] to "a" "b" "c" for bash"""
-        # Split by comma, strip quotes, re-quote for bash
-        items = [item.strip() for item in elements.split(',')]
-        return ' '.join(items)
-        
-    def preprocess_code(code):
-        """Normalize whitespace before transpilation"""
-        # Convert tabs to spaces (4 spaces standard)
-        code = code.replace('\t', '    ')
-        
-        # Normalize line endings (Windows/Mac/Linux)
-        code = code.replace('\r\n', '\n').replace('\r', '\n')
-        
-        # Remove trailing whitespace from each line
-        lines = code.split('\n')
-        lines = [line.rstrip() for line in lines]
-        code = '\n'.join(lines)
-        
-        # Remove excessive blank lines (more than 2 consecutive)
-        code = re.sub(r'\n{3,}', '\n\n', code)
-        
-        return code
-    
-    # String concatenation: "text" + var + "more"
-    # Strategy: Find all echo statements with + operators and rebuild them
-    def fix_echo_concat(match):
-        parts = match.group(1).split('+')
-        result = []
-        for i, part in enumerate(parts):
-            part = part.strip()
-            # If it's a quoted string, remove quotes and add to result
-            if part.startswith('"') and part.endswith('"'):
-                result.append(part[1:-1])
-            # If it's a variable, add with $ prefix
-            elif part and not part.startswith('"'):
-                result.append(f'${part}')
-            # If it's just a string part, add as-is
-            elif part:
-                result.append(part.strip('"'))
-        return f'echo "{"".join(result)}"'
-    
     # Match echo statements with concatenation
     code = re.sub(r'echo\s+(.+?\+.+?)(?:;|\n|$)', fix_echo_concat, code, flags=re.MULTILINE)
     
@@ -328,6 +351,9 @@ def transpile_smash(code):
             result.append(line)
     
     code = '\n'.join(result)
+    
+    # Heal known mangled patterns
+    code = heal_code(code)
     
     return code
 
