@@ -11,7 +11,7 @@ Tired of bash's 1977 syntax? Write shell scripts with modern JavaScript-like syn
 - All Linux commands work. Pipes, redirects, grep, awk, everything
 - Transpiles to bash. Works everywhere bash works
 - No runtime dependencies. Just Python 3 and bash
-- Drop- in replacement. Use SMASH for new scripts, keep old bash scripts
+- Drop-in replacement. Use SMASH for new scripts, keep old bash scripts
 - Debug mode. See the generated bash code
 
 ## Example .smash
