@@ -1,6 +1,15 @@
 # SMASH - Simple Modern Advanced SHell
 
-JavaScript-style shell scripting.
+Introducing: SMASH! - a JavaScript-style shell scripting.
+
+```
+    ███████╗███╗   ███╗ █████╗ ███████╗██╗  ██╗
+    ██╔════╝████╗ ████║██╔══██╗██╔════╝██║  ██║
+    ███████╗██╔████╔██║███████║███████╗███████║
+    ╚════██║██║╚██╔╝██║██╔══██║╚════██║██╔══██║
+    ███████║██║ ╚═╝ ██║██║  ██║███████║██║  ██║
+    ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
+```
 
 Tired of bash's 1977 syntax? Write shell scripts with modern JavaScript-like syntax that transpiles to bash.
 
