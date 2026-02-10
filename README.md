@@ -368,9 +368,9 @@ The beauty: You get modern syntax, but it runs as plain bash everywhere!
 ## Roadmap
 
 ### v1.0-2 - Arrays & Loops (Next)
-- Array declaration: `let arr = ["a", "b", "c"];`
-- Array indexing: `arr[0]`
-- Array length: `arr.length`
+~~- Array declaration~~ `let arr = ["a", "b", "c"];`
+~~- Array indexing:~~ `arr[0]`
+~~- Array length:~~ `arr.length`
 - Array methods: `push()`, `pop()`, `shift()`
 - While loops: `while (x < 10) { }`
 - Logical operators: `&&`, `||`, `!`

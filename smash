@@ -45,6 +45,29 @@ def transpile_smash(code):
     # Variable reassignment (without let/const/var): x = value -> x=value
     # But only if there's whitespace around the =, to avoid matching == comparisons
     code = re.sub(r'^(\s*)(\w+)\s+=\s+([^;]+);?', r'\1\2=\3', code, flags=re.MULTILINE)
+
+    # Array declarations: let arr = ["a", "b", "c"]
+    code = re.sub(
+        r'let\s+(\w+)\s*=\s*\[(.*?)\]',
+        lambda m: f"{m.group(1)}=({convert_array_elements(m.group(2))})",
+        code
+    )
+    
+    # Array access: arr[0]
+    # This is tricky - need to distinguish from declaration
+    # Only convert if NOT in a declaration context
+    code = re.sub(
+        r'(\w+)\[(\d+)\]',
+        r'${\1[\2]}',
+        code
+    )
+    
+    # Array.length
+    code = re.sub(
+        r'(\w+)\.length',
+        r'${#\1[@]}',
+        code
+    )
     
     # Else if FIRST (before regular if statements)
     # This prevents the regular if regex from matching the if in "} else if"
@@ -320,6 +343,12 @@ def run_smash(filename, debug=False, dry_run=False):
             traceback.print_exc()
         sys.exit(1)
 
+def convert_array_elements(elements):
+    """Convert ["a", "b", "c"] to "a" "b" "c" for bash"""
+    # Split by comma, strip quotes, re-quote for bash
+    items = [item.strip() for item in elements.split(',')]
+    return ' '.join(items)
+    
 def preprocess_code(code):
     """Normalize whitespace before transpilation"""
     # Convert tabs to spaces (4 spaces standard)
