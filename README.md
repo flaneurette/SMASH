@@ -4,6 +4,17 @@ JavaScript-style shell scripting.
 
 Tired of bash's 1977 syntax? Write shell scripts with modern JavaScript-like syntax that transpiles to bash.
 
+
+## Features
+
+- JavaScript-like syntax. Familiar to millions of developers
+- All Linux commands work. Pipes, redirects, grep, awk, everything
+- Transpiles to bash. Works everywhere bash works
+- No runtime dependencies. Just Python 3 and bash
+- Drop- in replacement. Use SMASH for new scripts, keep old bash scripts
+- Debug mode. See the generated bash code
+
+## Example .smash
 ```
 // Write this beautiful code:
 let name = "world";
@@ -60,15 +71,6 @@ Run it:
 smash hello.smash
 # Output: Hello from SMASH!
 ```
-
-## Features
-
-- JavaScript-like syntax. Familiar to millions of developers
-- All Linux commands work. Pipes, redirects, grep, awk, everything
-- Transpiles to bash. Works everywhere bash works
-- No runtime dependencies. Just Python 3 and bash
-- Drop- in replacement. Use SMASH for new scripts, keep old bash scripts
-- Debug mode. See the generated bash code
 
 ## Syntax Guide
 
