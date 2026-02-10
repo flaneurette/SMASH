@@ -30,15 +30,11 @@ def transpile_smash(code):
     code = preprocess_code(code)
     
     original_code = code
-    
-    # Remove comments carefully
-    # Remove /* */ comments (multi-line) first
-    code = re.sub(r'/\*.*?\*/', '', code, flags=re.DOTALL)
-    
-    # Remove // comments but NOT if they're inside quotes or command substitutions
-    # This is a simplified approach - we'll only remove // at the start of a line or after whitespace
-    code = re.sub(r'(^|\s)//[^\n]*', r'\1', code, flags=re.MULTILINE)
-    
+
+    # Convert all comments to bash # comments
+    code = re.sub(r'(^|\s)//(.*)$', r'\1#\2', code, flags=re.MULTILINE)
+    code = re.sub(r'/\*(.*?)\*/', convert_block_comment, code, flags=re.DOTALL)
+  
     # Variable declarations: let/const/var x = value -> x=value
     code = re.sub(r'\b(let|const|var)\s+(\w+)\s*=\s*([^;]+);?', r'\2=\3', code)
     
@@ -223,7 +219,14 @@ def transpile_smash(code):
         r'\1() {',
         code
     )
-
+    
+    # SMASH HELPER FUNCTIONS
+    def convert_block_comment(match):
+        """Convert /* */ to # block comments for bash"""
+        comment_text = match.group(1)
+        lines = comment_text.split('\n')
+        return '\n'.join('# ' + line.strip() for line in lines)
+        
     def convert_array_elements(elements):
         """Convert ["a", "b", "c"] to "a" "b" "c" for bash"""
         # Split by comma, strip quotes, re-quote for bash
