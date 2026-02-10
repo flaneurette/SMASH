@@ -171,7 +171,6 @@ if (( x % 2 == 0 )); then
 **Don't transpile:**
 - Promises/async-await (doesn't map well)
 - Classes (too complex for shell)
-- Modules/imports (not how bash works)
 
 
 ---
