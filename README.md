@@ -4,9 +4,9 @@ JavaScript-style shell scripting.
 
 Tired of bash's 1977 syntax? Write shell scripts with modern JavaScript-like syntax that transpiles to bash.
 
-## How It Works
+## How it works
 
-SMASH is a transpiler -it converts your JavaScript- like syntax to bash:
+SMASH is a runtime transpiler -it converts your JavaScript .smash- like syntax to bash, instantly in memory:
 
 ```
 Your SMASH code
