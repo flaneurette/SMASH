@@ -94,7 +94,7 @@ smash hello.smash
 # Output: Hello from SMASH!
 ```
 
-## Syntax Guide
+## Syntax guide
 
 ### Variables
 
@@ -110,7 +110,7 @@ let files = $(ls *.txt);
 // files=$(ls *.txt)
 ```
 
-### If/Else Statements
+### If/Else statements
 
 ```
 // SMASH
@@ -163,7 +163,7 @@ while (i < 10) {
 let x = "value"; // Inline comment
 ```
 
-### String Concatenation
+### String concatenation
 
 ```
 let name = "world";
@@ -172,7 +172,7 @@ echo "Hello, " + name + "!";
 // Becomes: echo "Hello, $name!"
 ```
 
-### All Bash Commands Work!
+### All Bash commands work!
 
 ```
 // Everything just passes through to bash
@@ -184,11 +184,11 @@ find . -name "*.log" -mtime +7 -delete;
 // You get the ENTIRE Linux ecosystem!
 ```
 
-## Real- World Examples
+## Real-world examples
 
 Note: Functions are partially implemented but have some edge cases in v1.0-1. They'll be fully supported in v1.0-2!
 
-### System Health Check
+### System health check
 
 ```
 #!/usr/bin/env smash
@@ -209,7 +209,7 @@ if (disk > 80) {
 }
 ```
 
-### Deployment Script
+### Deployment script
 
 ```
 #!/usr/bin/env smash
@@ -233,7 +233,7 @@ if (environment == "production") {
 }
 ```
 
-### Backup Automation
+### Backup automation
 
 ```
 #!/usr/bin/env smash
@@ -256,7 +256,7 @@ aws s3 cp $backup_dir s3://my- backups/$date/ --recursive;
 echo "Backup complete!";
 ```
 
-### Log Processing
+### Log processing
 
 ```
 #!/usr/bin/env smash
@@ -278,7 +278,7 @@ for (let logfile in /var/log/*.log) {
 
 ## Usage
 
-### Basic Usage
+### Basic usage
 
 ```
 # Run a script
@@ -299,7 +299,7 @@ smash -v
 smash --version
 ```
 
-### Making Scripts Executable
+### Making scripts executable
 
 ```
 # Add shebang to your script
@@ -318,9 +318,9 @@ chmod +x myscript.smash
 
 The beauty: You get modern syntax, but it runs as plain bash everywhere!
 
-## Supported Features
+## Supported features
 
-### Currently Supported
+### Currently supported
 
 - Variables (`let`, `const`, `var`)
 - If/else/else if statements
@@ -332,7 +332,7 @@ The beauty: You get modern syntax, but it runs as plain bash everywhere!
 - Multi- line comments (`/* */`)
 - All bash commands (pipes, redirects, etc.)
 
-### Coming Soon (v1.0-2)
+### Coming soon (v1.0-2)
 
 - Functions (basic support exists but needs work)
 - While loops
@@ -342,7 +342,7 @@ The beauty: You get modern syntax, but it runs as plain bash everywhere!
 - Syntax highlighting (VS Code extension)
 - More operators (`&&`, `||`, `!`)
 
-### Maybe Future
+### Maybe future
 
 - Type checking (optional)
 - Linting
@@ -360,7 +360,7 @@ The beauty: You get modern syntax, but it runs as plain bash everywhere!
 - Logical operators: `&&`, `||`, `!`
 - Better error messages
 
-### v1.0-3 Advanced Features
+### v1.0-3 Advanced features
 - Functions (properly implemented)
 - Switch/case statements
 - String methods: `.split()`, `.join()`, `.replace()`
@@ -382,7 +382,7 @@ if [ $x = $y ]; then      # Breaks if $x is empty
 if [ "$x" == "$y" ]       # Missing semicolon
 ```
 
-The SMASH Solution:
+The SMASH solution:
 
 ```
 // Clean, familiar, hard to mess up
