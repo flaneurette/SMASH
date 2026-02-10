@@ -22,11 +22,13 @@ Bash has a ton of features you could expose with cleaner syntax:
 let result = str.substring(0, 5);
 let parts = str.split(",");
 let upper = str.toUpperCase();
+let lower = str.toLowerCase() 
 
 // Bash has:
 result="${str:0:5}"
 IFS=',' read -ra parts <<< "$str"
 upper="${str^^}"
+lower="${str,,}"
 ```
 
 **Math operations:**
