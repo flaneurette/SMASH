@@ -3,7 +3,7 @@
 SMASH - Simple Modern Advanced SHell
 JavaScript-style shell scripting that transpiles to bash
 
-Author: Created with Claude
+Author: Flaneurette, Claude AI and contributors
 License: MIT
 """
 
@@ -36,14 +36,14 @@ def transpile_smash(code):
     # This is a simplified approach - we'll only remove // at the start of a line or after whitespace
     code = re.sub(r'(^|\s)//[^\n]*', r'\1', code, flags=re.MULTILINE)
     
-    # 1. Variable declarations: let/const/var x = value -> x=value
+    # Variable declarations: let/const/var x = value -> x=value
     code = re.sub(r'\b(let|const|var)\s+(\w+)\s*=\s*([^;]+);?', r'\2=\3', code)
     
-    # 1b. Variable reassignment (without let/const/var): x = value -> x=value
+    # Variable reassignment (without let/const/var): x = value -> x=value
     # But only if there's whitespace around the =, to avoid matching == comparisons
     code = re.sub(r'^(\s*)(\w+)\s+=\s+([^;]+);?', r'\1\2=\3', code, flags=re.MULTILINE)
     
-    # 2. Else if FIRST (before regular if statements)
+    # Else if FIRST (before regular if statements)
     # This prevents the regular if regex from matching the if in "} else if"
     code = re.sub(
         r'\}\s*else\s+if\s*\(\s*(\w+)\s*==\s*"([^"]+)"\s*\)\s*\{',
@@ -76,7 +76,7 @@ def transpile_smash(code):
         code
     )
     
-    # 3. If statements with string comparison: if (x == "value")
+    # If statements with string comparison: if (x == "value")
     code = re.sub(
         r'if\s*\(\s*(\w+)\s*==\s*"([^"]+)"\s*\)\s*\{',
         r'if [[ "$\1" == "\2" ]]; then',
@@ -90,7 +90,7 @@ def transpile_smash(code):
         code
     )
     
-    # 4. Not equal comparisons: if (x != y)
+    # Not equal comparisons: if (x != y)
     code = re.sub(
         r'if\s*\(\s*(\w+)\s*!=\s*"([^"]+)"\s*\)\s*\{',
         r'if [[ "$\1" != "\2" ]]; then',
@@ -102,7 +102,7 @@ def transpile_smash(code):
         code
     )
     
-    # 5. Numeric comparisons: >, <, >=, <=
+    # Numeric comparisons: >, <, >=, <=
     code = re.sub(
         r'if\s*\(\s*(\w+)\s*>\s*(\d+)\s*\)\s*\{',
         r'if [[ "$\1" -gt \2 ]]; then',
@@ -124,10 +124,10 @@ def transpile_smash(code):
         code
     )
     
-    # 6. Else: } else {
+    # Else: } else {
     code = re.sub(r'\}\s*else\s*\{', 'else', code)
     
-    # 7. Closing braces: } -> fi (for if statements) but keep function closing braces
+    # Closing braces: } -> fi (for if statements) but keep function closing braces
     lines = code.split('\n')
     result = []
     function_stack = []
@@ -172,14 +172,14 @@ def transpile_smash(code):
     
     code = '\n'.join(result)
     
-    # 8. For loops: for (let x in ...) { -> for x in ...; do
+    # For loops: for (let x in ...) { -> for x in ...; do
     code = re.sub(
         r'for\s*\(\s*let\s+(\w+)\s+in\s+([^\)]+)\)\s*\{',
         r'for \1 in \2; do',
         code
     )
     
-    # 9. While loops: while (x > 0) {
+    # While loops: while (x > 0) {
     code = re.sub(
         r'while\s*\(\s*(\w+)\s*>\s*(\d+)\s*\)\s*\{',
         r'while [[ "$\1" -gt \2 ]]; do',
@@ -191,14 +191,14 @@ def transpile_smash(code):
         code
     )
     
-    # 10. Functions: function name(params) { -> name() {
+    # Functions: function name(params) { -> name() {
     code = re.sub(
         r'function\s+(\w+)\s*\([^\)]*\)\s*\{',
         r'\1() {',
         code
     )
     
-    # 11. String concatenation: "text" + var + "more"
+    # String concatenation: "text" + var + "more"
     # Strategy: Find all echo statements with + operators and rebuild them
     def fix_echo_concat(match):
         parts = match.group(1).split('+')
@@ -219,10 +219,10 @@ def transpile_smash(code):
     # Match echo statements with concatenation
     code = re.sub(r'echo\s+(.+?\+.+?)(?:;|\n|$)', fix_echo_concat, code, flags=re.MULTILINE)
     
-    # 12. Remove trailing semicolons (bash doesn't strictly need them)
+    # Remove trailing semicolons (bash doesn't strictly need them)
     code = re.sub(r';(\s*)$', r'\1', code, flags=re.MULTILINE)
     
-    # 13. Fix for loops - convert the last 'fi' in a for loop block to 'done'
+    # Fix for loops - convert the last 'fi' in a for loop block to 'done'
     # This needs to happen AFTER fi conversion
     # Strategy: Find 'for...do' blocks and replace the final 'fi' with 'done'
     lines = code.split('\n')
@@ -401,7 +401,7 @@ def main():
     if not filename:
         print("Error: No script file specified")
         print("Usage: smash <script.smash>")
-        print("Try 'smash --help' for more information")
+        print("Try 'smash -h' for more information")
         sys.exit(1)
     
     # Run the script

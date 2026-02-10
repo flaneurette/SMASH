@@ -4,7 +4,6 @@ JavaScript-style shell scripting.
 
 Tired of bash's 1977 syntax? Write shell scripts with modern JavaScript-like syntax that transpiles to bash.
 
-
 ## Features
 
 - JavaScript-like syntax. Familiar to millions of developers
@@ -452,7 +451,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 - Inspired by the frustration of writing bash scripts for 30+ years
 - Thanks to everyone who said "just use Python" (you were right, but also wrong)
-- Built with Claude AI
+- Flaneurette, Claude AI and contributors
 
 ## Links
 
