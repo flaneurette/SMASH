@@ -12,7 +12,7 @@ if (name == "world") {
     echo "Hello, " + name + "!";
 }
 
-// Instead of this nightmare:
+// Instead of this:
 # name="world"
 # if [ "$name" = "world" ]; then
 #     echo "Hello, $name!"
