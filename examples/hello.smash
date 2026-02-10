@@ -1,0 +1,19 @@
+#!/usr/bin/env smash
+// hello.smash - Your first SMASH script!
+
+let name = "world";
+
+if (name == "world") {
+    echo "Hello, " + name + "!";
+    echo "Welcome to SMASH - JavaScript-style shell scripting!";
+} else {
+    echo "Hello, stranger!";
+}
+
+// Show some system info
+let hostname = $(hostname);
+let date = $(date);
+
+echo "";
+echo "Running on: " + hostname;
+echo "Current time: " + date;

@@ -1,0 +1,25 @@
+#!/usr/bin/env smash
+// process-files.smash - Process log files example
+
+echo "Processing log files...";
+echo "";
+
+let count = 0;
+
+for (let file in *.log) {
+    echo "Processing: " + file;
+    
+    // Count errors in this file
+    let errors = $(grep -c "ERROR" $file 2>/dev/null || echo "0");
+    
+    if (errors > 0) {
+        echo "Found " + errors + " errors";
+    } else {
+        echo "No errors found";
+    }
+    
+    count = $(expr $count + 1);
+}
+
+echo "";
+echo "Processed " + count + " log files";

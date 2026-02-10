@@ -1,0 +1,40 @@
+#!/usr/bin/env smash
+// deploy.smash - Example deployment automation
+
+let environment = "production";
+let app_name = "myapp";
+let version = "v1.0-1";
+
+echo "Deploying " + app_name + " " + version + " to " + environment;
+echo "";
+
+if (environment == "production") {
+    echo "Building Docker image...";
+    // docker build -t $app_name:$version .;
+    echo "Image built";
+    
+    echo "Pushing to registry...";
+    // docker push registry.example.com/$app_name:$version;
+    echo "Image pushed";
+    
+    echo "Deploying to Kubernetes...";
+    // kubectl set image deployment/$app_name app=registry.example.com/$app_name:$version;
+    // kubectl rollout status deployment/$app_name;
+    echo "Deployment updated";
+    
+    echo "";
+    echo "Production deployment complete!";
+    
+} else if (environment == "staging") {
+    echo "Deploying to staging environment...";
+    // docker-compose -f docker-compose.staging.yml up -d;
+    echo "Staging deployment complete!";
+    
+} else {
+    echo "Starting development environment...";
+    // docker-compose up -d;
+    echo "Development environment ready!";
+}
+
+echo "";
+echo "All done! Application is running.";

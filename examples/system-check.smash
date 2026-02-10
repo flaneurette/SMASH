@@ -1,0 +1,42 @@
+#!/usr/bin/env smash
+// system-check.smash - System health monitoring (simplified for v1.0-1)
+
+echo "System Health Check";
+echo "======================";
+echo "";
+
+// Get system info
+let hostname = $(hostname);
+let uptime = $(uptime -p);
+
+echo "Hostname: " + hostname;
+echo "Uptime: " + uptime;
+echo "";
+
+// Check disk space
+echo "Disk Space:";
+let disk_usage = $(df -h / | tail -1 | awk '{print $5}' | sed 's/%//');
+
+if (disk_usage > 80) {
+    echo "WARNING: Disk usage is " + disk_usage + "% (threshold: 80%)";
+    echo "Consider running cleanup scripts!";
+} else if (disk_usage > 60) {
+    echo "Disk usage: " + disk_usage + "% (getting high)";
+} else {
+    echo "Disk usage: " + disk_usage + "% (OK)";
+}
+
+echo "";
+
+// Check memory
+echo "Memory:";
+let mem_usage = $(free | grep Mem | awk '{print int($3/$2 * 100)}');
+
+if (mem_usage > 90) {
+    echo "  WARNING: Memory usage is " + mem_usage + "%";
+} else {
+    echo "  Memory usage: " + mem_usage + "% (OK)";
+}
+
+echo "";
+echo "Health check complete!";

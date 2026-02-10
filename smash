@@ -1,0 +1,411 @@
+#!/usr/bin/env python3
+"""
+SMASH - Simple Modern Advanced SHell
+JavaScript-style shell scripting that transpiles to bash
+
+Author: Created with Claude
+License: MIT
+"""
+
+import re
+import sys
+import subprocess
+import os
+
+VERSION = "1.0-1"
+
+def transpile_smash(code):
+    """
+    Convert JavaScript-style SMASH syntax to bash
+    
+    Supports:
+    - Variables: let x = "value"
+    - If/else: if (x == y) { }
+    - Loops: for (let x in *.txt) { }
+    - Functions: function name() { }
+    - All bash commands pass through unchanged
+    """
+    
+    original_code = code
+    
+    # Remove comments carefully
+    # Remove /* */ comments (multi-line) first
+    code = re.sub(r'/\*.*?\*/', '', code, flags=re.DOTALL)
+    
+    # Remove // comments but NOT if they're inside quotes or command substitutions
+    # This is a simplified approach - we'll only remove // at the start of a line or after whitespace
+    code = re.sub(r'(^|\s)//[^\n]*', r'\1', code, flags=re.MULTILINE)
+    
+    # 1. Variable declarations: let/const/var x = value -> x=value
+    code = re.sub(r'\b(let|const|var)\s+(\w+)\s*=\s*([^;]+);?', r'\2=\3', code)
+    
+    # 1b. Variable reassignment (without let/const/var): x = value -> x=value
+    # But only if there's whitespace around the =, to avoid matching == comparisons
+    code = re.sub(r'^(\s*)(\w+)\s+=\s+([^;]+);?', r'\1\2=\3', code, flags=re.MULTILINE)
+    
+    # 2. Else if FIRST (before regular if statements)
+    # This prevents the regular if regex from matching the if in "} else if"
+    code = re.sub(
+        r'\}\s*else\s+if\s*\(\s*(\w+)\s*==\s*"([^"]+)"\s*\)\s*\{',
+        r'elif [[ "$\1" == "\2" ]]; then',
+        code
+    )
+    code = re.sub(
+        r'\}\s*else\s+if\s*\(\s*(\w+)\s*==\s*(\w+)\s*\)\s*\{',
+        r'elif [[ "$\1" == "$\2" ]]; then',
+        code
+    )
+    code = re.sub(
+        r'\}\s*else\s+if\s*\(\s*(\w+)\s*!=\s*"([^"]+)"\s*\)\s*\{',
+        r'elif [[ "$\1" != "\2" ]]; then',
+        code
+    )
+    code = re.sub(
+        r'\}\s*else\s+if\s*\(\s*(\w+)\s*!=\s*(\w+)\s*\)\s*\{',
+        r'elif [[ "$\1" != "$\2" ]]; then',
+        code
+    )
+    code = re.sub(
+        r'\}\s*else\s+if\s*\(\s*(\w+)\s*>\s*(\d+)\s*\)\s*\{',
+        r'elif [[ "$\1" -gt \2 ]]; then',
+        code
+    )
+    code = re.sub(
+        r'\}\s*else\s+if\s*\(\s*(\w+)\s*<\s*(\d+)\s*\)\s*\{',
+        r'elif [[ "$\1" -lt \2 ]]; then',
+        code
+    )
+    
+    # 3. If statements with string comparison: if (x == "value")
+    code = re.sub(
+        r'if\s*\(\s*(\w+)\s*==\s*"([^"]+)"\s*\)\s*\{',
+        r'if [[ "$\1" == "\2" ]]; then',
+        code
+    )
+    
+    # If comparing two variables: if (x == y)
+    code = re.sub(
+        r'if\s*\(\s*(\w+)\s*==\s*(\w+)\s*\)\s*\{',
+        r'if [[ "$\1" == "$\2" ]]; then',
+        code
+    )
+    
+    # 4. Not equal comparisons: if (x != y)
+    code = re.sub(
+        r'if\s*\(\s*(\w+)\s*!=\s*"([^"]+)"\s*\)\s*\{',
+        r'if [[ "$\1" != "\2" ]]; then',
+        code
+    )
+    code = re.sub(
+        r'if\s*\(\s*(\w+)\s*!=\s*(\w+)\s*\)\s*\{',
+        r'if [[ "$\1" != "$\2" ]]; then',
+        code
+    )
+    
+    # 5. Numeric comparisons: >, <, >=, <=
+    code = re.sub(
+        r'if\s*\(\s*(\w+)\s*>\s*(\d+)\s*\)\s*\{',
+        r'if [[ "$\1" -gt \2 ]]; then',
+        code
+    )
+    code = re.sub(
+        r'if\s*\(\s*(\w+)\s*<\s*(\d+)\s*\)\s*\{',
+        r'if [[ "$\1" -lt \2 ]]; then',
+        code
+    )
+    code = re.sub(
+        r'if\s*\(\s*(\w+)\s*>=\s*(\d+)\s*\)\s*\{',
+        r'if [[ "$\1" -ge \2 ]]; then',
+        code
+    )
+    code = re.sub(
+        r'if\s*\(\s*(\w+)\s*<=\s*(\d+)\s*\)\s*\{',
+        r'if [[ "$\1" -le \2 ]]; then',
+        code
+    )
+    
+    # 6. Else: } else {
+    code = re.sub(r'\}\s*else\s*\{', 'else', code)
+    
+    # 7. Closing braces: } -> fi (for if statements) but keep function closing braces
+    lines = code.split('\n')
+    result = []
+    function_stack = []
+    
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        
+        # Starting a function - the { is on this line, so we start tracking from 0
+        # Any { or } after this will change the depth
+        if stripped.endswith('() {'):
+            function_stack.append(0)
+            result.append(line)
+        elif function_stack:  # Inside a function
+            # Count braces on this line BEFORE checking if it closes
+            open_braces = stripped.count('{')
+            close_braces = stripped.count('}')
+            
+            # If this line has a }, check if closing function
+            if '}' in stripped:
+                # Temporarily apply the change to see if we hit 0
+                new_depth = function_stack[-1] + open_braces - close_braces
+                
+                if new_depth < 0 and stripped == '}':
+                    # This closes the function
+                    result.append('}')
+                    function_stack.pop()
+                elif stripped == '}':
+                    # Regular if/else closing
+                    result.append('fi')
+                    function_stack[-1] = new_depth
+                else:
+                    result.append(line)
+                    function_stack[-1] = new_depth
+            else:
+                result.append(line)
+                function_stack[-1] += open_braces
+        else:  # Outside any function
+            if stripped == '}':
+                result.append('fi')
+            else:
+                result.append(line)
+    
+    code = '\n'.join(result)
+    
+    # 8. For loops: for (let x in ...) { -> for x in ...; do
+    code = re.sub(
+        r'for\s*\(\s*let\s+(\w+)\s+in\s+([^\)]+)\)\s*\{',
+        r'for \1 in \2; do',
+        code
+    )
+    
+    # 9. While loops: while (x > 0) {
+    code = re.sub(
+        r'while\s*\(\s*(\w+)\s*>\s*(\d+)\s*\)\s*\{',
+        r'while [[ "$\1" -gt \2 ]]; do',
+        code
+    )
+    code = re.sub(
+        r'while\s*\(\s*(\w+)\s*<\s*(\d+)\s*\)\s*\{',
+        r'while [[ "$\1" -lt \2 ]]; do',
+        code
+    )
+    
+    # 10. Functions: function name(params) { -> name() {
+    code = re.sub(
+        r'function\s+(\w+)\s*\([^\)]*\)\s*\{',
+        r'\1() {',
+        code
+    )
+    
+    # 11. String concatenation: "text" + var + "more"
+    # Strategy: Find all echo statements with + operators and rebuild them
+    def fix_echo_concat(match):
+        parts = match.group(1).split('+')
+        result = []
+        for i, part in enumerate(parts):
+            part = part.strip()
+            # If it's a quoted string, remove quotes and add to result
+            if part.startswith('"') and part.endswith('"'):
+                result.append(part[1:-1])
+            # If it's a variable, add with $ prefix
+            elif part and not part.startswith('"'):
+                result.append(f'${part}')
+            # If it's just a string part, add as-is
+            elif part:
+                result.append(part.strip('"'))
+        return f'echo "{"".join(result)}"'
+    
+    # Match echo statements with concatenation
+    code = re.sub(r'echo\s+(.+?\+.+?)(?:;|\n|$)', fix_echo_concat, code, flags=re.MULTILINE)
+    
+    # 12. Remove trailing semicolons (bash doesn't strictly need them)
+    code = re.sub(r';(\s*)$', r'\1', code, flags=re.MULTILINE)
+    
+    # 13. Fix for loops - convert the last 'fi' in a for loop block to 'done'
+    # This needs to happen AFTER fi conversion
+    # Strategy: Find 'for...do' blocks and replace the final 'fi' with 'done'
+    lines = code.split('\n')
+    result = []
+    in_for_loop = False
+    for_depth = 0
+    if_depth_in_for = 0
+    
+    for line in lines:
+        if 'for ' in line and ' do' in line:
+            in_for_loop = True
+            for_depth += 1
+            if_depth_in_for = 0
+            result.append(line)
+        elif in_for_loop:
+            # Track if statements inside for loop
+            if line.strip().startswith('if ') and ' then' in line:
+                if_depth_in_for += 1
+            elif line.strip() == 'fi':
+                if if_depth_in_for > 0:
+                    if_depth_in_for -= 1
+                    result.append(line)  # Keep this fi
+                else:
+                    # This is the for loop's closing - convert to done
+                    result.append('done')
+                    in_for_loop = False
+                    for_depth -= 1
+                continue
+            result.append(line)
+        else:
+            result.append(line)
+    
+    code = '\n'.join(result)
+    
+    return code
+
+def run_smash(filename, debug=False, dry_run=False):
+    """Read, transpile, and execute SMASH script"""
+    try:
+        # Check if file exists
+        if not os.path.exists(filename):
+            print(f"Error: File '{filename}' not found")
+            sys.exit(1)
+        
+        # Read the SMASH code
+        with open(filename, 'r') as f:
+            smash_code = f.read()
+        
+        # Remove shebang if present
+        if smash_code.startswith('#!'):
+            smash_code = '\n'.join(smash_code.split('\n')[1:])
+        
+        # Transpile to bash
+        bash_code = transpile_smash(smash_code)
+        
+        # Debug mode - show generated code
+        if debug or dry_run:
+            print("=" * 70)
+            print("SMASH CODE:")
+            print("=" * 70)
+            print(smash_code)
+            print("\n" + "=" * 70)
+            print("GENERATED BASH:")
+            print("=" * 70)
+            print(bash_code)
+            print("=" * 70)
+            
+            if dry_run:
+                print("\nDry run mode - not executing")
+                sys.exit(0)
+            
+            print("\nEXECUTING...\n")
+        
+        # Execute via bash
+        result = subprocess.run(
+            ['bash', '-c', bash_code],
+            capture_output=False
+        )
+        
+        sys.exit(result.returncode)
+        
+    except FileNotFoundError:
+        print(f"Error: File '{filename}' not found")
+        sys.exit(1)
+    except KeyboardInterrupt:
+        print("\n\nInterrupted by user")
+        sys.exit(130)
+    except Exception as e:
+        print(f"Error: {e}")
+        if debug:
+            import traceback
+            traceback.print_exc()
+        sys.exit(1)
+
+def show_help():
+    """Display help message"""
+    print("""
+    ███████╗███╗   ███╗ █████╗ ███████╗██╗  ██╗
+    ██╔════╝████╗ ████║██╔══██╗██╔════╝██║  ██║
+    ███████╗██╔████╔██║███████║███████╗███████║
+    ╚════██║██║╚██╔╝██║██╔══██║╚════██║██╔══██║
+    ███████║██║ ╚═╝ ██║██║  ██║███████║██║  ██║
+    ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
+    
+    SMASH v{VERSION} - JavaScript-style shell scripting
+    
+    Usage:
+        smash <script.smash>           Run a SMASH script
+        smash <script.smash> --debug   Show generated bash code
+        smash <script.smash> --dry-run Show generated code without running
+        smash --version                Show version
+        smash --help                   Show this help
+    
+    Features:
+     JavaScript-like syntax for shell scripts
+     All Linux commands work (pipes, redirects, everything)
+     Transpiles to bash (works everywhere)
+     No dependencies except Python 3 and bash
+    
+    Example script.smash:
+        
+        let name = "world";
+        
+        if (name == "world") {{
+            echo "Hello, " + name + "!";
+        }}
+        
+        for (let file in *.txt) {{
+            cat $file | grep ERROR | wc -l;
+        }}
+        
+        function greet(name) {{
+            echo "Hello, " + name;
+        }}
+        
+        greet("SMASH");
+    
+    Learn more: https://github.com/flaneurette/smash
+    Report bugs: https://github.com/flaneurette/smash/issues
+    """.format(VERSION=VERSION))
+
+def show_version():
+    """Display version information"""
+    print(f"SMASH v{VERSION}")
+    print("JavaScript-style shell scripting")
+    print("License: MIT")
+
+def main():
+    """Main entry point"""
+    
+    # Parse arguments
+    if len(sys.argv) < 2:
+        show_help()
+        sys.exit(0)
+    
+    # Handle flags
+    if '--help' in sys.argv or '-h' in sys.argv:
+        show_help()
+        sys.exit(0)
+    
+    if '--version' in sys.argv or '-v' in sys.argv:
+        show_version()
+        sys.exit(0)
+    
+    # Check for debug/dry-run flags
+    debug = '--debug' in sys.argv or '-d' in sys.argv
+    dry_run = '--dry-run' in sys.argv
+    
+    # Get filename (first non-flag argument)
+    filename = None
+    for arg in sys.argv[1:]:
+        if not arg.startswith('--') and not arg.startswith('-'):
+            filename = arg
+            break
+    
+    if not filename:
+        print("Error: No script file specified")
+        print("Usage: smash <script.smash>")
+        print("Try 'smash --help' for more information")
+        sys.exit(1)
+    
+    # Run the script
+    run_smash(filename, debug=debug, dry_run=dry_run)
+
+if __name__ == '__main__':
+    main()
