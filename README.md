@@ -460,9 +460,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
-- Inspired by the frustration of writing bash scripts for 30+ years
-- Thanks to everyone who said "just use Python" (you were right, but also wrong)
-- Flaneurette, Claude AI and contributors
+Flaneurette, Claude AI and contributors
 
 ## Links
 
