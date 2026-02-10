@@ -32,7 +32,8 @@ def transpile_smash(code):
     original_code = code
 
     # Convert all comments to bash # comments
-    code = re.sub(r'(^|\s)//(.*)$', r'\1#\2', code, flags=re.MULTILINE)
+    code = convert_comments(code)
+    # Convert all block-comments to bash # comments
     code = re.sub(r'/\*(.*?)\*/', convert_block_comment, code, flags=re.DOTALL)
   
     # Variable declarations: let/const/var x = value -> x=value
@@ -221,6 +222,24 @@ def transpile_smash(code):
     )
     
     # SMASH HELPER FUNCTIONS
+
+    def convert_comments(code):
+        """Convert // comments to # (only at line start)"""
+        lines = code.split('\n')
+        result = []
+        
+        for line in lines:
+            stripped = line.lstrip()
+            if stripped.startswith('//'):
+                # Get original indentation
+                indent = line[:len(line) - len(stripped)]
+                comment_text = stripped[2:]  # Remove //
+                line = indent + '#' + comment_text
+            
+            result.append(line)
+        
+        return '\n'.join(result)
+
     def convert_block_comment(match):
         """Convert /* */ to # block comments for bash"""
         comment_text = match.group(1)
