@@ -206,7 +206,7 @@ Note: Functions are partially implemented but have some edge cases in v1.0-1. Th
 
 ```
 #!/usr/bin/env smash
-// system- check.smash
+// system-check.smash
 
 let hostname = $(hostname);
 let uptime = $(uptime -p);
@@ -274,7 +274,7 @@ echo "Backup complete!";
 
 ```
 #!/usr/bin/env smash
-// process- logs.smash
+// process-logs.smash
 
 let threshold = 100;
 
