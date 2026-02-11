@@ -125,13 +125,6 @@ def transpile_smash(code):
     
     # Convert all block-comments to bash # comments
     code = re.sub(r'/\*(.*?)\*/', convert_block_comment, code, flags=re.DOTALL)
-    
-    # Variable declarations: let/const/var x = value -> x=value
-    code = re.sub(r'\b(let|const|var)\s+(\w+)\s*=\s*([^;]+);?', r'\2=\3', code)
-    
-    # Variable reassignment (without let/const/var): x = value -> x=value
-    # But only if there's whitespace around the =, to avoid matching == comparisons
-    code = re.sub(r'^(\s*)(\w+)\s+=\s+([^;]+);?', r'\1\2=\3', code, flags=re.MULTILINE)
 
     # Array declarations: let arr = ["a", "b", "c"]
     code = re.sub(
@@ -149,13 +142,20 @@ def transpile_smash(code):
         code
     )
     
-    # Array.length
+    # Array.length (see: Numeric equality)
     code = re.sub(
         r'(\w+)\.length',
         r'${#\1[@]}',
         code
     )
+        
+    # Variable declarations: let/const/var x = value -> x=value
+    code = re.sub(r'\b(let|const|var)\s+(\w+)\s*=\s*([^;]+);?', r'\2=\3', code)
     
+    # Variable reassignment (without let/const/var): x = value -> x=value
+    # But only if there's whitespace around the =, to avoid matching == comparisons
+    code = re.sub(r'^(\s*)(\w+)\s+=\s+([^;]+);?', r'\1\2=\3', code, flags=re.MULTILINE)
+
     # Else if FIRST (before regular if statements)
     # This prevents the regular if regex from matching the if in "} else if"
     code = re.sub(
@@ -196,6 +196,13 @@ def transpile_smash(code):
         code
     )
     
+    # Numeric equality: if (x == 2) also important for arrays!
+    code = re.sub(
+        r'if\s*\(\s*(\w+)\s*==\s*(\d+)\s*\)\s*\{',
+        r'if [[ "$\1" -eq \2 ]]; then',
+        code
+    )
+
     # If comparing two variables: if (x == y)
     code = re.sub(
         r'if\s*\(\s*(\w+)\s*==\s*(\w+)\s*\)\s*\{',

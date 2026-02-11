@@ -339,6 +339,7 @@ The beauty: You get modern syntax, but it runs as plain bash everywhere!
 ### Currently supported
 
 - Variables (`let`, `const`, `var`)
+- Arrays (`let array = ['a','b','c'];`)
 - If/else/else if statements
 - String comparisons (`==`, `!=`)
 - Numeric comparisons (`>`, `<`, `>=`, `<=`)
@@ -350,20 +351,10 @@ The beauty: You get modern syntax, but it runs as plain bash everywhere!
 
 ### Coming soon (v1.0-2)
 
-- Functions (basic support exists but needs work)
 - While loops
 - Switch/case statements
-- Array support
 - Better error messages
-- Syntax highlighting (VS Code extension)
 - More operators (`&&`, `||`, `!`)
-
-### Maybe future
-
-- Type checking (optional)
-- Linting
-- Package manager integration
-- REPL mode
 
 ## Roadmap
 

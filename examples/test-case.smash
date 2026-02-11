@@ -1,0 +1,365 @@
+#!/usr/bin/env smash
+// test-case.smash - SMASH test suite
+// Tests all supported features in v1.0-1
+
+echo "SMASH Test Suite v1.0-1";
+echo "======================";
+echo "";
+
+// Test counter
+let passed = 0;
+let failed = 0;
+let total = 0;
+
+// Test 1: Variable declarations
+echo "Test 1: Variable declarations";
+let test_var = "value";
+let test_num = 42;
+let test_cmd = $(echo "command substitution");
+
+if (test_var == "value") {
+    echo "  PASS: let assignment works";
+    passed = $(expr $passed + 1);
+} else {
+    echo "  FAIL: let assignment broken";
+    failed = $(expr $failed + 1);
+}
+total = $(expr $total + 1);
+echo "";
+
+// Test 2: String comparison with ==
+echo "Test 2: String comparison (==)";
+let str1 = "test";
+let str2 = "test";
+
+if (str1 == str2) {
+    echo "  PASS: String equality works";
+    passed = $(expr $passed + 1);
+} else {
+    echo "  FAIL: String equality broken";
+    failed = $(expr $failed + 1);
+}
+total = $(expr $total + 1);
+echo "";
+
+// Test 3: String comparison with !=
+echo "Test 3: String comparison (!=)";
+let str3 = "foo";
+let str4 = "bar";
+
+if (str3 != str4) {
+    echo "  PASS: String inequality works";
+    passed = $(expr $passed + 1);
+} else {
+    echo "  FAIL: String inequality broken";
+    failed = $(expr $failed + 1);
+}
+total = $(expr $total + 1);
+echo "";
+
+// Test 4: Numeric comparison (>)
+echo "Test 4: Numeric comparison (>)";
+let num1 = 100;
+let num2 = 50;
+
+if (num1 > 50) {
+    echo "  PASS: Greater than works";
+    passed = $(expr $passed + 1);
+} else {
+    echo "  FAIL: Greater than broken";
+    failed = $(expr $failed + 1);
+}
+total = $(expr $total + 1);
+echo "";
+
+// Test 5: Numeric comparison (<)
+echo "Test 5: Numeric comparison (<)";
+if (num2 < 100) {
+    echo "  PASS: Less than works";
+    passed = $(expr $passed + 1);
+} else {
+    echo "  FAIL: Less than broken";
+    failed = $(expr $failed + 1);
+}
+total = $(expr $total + 1);
+echo "";
+
+// Test 6: If-else statement
+echo "Test 6: If-else statement";
+let condition = "true";
+
+if (condition == "true") {
+    echo "  PASS: If branch works";
+    passed = $(expr $passed + 1);
+} else {
+    echo "  FAIL: Else branch executed incorrectly";
+    failed = $(expr $failed + 1);
+}
+total = $(expr $total + 1);
+echo "";
+
+// Test 7: Else branch
+echo "Test 7: Else branch";
+let condition2 = "false";
+
+if (condition2 == "true") {
+    echo "  FAIL: If branch executed incorrectly";
+    failed = $(expr $failed + 1);
+} else {
+    echo "  PASS: Else branch works";
+    passed = $(expr $passed + 1);
+}
+total = $(expr $total + 1);
+echo "";
+
+// Test 8: Else-if chain
+echo "Test 8: Else-if chain";
+let value = "medium";
+
+if (value == "low") {
+    echo "  FAIL: Wrong branch (low)";
+    failed = $(expr $failed + 1);
+} else if (value == "medium") {
+    echo "  PASS: Else-if works";
+    passed = $(expr $passed + 1);
+} else {
+    echo "  FAIL: Wrong branch (else)";
+    failed = $(expr $failed + 1);
+}
+total = $(expr $total + 1);
+echo "";
+
+// Test 9: String concatenation
+echo "Test 9: String concatenation";
+let part1 = "Hello";
+let part2 = "World";
+let expected = $(echo "Hello, World!");
+let result = $(echo "Concatenation test");
+
+echo "  Testing: " + part1 + ", " + part2 + "!";
+echo "  PASS: String concatenation works";
+passed = $(expr $passed + 1);
+total = $(expr $total + 1);
+echo "";
+
+// Test 10: For loop with file globbing
+echo "Test 10: For loop";
+echo "test1" > /tmp/smash_test_1.tmp;
+echo "test2" > /tmp/smash_test_2.tmp;
+echo "test3" > /tmp/smash_test_3.tmp;
+
+let loop_count = 0;
+for (let file in /tmp/smash_test_*.tmp) {
+    loop_count = $(expr $loop_count + 1);
+}
+
+if (loop_count == "3") {
+    echo "  PASS: For loop iterated " + loop_count + " times";
+    passed = $(expr $passed + 1);
+} else {
+    echo "  FAIL: For loop count wrong: " + loop_count;
+    failed = $(expr $failed + 1);
+}
+total = $(expr $total + 1);
+
+rm -f /tmp/smash_test_*.tmp;
+echo "";
+
+// Test 11: Command substitution
+echo "Test 11: Command substitution";
+let cmd_result = $(echo "substitution works");
+
+if (cmd_result == "substitution works") {
+    echo "  PASS: Command substitution works";
+    passed = $(expr $passed + 1);
+} else {
+    echo "  FAIL: Command substitution broken";
+    failed = $(expr $failed + 1);
+}
+total = $(expr $total + 1);
+echo "";
+
+// Test 12: Variable reassignment
+echo "Test 12: Variable reassignment";
+let mutable = "initial";
+mutable = "changed";
+
+if (mutable == "changed") {
+    echo "  PASS: Variable reassignment works";
+    passed = $(expr $passed + 1);
+} else {
+    echo "  FAIL: Variable reassignment broken";
+    failed = $(expr $failed + 1);
+}
+total = $(expr $total + 1);
+echo "";
+
+// Test 13: Nested if statements
+echo "Test 13: Nested if statements";
+let outer = "yes";
+let inner = "yes";
+
+if (outer == "yes") {
+    if (inner == "yes") {
+        echo "  PASS: Nested if works";
+        passed = $(expr $passed + 1);
+    } else {
+        echo "  FAIL: Inner if failed";
+        failed = $(expr $failed + 1);
+    }
+} else {
+    echo "  FAIL: Outer if failed";
+    failed = $(expr $failed + 1);
+}
+total = $(expr $total + 1);
+echo "";
+
+// Test 14: Numeric comparison (>=)
+echo "Test 14: Numeric comparison (>=)";
+let num3 = 100;
+
+if (num3 >= 100) {
+    echo "  PASS: Greater than or equal works";
+    passed = $(expr $passed + 1);
+} else {
+    echo "  FAIL: Greater than or equal broken";
+    failed = $(expr $failed + 1);
+}
+total = $(expr $total + 1);
+echo "";
+
+// Test 15: Numeric comparison (<=)
+echo "Test 15: Numeric comparison (<=)";
+let num4 = 50;
+
+if (num4 <= 50) {
+    echo "  PASS: Less than or equal works";
+    passed = $(expr $passed + 1);
+} else {
+    echo "  FAIL: Less than or equal broken";
+    failed = $(expr $failed + 1);
+}
+total = $(expr $total + 1);
+echo "";
+
+// Test 16: Complex string concatenation
+echo "Test 16: Complex concatenation";
+let name = "SMASH";
+let version = "1.0-1";
+echo "  Running " + name + " v" + version;
+echo "  PASS: Complex concatenation works";
+passed = $(expr $passed + 1);
+total = $(expr $total + 1);
+echo "";
+
+// Test 17: Empty string comparison
+echo "Test 17: Empty string handling";
+let empty = "";
+let nonempty = "data";
+
+if (empty != nonempty) {
+    echo "  PASS: Empty string comparison works";
+    passed = $(expr $passed + 1);
+} else {
+    echo "  FAIL: Empty string comparison broken";
+    failed = $(expr $failed + 1);
+}
+total = $(expr $total + 1);
+echo "";
+
+// Test 18: Multiple else-if branches
+echo "Test 18: Multiple else-if branches";
+let choice = "three";
+
+if (choice == "one") {
+    echo "  FAIL: Wrong branch (one)";
+    failed = $(expr $failed + 1);
+} else if (choice == "two") {
+    echo "  FAIL: Wrong branch (two)";
+    failed = $(expr $failed + 1);
+} else if (choice == "three") {
+    echo "  PASS: Multiple else-if works";
+    passed = $(expr $passed + 1);
+} else {
+    echo "  FAIL: Wrong branch (else)";
+    failed = $(expr $failed + 1);
+}
+total = $(expr $total + 1);
+echo "";
+
+// Test 19: Bash command passthrough
+echo "Test 19: Bash command passthrough";
+let pipe_result = $(echo "test" | tr 'a-z' 'A-Z');
+
+if (pipe_result == "TEST") {
+    echo "  PASS: Pipes work correctly";
+    passed = $(expr $passed + 1);
+} else {
+    echo "  FAIL: Pipes broken";
+    failed = $(expr $failed + 1);
+}
+total = $(expr $total + 1);
+echo "";
+
+// Test 20: Comments
+echo "Test 20: Comment handling";
+// This is a single-line comment
+/* This is a
+   multi-line comment */
+echo "  PASS: Comments don't break execution";
+passed = $(expr $passed + 1);
+total = $(expr $total + 1);
+echo "";
+
+// Test 21: Functions (simple)
+echo "Test 21: Functions";
+
+function testfunc() {
+    echo "function_works";
+}
+
+let func_result = $(testfunc);
+
+if (func_result == "function_works") {
+    echo "  PASS: Simple functions work";
+    passed = $(expr $passed + 1);
+} else {
+    echo "  FAIL: Functions broken: " + func_result;
+    failed = $(expr $failed + 1);
+}
+total = $(expr $total + 1);
+echo "";
+
+echo "Test 22: Arrays";
+let myarray = ["Alice","Bob"];
+let mypiece = myarray[1];
+
+if (myarray == 2) {
+    echo "  PASS: Simple array.length works";
+}
+
+if (mypiece == "Bob") {
+    echo "  PASS: Simple arrays works";
+    passed = $(expr $passed + 1);
+} else {
+    echo "  FAIL: Arrays: " + myarray;
+    failed = $(expr $failed + 1);
+}
+
+echo "";
+
+// Final results
+echo "======================";
+echo "Test Results";
+echo "======================";
+echo "Total tests: " + total;
+echo "Passed: " + passed;
+echo "Failed: " + failed;
+echo "";
+
+if (failed == "0") {
+    echo "SUCCESS: All tests passed!";
+} else {
+    echo "FAILURE: Some tests failed";
+    echo "Please review failed tests above";
+}
