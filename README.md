@@ -122,7 +122,7 @@ let files = $(ls *.txt);
 let name = "world";
 
 if (name == "world") {
-    echo "Hello " + `{name}`;
+    echo `Hello {name}`;
 }
 ```
 
