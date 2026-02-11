@@ -138,12 +138,15 @@ echo "Hello, " + name + "!";
 ### String operations
 
 ```
-let result = str.substring(0, 5);
-let parts = str.split(",");
-let upper = str.toUpperCase();
-let lower = str.toLowerCase() 
+str.substring(0, 5);
+str.split(",");
+str.toUpperCase();
+str.toLowerCase() 
+```
 
-// Example
+Examples
+
+```
 let lower = "hello";
 let upper = "LOWER";
 
@@ -164,6 +167,15 @@ echo `Lower: {low}`;
 ```
 
 ### Array operations
+
+```
+arr = [];		// Array creation
+arr.push();		// Push value unto array
+arr.length;		// Array length
+arr[0];			// Indexing
+```
+
+Examples:
 
 ```
 let arr = ['a','b','c'];	// Array creation
