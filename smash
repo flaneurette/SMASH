@@ -94,7 +94,20 @@ def transpile_smash(code):
         code = re.sub(r'\n{3,}', '\n\n', code)
         
         return code
-    
+
+    def convert_variable_assignment(match):
+        varname = match.group(2)
+        value = match.group(3).strip()
+
+        # Arithmetic only if STRICTLY numeric expression
+        if (
+            re.fullmatch(r'[A-Za-z0-9_+\-*/%() \t]+', value)
+            and re.search(r'[+\-*/%]', value)
+        ):
+            return f'{varname}=$(({value}))'
+
+        return f'{varname}={value}'
+
     # String concatenation: "text" + var + "more"
     # Strategy: Find all echo statements with + operators and rebuild them
     def fix_echo_concat(match):
@@ -113,6 +126,13 @@ def transpile_smash(code):
                 result.append(part.strip('"'))
         return f'echo "{"".join(result)}"'
 
+    def text_interpolation(code):
+        def repl(match):
+            content = match.group(1)
+            content = re.sub(r'\{([^}]+)\}', r'${\1}', content)
+            return f'"{content}"'
+        return re.sub(r'`([^`]+)`', repl, code)
+    
     # --------------------------------- BEGIN SMASH ---------------------------------
     
     # Preprocess first
@@ -120,17 +140,76 @@ def transpile_smash(code):
     
     original_code = code
 
+    # Text interpolation
+    code = text_interpolation(code)
+    
+    # Detect "use X" directives at the top
+    use_directives = []
+ 
+    # Pragmas
+    # "use strict" and bash flags
+    if re.search(r'["\']use\s+strict["\']', code):
+        use_directives.append('-e')  # errexit
+        use_directives.append('-u')  # nounset
+    
+    if re.search(r'["\']use\s+pipefail["\']', code):
+        use_directives.append('-o pipefail')
+    
+    if re.search(r'["\']use\s+errexit["\']', code):
+        use_directives.append('-e')
+    
+    if re.search(r'["\']use\s+nounset["\']', code):
+        use_directives.append('-u')
+    
+    if re.search(r'["\']use\s+xtrace["\']', code):
+        use_directives.append('-x')
+
+    if re.search(r'["\']use\s+noclobber["\']', code):
+        use_directives.append('-C')
+
+    if re.search(r'["\']use\s+vi-mode["\']', code):
+        use_directives.append('-o vi')
+
+    if re.search(r'["\']use\s+emacs-mode["\']', code):
+        use_directives.append('-o emacs')
+
+    if re.search(r'["\']use\s+verbose["\']', code):
+        use_directives.append('-v')
+        
+    # Remove the directives from code
+    code = re.sub(r'["\']use\s+[^"\']+["\'];?\n?', '', code)
+    
+    # Add set command at the beginning
+    if use_directives:
+        unique_flags = list(dict.fromkeys(use_directives))  # Remove dupes
+        set_cmd = 'set ' + ' '.join(unique_flags) + '\n\n'
+        code = set_cmd + code
+        
     # Convert all comments to bash # comments
     code = convert_comments(code)
     
     # Convert all block-comments to bash # comments
     code = re.sub(r'/\*(.*?)\*/', convert_block_comment, code, flags=re.DOTALL)
 
+    # Import statements: import("path") or import "path"
+    code = re.sub(
+        r'import\s*\(\s*["\']([^"\']+)["\']\s*\)\s*;?',
+        r'source "\1"',
+        code
+    )
+    
+    code = re.sub(
+        r'import\s+["\']([^"\']+)["\']\s*;?',
+        r'source "\1"',
+        code
+    )
+
     # Array declarations: let arr = ["a", "b", "c"]
     code = re.sub(
-        r'let\s+(\w+)\s*=\s*\[(.*?)\]',
-        lambda m: f"{m.group(1)}=({convert_array_elements(m.group(2))})",
-        code, flags=re.MULTILINE
+        r'(let|const|var)\s+(\w+)\s*=\s*\[(.*?)\]',
+        lambda m: f"{m.group(2)}=({convert_array_elements(m.group(3))})",
+        code,
+        flags=re.MULTILINE
     )
     
     # Array access: arr[0]
@@ -148,7 +227,20 @@ def transpile_smash(code):
         r'${#\1[@]}',
         code
     )
-        
+
+    code = re.sub(
+        r'(\w+)\.push\(\s*[\'"]([^\'"]+)[\'"]\s*\)',
+        r'\1+=("\2")',
+        code
+    )
+    
+    # Math (let result = x + y * 2; or let mod = x % 3;)
+    code = re.sub(
+        r'\b(let|const|var)\s+(\w+)\s*=\s*([^;]+);?',
+        convert_variable_assignment,
+        code
+    )   
+    
     # Variable declarations: let/const/var x = value -> x=value
     code = re.sub(r'\b(let|const|var)\s+(\w+)\s*=\s*([^;]+);?', r'\2=\3', code)
     
@@ -186,6 +278,13 @@ def transpile_smash(code):
     code = re.sub(
         r'\}\s*else\s+if\s*\(\s*(\w+)\s*<\s*(\d+)\s*\)\s*\{',
         r'elif [[ "$\1" -lt \2 ]]; then',
+        code
+    )
+
+    # Array indexing/comparison in if statement
+    code = re.sub(
+        r'if\s*\(\s*\$\{(\w+)\[(\d+)\]\}\s*==\s*[\'"]([^\'"]+)[\'"]\s*\)\s*\{',
+        r'if [[ "${\1[\2]}" == "\3" ]]; then',
         code
     )
     
@@ -292,13 +391,20 @@ def transpile_smash(code):
     
     code = '\n'.join(result)
     
-    # For loops: for (let x in ...) { -> for x in ...; do
+    # Array iteration: for (let x in result)
+    code = re.sub(
+        r'for\s*\(\s*let\s+(\w+)\s+in\s+(\w+)\s*\)\s*\{',
+        r'for \1 in "${\2[@]}"; do',
+        code
+    )
+
+    # Fallback glob/raw iteration
     code = re.sub(
         r'for\s*\(\s*let\s+(\w+)\s+in\s+([^\)]+)\)\s*\{',
         r'for \1 in \2; do',
         code
     )
-    
+
     # While loops: while (x > 0) {
     code = re.sub(
         r'while\s*\(\s*(\w+)\s*>\s*(\d+)\s*\)\s*\{',
@@ -315,6 +421,47 @@ def transpile_smash(code):
     code = re.sub(
         r'function\s+(\w+)\s*\([^\)]*\)\s*\{',
         r'\1() {',
+        code
+    )
+
+    # Str.toUpperCase
+    code = re.sub(
+        r'(\w+)\.(toUpperCase|touppercase|toupper|up)\(\)',
+        r'${\1^^}',
+        code
+    )
+
+    # Str.toLowerCase
+    code = re.sub(
+        r'(\w+)\.(toLowerCase|tolowercase|tolower|lower)\(\)',
+        r'${\1,,}',
+        code
+    )
+    
+    # Str.substring or Str.substr
+    code = re.sub(
+        r'(\w+)\.(substring|substr)\(\s*(\d+)\s*,\s*(\d+)\s*\)',
+        r'${\1:\3:\4}',
+        code
+    )
+
+    # Str.split
+    def split_repl(match):
+        var = match.group(1)
+        delim = match.group(2)
+        return f'IFS="{delim}" read -ra parts <<< "${var}"'
+
+    # Str.split array assignment
+    code = re.sub(
+        r'\blet\s+(\w+)\s*=\s*(\w+)\.split\(\s*[\'"]([^\'"]+)[\'"]\s*\)\s*;?',
+        lambda m: f'IFS="{m.group(3)}" read -ra {m.group(1)} <<< "${m.group(2)}"',
+        code
+    )
+
+    # File operations
+    code = re.sub(
+        r'if\s*\(\s*(exists|isfile)\(\s*([^)]+)\s*\)\s*\)\s*\{',
+        r'if [[ -f \2 ]]; then',
         code
     )
     
@@ -364,7 +511,7 @@ def transpile_smash(code):
     
     return code
 
-def run_smash(filename, debug=False, dry_run=False):
+def run_smash(filename, debug=False, dry_run=False, emit=False, emit_file=False):
     """Read, transpile, and execute SMASH script"""
     try:
         # Check if file exists
@@ -383,6 +530,14 @@ def run_smash(filename, debug=False, dry_run=False):
         # Transpile to bash
         bash_code = transpile_smash(smash_code)
         
+        if emit and emit_file:
+            with open(emit_file, "w") as f:
+                f.write("#!/usr/bin/env bash\n\n")
+                f.write(bash_code)
+            os.chmod(emit_file, 0o755)
+            print(f"\nEmitted bash script to: {emit_file}")
+            sys.exit(0)
+            
         # Debug mode - show generated code
         if debug or dry_run:
             print("=" * 70)
@@ -435,11 +590,12 @@ def show_help():
     SMASH v{VERSION} - JavaScript-style shell scripting
     
     Usage:
-        smash <script.smash>           Run a SMASH script
-        smash <script.smash> -debug    Show generated bash code
-        smash <script.smash> -test     Show generated code without running
-        smash -v                       Show version
-        smash -h                       Show this help
+        smash <script.smash>                  Run a SMASH script
+        smash <script.smash> -debug           Show generated bash code
+        smash <script.smash> -test            Show generated code without running
+        smash <script.smash> -emit build.sh   Build tool generator
+        smash -v                              Show version
+        smash -h                              Show this help
     
     Features:
      JavaScript-like syntax for shell scripts
@@ -474,7 +630,7 @@ def show_version():
     print(f"SMASH v{VERSION}")
     print("JavaScript-style shell scripting")
     print("License: MIT")
-
+    
 def main():
     """Main entry point"""
     
@@ -491,18 +647,34 @@ def main():
     if '--version' in sys.argv or '-v' in sys.argv:
         show_version()
         sys.exit(0)
-    
+        
     # Check for debug/dry-run flags
     debug = '-debug' in sys.argv or '-debug' in sys.argv or '-d' in sys.argv
     dry_run = '--dry-run' in sys.argv or '-test' in sys.argv
-    
+    emit = '--emit' in sys.argv or '-emit' in sys.argv
+            
     # Get filename (first non-flag argument)
     filename = None
-    for arg in sys.argv[1:]:
-        if not arg.startswith('--') and not arg.startswith('-'):
-            filename = arg
+    for arg1 in sys.argv[1:]:
+        if not arg1.startswith('--') and not arg1.startswith('-'):
+            filename = arg1
             break
-    
+            
+    emit_file = None
+
+    if emit:
+        try:
+            emit_index = sys.argv.index('--emit')
+        except ValueError:
+            emit_index = sys.argv.index('-emit')
+
+        # If next argument exists and is not a flag, use it
+        if len(sys.argv) > emit_index + 1 and not sys.argv[emit_index + 1].startswith('-'):
+            emit_file = sys.argv[emit_index + 1]
+        else:
+            # Default filename: script.smash, script.sh
+            emit_file = filename.replace('.smash', '.sh')
+
     if not filename:
         print("Error: No script file specified")
         print("Usage: smash <script.smash>")
@@ -510,7 +682,7 @@ def main():
         sys.exit(1)
     
     # Run the script
-    run_smash(filename, debug=debug, dry_run=dry_run)
+    run_smash(filename, debug=debug, dry_run=dry_run, emit=emit, emit_file=emit_file)
 
 if __name__ == '__main__':
     main()

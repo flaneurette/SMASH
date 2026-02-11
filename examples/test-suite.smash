@@ -331,18 +331,77 @@ total = $(expr $total + 1);
 echo "";
 
 echo "Test 22: Arrays";
-let myarray = ["Alice","Bob"];
-let mypiece = myarray[1];
+let arr = ["Alice","Bob"];
+let mypiece = arr[1];
+arr.push("John");
+let len = arr.length;
 
-if (myarray == 2) {
+if (arr[2] == "John") {
+	echo "  PASS: Array push works";
+} else {
+    echo "  FAIL: Array push failed " + arr;
+    failed = $(expr $failed + 1);
+}
+
+if (len == 3) {
     echo "  PASS: Simple array length works";
+} else {
+    echo "  FAIL: Array length failed " + arr;
+    failed = $(expr $failed + 1);
 }
 
 if (mypiece == "Bob") {
     echo "  PASS: Simple arrays works";
     passed = $(expr $passed + 1);
 } else {
-    echo "  FAIL: Arrays: " + myarray;
+    echo "  FAIL: Array: " + arr;
+    failed = $(expr $failed + 1);
+}
+
+total = $(expr $total + 1);
+echo "";
+
+echo "Test 23: Importing files";
+
+echo "testImport=abc" > /tmp/smash_test_4.tmp;
+
+import "/tmp/smash_test_4.tmp";
+
+if (testImport == "abc") {
+    echo "  PASS: Importing files works.";
+    passed = $(expr $passed + 1);
+} else {
+    echo "  FAIL: Importing files failed.";
+    failed = $(expr $failed + 1);
+}
+
+rm -f /tmp/smash_test_4.tmp;
+
+total = $(expr $total + 1);
+echo "";
+
+echo "Test 24: Math 1.";
+echo "Simple math calculation";
+let result = 1 + 12 * 2;
+if (result == 25) {
+    echo "  PASS: Simple math calculation works.";
+    passed = $(expr $passed + 1);
+} else {
+    echo "  FAIL: Simple math calculation failed.";
+    failed = $(expr $failed + 1);
+}
+total = $(expr $total + 1);
+echo "";
+
+echo "Test 25: Math 2.";
+
+echo "Math modulo.";
+let mod = 5 % 3;
+if (mod == 2) {
+    echo "  PASS: Math modulo works.";
+    passed = $(expr $passed + 1);
+} else {
+    echo "  FAIL: Math modulo failed.";
     failed = $(expr $failed + 1);
 }
 total = $(expr $total + 1);

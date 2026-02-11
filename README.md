@@ -11,11 +11,12 @@ Introducing: SMASH! - a JavaScript-style shell scripting.
     ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
 
     Usage:
-        smash <script.smash>            Run a SMASH script
-        smash <script.smash> -debug     Show generated bash code
-        smash <script.smash> -test      Show generated code without running
-        smash -v						Show version
-        smash -h                   		Show this help
+        smash <script.smash>            		Run a SMASH script
+        smash <script.smash> -debug     		Show generated bash code
+        smash <script.smash> -test      		Show generated code without running
+		smash <script.smash> -emit build.sh     Build tool generator
+        smash -v								Show version
+        smash -h                   				Show this help
     
     Features:
      JavaScript-like syntax for shell scripts
@@ -93,35 +94,96 @@ Install it
 sudo ./install.sh
 ```
 
-Write your first script:
-
-```
-// hello.smash
-let name = "SMASH";
-echo "Hello from " + name + "!";
-```
-
-Run it:
-
-```
-smash hello.smash
-# Output: Hello from SMASH!
-```
-
 ## Syntax guide
+
+### Flags
+
+Possible flags/pragmas to set:
+
+```
+"use strict";        // Enable strict mode
+
+"use pipefail";      // Bash: set -o pipefail
+"use errexit";       // Bash: set -e (exit on error)
+"use nounset";       // Bash: set -u (error on undefined vars)
+"use xtrace";        // Bash: set -x (debug/trace mode)
+
+"use noclobber";     // Bash: set -C (don't overwrite files with >)
+"use vi-mode";       // Bash: set -o vi
+"use emacs-mode";    // Bash: set -o emacs
+"use verbose";       // Bash: set -v (print commands as read)
+
+// Or combined:
+"use strict pipefail errexit";
+```
 
 ### Variables
 
 ```
-// SMASH
+| Keyword  | Description                   | Enforced  |
+|----------|-------------------------------|-----------|
+| let      | Standard variable declaration | Yes       |
+| var      | Alias of let                  | Yes       |
+| const    | Constant (semantic only)      | No        |
+
 let name = "John";
 let count = 10;
 let files = $(ls *.txt);
+```
 
-// Becomes bash:
-// name="John"
-// count=10
-// files=$(ls *.txt)
+### String concatenation
+
+```
+let name = "world";
+echo "Hello, " + name + "!";
+
+// Becomes: echo "Hello, $name!"
+```
+
+### String operations
+
+```
+let result = str.substring(0, 5);
+let parts = str.split(",");
+let upper = str.toUpperCase();
+let lower = str.toLowerCase() 
+
+// Example
+let lower = "hello";
+let upper = "LOWER";
+
+let a = lower.substring(2,3);
+echo `{a}`;
+
+// split() returns an array assigned to the left-hand variable.
+let splitter = "Hello,world";
+let a = splitter.split(",");
+echo a.length;
+echo a[1];
+
+let up = lower.toUpperCase();
+let low = upper.toLowerCase();
+
+echo `Upper: {up}`;
+echo `Lower: {low}`;
+```
+
+### Array operations
+
+```
+let arr = ['a','b','c'];	// Array creation
+arr.push('d');				// Push value unto array
+echo arr.length;			// Array length
+echo arr[1];				// Indexing
+
+if(arr[1] == 'b') {			// Idx comparison
+	echo "Works fine";
+}
+
+let val = arr[1];			// New assignment
+if(val == 'b') { 			// Idx comparison
+	echo "Also works!";
+} 			
 ```
 
 ### If/Else statements
@@ -150,13 +212,28 @@ if (count > 10) {
 ### Loops
 
 ```
-// For loop
-for (let file in *.log) {
+| Syntax                 | Meaning              |
+| ---------------------- | -------------------- |
+| `for (let x of arr)`   | iterate array values |
+| `for (let x in arr)`   | same as `of`         |
+| `for (let f in *.log)` | iterate glob results |
+
+let arr = ['a','b','c'];
+
+for(let str of arr) {		
+    echo `{str}`;			// Required text interpolation
+}
+
+for(let str in arr) {		// NOTE: In SMASH similar to `of`
+    echo `{str}`;			// Required text interpolation
+}
+
+for(let file in *.log) {
     echo "Processing: " + file;
     cat $file | grep ERROR;
 }
 
-// While loop (coming soon)
+// While loop (use very sparingly, breaks fast)
 let i = 0;
 while (i < 10) {
     echo "Count: " + i;
@@ -177,16 +254,26 @@ while (i < 10) {
 let x = "value"; // Inline comment
 ```
 
-### String concatenation
-
+### Math operations
 ```
-let name = "world";
-echo "Hello, " + name + "!";
-
-// Becomes: echo "Hello, $name!"
+let result = x + y * 2;
+let mod = x % 3;
 ```
 
-### All Bash commands work!
+
+### File operations
+
+```
+if(exists("/usr/local/bin/smash")) {
+    echo "File exists";
+}
+
+if(isfile("/usr/local/bin/smash")) {
+    echo "File exists";
+}
+```
+
+### All Bash commands work
 
 ```
 // Everything just passes through to bash
@@ -195,99 +282,7 @@ curl -s https://api.github.com | jq '.items[0]';
 ssh user@server "systemctl restart app";
 find . -name "*.log" -mtime +7 -delete;
 
-// You get the ENTIRE Linux ecosystem!
-```
-
-## Real-world examples
-
-Note: Functions are partially implemented but have some edge cases in v1.0-1. They'll be fully supported in v1.0-2!
-
-### System health check
-
-```
-#!/usr/bin/env smash
-// system-check.smash
-
-let hostname = $(hostname);
-let uptime = $(uptime -p);
-let disk = $(df -h / | tail -1 | awk '{print $5}' | sed 's/%//');
-
-echo "System: " + hostname;
-echo "Uptime: " + uptime;
-
-if (disk > 80) {
-    echo "WARNING: Disk usage high: " + disk + "%";
-    bash /usr/local/bin/cleanup.sh;
-} else {
-    echo "Disk usage OK: " + disk + "%";
-}
-```
-
-### Deployment script
-
-```
-#!/usr/bin/env smash
-// deploy.smash
-
-let environment = "production";
-let app = "myapp";
-let version = $(git describe --tags);
-
-echo "Deploying " + app + " v" + version;
-
-if (environment == "production") {
-    docker build -t $app:$version .;
-    docker push registry.io/$app:$version;
-    kubectl set image deployment/$app app=registry.io/$app:$version;
-    kubectl rollout status deployment/$app;
-    echo "Deployed to production!";
-} else {
-    docker-compose up -d;
-    echo "Started in development mode";
-}
-```
-
-### Backup automation
-
-```
-#!/usr/bin/env smash
-// backup.smash
-
-let date = $(date +%Y-%m-%d);
-let backup_dir = "/backups/" + date;
-
-mkdir -p $backup_dir;
-
-echo "Backing up database...";
-pg_dump mydb | gzip > $backup_dir/db.sql.gz;
-
-echo "Backing up files...";
-tar -czf $backup_dir/files.tar.gz /var/www;
-
-echo "Uploading to S3...";
-aws s3 cp $backup_dir s3://my- backups/$date/ --recursive;
-
-echo "Backup complete!";
-```
-
-### Log processing
-
-```
-#!/usr/bin/env smash
-// process-logs.smash
-
-let threshold = 100;
-
-for (let logfile in /var/log/*.log) {
-    let errors = $(grep -c ERROR $logfile);
-    
-    if (errors > threshold) {
-        echo "High error count in " + logfile + ": " + errors;
-        // Send alert
-        curl -X POST https://alerts.example.com \
-             -d '{"file":"'$logfile'","count":"'$errors'"}';
-    }
-}
+// You get the ENTIRE Linux ecosystem.
 ```
 
 ## Usage
@@ -339,7 +334,7 @@ The beauty: You get modern syntax, but it runs as plain bash everywhere!
 ### Currently supported
 
 - Variables (`let`, `const`, `var`)
-- Arrays (`let array = ['a','b','c'];`)
+- Arrays (`const array = ['a','b','c'];`)
 - If/else/else if statements
 - String comparisons (`==`, `!=`)
 - Numeric comparisons (`>`, `<`, `>=`, `<=`)
@@ -375,44 +370,6 @@ The beauty: You get modern syntax, but it runs as plain bash everywhere!
 - Switch/case statements
 - String methods: `.split()`, `.join()`, `.replace()`
 - For...of loops: `for (let item of array)`
-
-## Why SMASH?
-
-The Problem:
-
-```
-# Bash syntax is weird and error- prone
-if [ "$x" = "$y" ]; then  # Spaces matter!
-    echo "match"          # Why [ ]?
-fi                         # Why fi?
-
-# Easy to make mistakes:
-if ["$x"="$y"]; then      # Breaks - no spaces
-if [ $x = $y ]; then      # Breaks if $x is empty
-if [ "$x" == "$y" ]       # Missing semicolon
-```
-
-The SMASH solution:
-
-```
-// Clean, familiar, hard to mess up
-if (x == y) {
-    echo "match";
-}
-
-// Everyone already knows this syntax
-```
-
-## Comparison
-
-| Feature | Bash | SMASH |
-|--------- |------|------- |
-| Syntax | `if [ "$x" = "$y" ]` | `if (x == y)` |
-| Variables | `name="value"` | `let name = "value"` |
-| Loops | `for x in *.txt; do` | `for (let x in *.txt) {` |
-| Learning curve | Steep (weird rules) | Gentle (like JS) |
-| Compatibility | Everywhere | Everywhere (transpiles to bash) |
-| Commands | All Linux tools | All Linux tools |
 
 ## FAQ
 
