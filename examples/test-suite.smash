@@ -335,7 +335,7 @@ let myarray = ["Alice","Bob"];
 let mypiece = myarray[1];
 
 if (myarray == 2) {
-    echo "  PASS: Simple array.length works";
+    echo "  PASS: Simple array length works";
 }
 
 if (mypiece == "Bob") {
