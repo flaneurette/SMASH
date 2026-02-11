@@ -345,7 +345,7 @@ if (mypiece == "Bob") {
     echo "  FAIL: Arrays: " + myarray;
     failed = $(expr $failed + 1);
 }
-
+total = $(expr $total + 1);
 echo "";
 
 // Final results
