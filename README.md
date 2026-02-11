@@ -35,7 +35,7 @@ SMASH is a runtime transpiler `it converts your JavaScript .smash` like syntax t
 ```
 Your SMASH code
       |
-Python transpiler (regex-based)
+Python transpiler
       |
 Generated bash code
       |
@@ -50,22 +50,7 @@ Executed by bash
 - No runtime dependencies. Just Python 3 and bash
 - Drop-in replacement. Use SMASH for new scripts, keep old bash scripts
 - Debug mode. See the generated bash code
-
-## Example .smash
-```
-// Write this beautiful code:
-let name = "world";
-
-if (name == "world") {
-    echo "Hello, " + name + "!";
-}
-
-// Instead of this:
-# name="world"
-# if [ "$name" = "world" ]; then
-#     echo "Hello, $name!"
-# fi
-```
+- Emit mode. Convert JavaScript smash directly to .sh scripts.
 
 ## Quick Start
 
@@ -129,6 +114,16 @@ Possible flags/pragmas to set:
 let name = "John";
 let count = 10;
 let files = $(ls *.txt);
+```
+
+### Text interpolation
+
+```
+let name = "world";
+
+if (name == "world") {
+    echo "Hello " + `{name}`;
+}
 ```
 
 ### String concatenation
