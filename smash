@@ -37,8 +37,8 @@ def transpile_smash(code):
         for protocol in protocols:
             # Match protocol:# followed by non-space (likely part of URL)
             code = re.sub(
-                f'{protocol}:#([^\s])',
-                f'{protocol}://\\1',
+                rf'{protocol}:#([^\s])',
+                rf'{protocol}://\\1',
                 code
             )
             
