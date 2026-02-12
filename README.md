@@ -14,7 +14,7 @@ SMASH is a modern JavaScript-style shell scripting language that transpiles dire
         smash <script.smash>            		Run a SMASH script
         smash <script.smash> -debug     		Show generated bash code
         smash <script.smash> -test      		Show generated code without running
-		smash <script.smash> -emit build.sh     Build tool generator
+		smash <script.smash> -emit mytool.sh    Build tool generator
         smash -v								Show version
         smash -h                   				Show this help
     
