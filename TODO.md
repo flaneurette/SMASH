@@ -104,27 +104,3 @@ DEFAULT_FLAGS = ['-e', '-o pipefail']  # Safe defaults
 # User can opt-out:
 "no strict";  # Remove default flags
 ```
-
----
-
-## `for (item of array)` (Very Natural)
-
-Bash:
-
-```bash
-for item in "${arr[@]}"; do
-```
-
-SMASH:
-
-```js
-for (item of arr) {
-    echo item;
-}
-```
-
-Transpile to:
-
-```bash
-for item in "${arr[@]}"; do
-```
