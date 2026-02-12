@@ -1,6 +1,6 @@
 # SMASH - Simple Modern Advanced SHell
 
-SMASH is a modern JavaScript-style shell scripting language that transpiles directly to Bash, with Unix power.
+SMASH is a modern JavaScript-style shell scripting language that transpiles directly to Bash, with Unix power: Modern structured syntax for Unix automation.
 
 ```
     ███████╗███╗   ███╗ █████╗ ███████╗██╗  ██╗
