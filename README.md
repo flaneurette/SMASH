@@ -117,6 +117,8 @@ let log = $(find . -name "*.log" -mtime +7 -delete);
 In SMASH, there are several ways to print. We do recommend SMASH `interpolation`
 
 ```
+#!/usr/bin/env smash
+
 let today = date("time");
 
 echo `{today}`;      // Use text interpolation
