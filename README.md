@@ -41,6 +41,7 @@ Tired of Bash's 1970s syntax? Write shell scripts with modern JavaScript-like (L
 // File: server-info.smash
 
 "use strict";
+"use logging /disk.log";
 
 echo "System Health Check";
 echo "-------------------";
