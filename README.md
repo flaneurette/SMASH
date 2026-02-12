@@ -339,6 +339,16 @@ x += temp1 * temp2;
 ...
 ```
 
+#### What SMASH Is Not
+
+- Not a JS interpreter
+- Not ECMAScript compliant
+- Not a browser runtime
+- Not Node.js
+- Not a full language implementation
+
+It intentionally supports only features that map cleanly and predictably to Bash.
+
 ## Usage
 
 ### Basic usage
