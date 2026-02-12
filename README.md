@@ -37,10 +37,10 @@ echo "System Health Check";
 echo "-------------------";
 
 // Get system info
-let hostname = $(hostname);
+let system = $(uname -a);
 let uptime = $(uptime -p);
 
-echo "Hostname: " + hostname;
+echo "System: " + system;
 echo "Uptime: " + uptime;
 
 // Check disk space
@@ -50,7 +50,6 @@ let disk_usage = $(df -h / | tail -1 | awk '{print $5}' | sed 's/%//');
 
 if (disk_usage > 80) {
     echo "WARNING: Disk usage is " + disk_usage + "% (threshold: 80%)";
-    echo "Consider running cleanup scripts!";
 } else if (disk_usage > 60) {
     echo "Disk usage: " + disk_usage + "% (getting high)";
 } else {
