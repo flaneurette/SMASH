@@ -9,6 +9,11 @@ SMASH is a modern JavaScript-style shell scripting language that transpiles dire
     ╚════██║██║╚██╔╝██║██╔══██║╚════██║██╔══██║
     ███████║██║ ╚═╝ ██║██║  ██║███████║██║  ██║
     ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
+	
+    Installation:
+    sudo add-apt-repository ppa:flaneurette/smash
+    sudo apt update
+    sudo apt install smash
 
     Usage:
         smash <script.smash>            		Run a SMASH script
@@ -32,6 +37,7 @@ Tired of Bash's 1970s syntax? Write shell scripts with modern JavaScript-like (L
 
 ```
 #!/usr/bin/env smash
+// File: server-info.smash
 
 "use strict";
 
@@ -85,31 +91,15 @@ Executed by bash
 - Debug mode. See the generated bash code
 - Emit mode. Convert JavaScript smash directly to .sh scripts.
 
-## Quick Start
+## Get it
 
 Install:
 
 ```
-# Download SMASH
-curl -o smash https://raw.githubusercontent.com/flaneurette/smash/main/smash
-chmod +x smash
-sudo mv smash /usr/local/bin/
-
-# Or just copy it to your project
-wget https://raw.githubusercontent.com/flaneurette/smash/main/smash
-chmod +x smash
-```
-
-Test it:
-
-```
-./smash examples/hello.smash
-```
-
-Install it
-
-```
-sudo ./install.sh
+sudo add-apt-repository ppa:flaneurette/smash
+sudo apt update
+sudo apt install smash
+smash -v
 ```
 
 ## Syntax guide
