@@ -59,8 +59,10 @@ let disk_usage = $(df -h / | tail -1 | awk '{print $5}' | sed 's/%//');
 
 if (disk_usage > 80) {
     echo "WARNING: Disk usage is " + disk_usage + "% (threshold: 80%)";
+	console.warn("Disk usage too high!");
 } else if (disk_usage > 60) {
     echo "Disk usage: " + disk_usage + "% (getting high)";
+	console.log("Disk usage getting high.");
 } else {
     echo "Disk usage: " + disk_usage + "% (OK)";
 }
