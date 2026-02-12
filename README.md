@@ -279,6 +279,17 @@ if (count > 10) {
 }
 ```
 
+### Functions
+
+```
+function testfunc() {
+    echo "function_works";
+}
+
+let func_result = $(testfunc);
+echo `{func_result}`;
+```
+
 ### Loops
 
 ```
