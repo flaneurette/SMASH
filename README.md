@@ -81,6 +81,19 @@ sudo ./install.sh
 
 ## Syntax guide
 
+### All Bash/Linux commands work out of the box
+
+```
+// You get the ENTIRE Linux ecosystem.
+// $(...) is executed at runtime by Bash
+
+let disk = $(df -h);
+let docker =  $(docker ps | grep nginx);
+let uri = $(curl -s https://api.github.com | jq '.items[0]');
+let ssh = $(ssh user@server "systemctl restart app");
+let log = $(find . -name "*.log" -mtime +7 -delete);
+```
+
 ### Flags
 
 Possible flags/pragmas to set:
@@ -306,18 +319,6 @@ if(isfile("/usr/local/bin/smash")) {
 }
 ```
 
-### All Bash commands work
-
-```
-// Everything just passes through to bash
-docker ps | grep nginx;
-curl -s https://api.github.com | jq '.items[0]';
-ssh user@server "systemctl restart app";
-find . -name "*.log" -mtime +7 -delete;
-
-// You get the ENTIRE Linux ecosystem.
-```
-
 ### Limitations
 
 SMASH transpiles Light-JS. It is not a *complete* JavaScript interpeter. Meaning, only basic JavaScript features and nesting is supported. SMASH does not support nested weirdness, overly long and complex comparisons and operator edge cases. Keep is as simple as possible. Also easier to debug, and for others to understand the code.
@@ -392,48 +393,6 @@ chmod +x myscript.smash
 ```
 
 The beauty: You get modern syntax, but it runs as plain bash everywhere!
-
-## Supported features
-
-### Currently supported
-
-- Variables (`let`, `const`, `var`)
-- Arrays (`const array = ['a','b','c'];`)
-- If/else/else if statements
-- String comparisons (`==`, `!=`)
-- Numeric comparisons (`>`, `<`, `>=`, `<=`)
-- For loops
-- String concatenation with `+`
-- Single- line comments (`//`)
-- Multi- line comments (`/* */`)
-- All bash commands (pipes, redirects, etc.)
-
-### Coming soon (v1.0-2)
-
-- While loops
-- Switch/case statements
-- Better error messages
-- More operators (`&&`, `||`, `!`)
-
-## Roadmap
-
-### v1.0-2 - Arrays & Loops (Next)
-~~- Array declaration~~ `let arr = ["a", "b", "c"];`
-
-~~- Array indexing:~~ `arr[0]`
-
-~~- Array length:~~ `arr.length`
-
-- Array methods: `push()`, `pop()`, `shift()`
-- While loops: `while (x < 10) { }`
-- Logical operators: `&&`, `||`, `!`
-- Better error messages
-
-### v1.0-3 Advanced features
-- Functions (properly implemented)
-- Switch/case statements
-- String methods: `.split()`, `.join()`, `.replace()`
-- For...of loops: `for (let item of array)`
 
 ## FAQ
 
