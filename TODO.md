@@ -82,6 +82,7 @@ echo "${config[host]}"
 ```
 
 Built-in tests:
+
 ```javascript
 // SMASH could make these readable:
 if (file.isDirectory(path)) { }
@@ -99,7 +100,7 @@ if (( x % 2 == 0 )); then
 
 Default SMASH behavior:
 
-You could make SMASH default to safe settings:
+We could make SMASH default to safe settings:
 
 ```python
 # Always add these unless user overrides:
