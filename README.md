@@ -173,6 +173,8 @@ Application started
 ### Date
 
 ```
+#!/usr/bin/env smash
+
 // Readable format
 let readable = date("D, M d, y");  // Monday, February 12, 2026
 
@@ -238,6 +240,7 @@ let files = $(ls *.txt);
 ### Text interpolation
 
 ```
+#!/usr/bin/env smash
 let name = "world";
 
 if (name == "world") {
@@ -248,6 +251,7 @@ if (name == "world") {
 ### String concatenation
 
 ```
+#!/usr/bin/env smash
 let name = "world";
 echo "Hello, " + name + "!";
 
@@ -257,6 +261,7 @@ echo "Hello, " + name + "!";
 ### String operations
 
 ```
+#!/usr/bin/env smash
 str.substring(0,5);
 str.split(",");
 str.toUpperCase();
@@ -266,6 +271,7 @@ str.toLowerCase()
 Examples
 
 ```
+#!/usr/bin/env smash
 let lower = "hello";
 let upper = "LOWER";
 
@@ -296,6 +302,7 @@ arr[0];				// Indexing
 Examples:
 
 ```
+#!/usr/bin/env smash
 let arr = ['a','b','c'];	// Array creation
 arr.push('d');				// Push value unto array
 echo arr.length;			// Array length
@@ -314,7 +321,8 @@ if(val == 'b') { 			// Idx comparison
 ### If/Else statements
 
 ```
-// SMASH
+#!/usr/bin/env smash
+
 if (environment == "production") {
     echo "Running in production";
 } else if (environment == "staging") {
@@ -344,6 +352,8 @@ if (count > 10) {
   `true` and `false` are literal strings, not boolean types.
   
 ```
+#!/usr/bin/env smash
+
 // Variable returns
 function test() {
     let a = 10;
@@ -388,6 +398,12 @@ Key Points:
 | `for (let x of arr)`   | iterate array values |
 | `for (let x in arr)`   | same as `of`         |
 | `for (let f in *.log)` | iterate glob results |
+```
+
+Example:
+
+```
+#!/usr/bin/env smash
 
 let arr = ['a','b','c'];
 
@@ -404,7 +420,7 @@ for(let file in *.log) {
     cat $file | grep ERROR;
 }
 
-// While loop (use very sparingly, breaks fast)
+// Use very sparingly, breaks fast)
 let i = 0;
 while (i < 10) {
     echo "Count: " + i;
@@ -420,6 +436,8 @@ Advise: if you do use comments, try to avoid too much commenting or keep it mini
 Keywords in comments such as: `function, let, var, const,` etc. etc. can lead to transpiling errors and edge cases.
 
 ```
+#!/usr/bin/env smash
+
 // Single line comment
 
 /*
@@ -432,6 +450,7 @@ let x = "value"; // Inline comment
 
 ### Math operations
 ```
+#!/usr/bin/env smash
 let result = x + y * 2;
 let mod = x % 3;
 ```
@@ -439,6 +458,7 @@ let mod = x % 3;
 ### File operations
 
 ```
+#!/usr/bin/env smash
 if(exists("/usr/local/bin/smash")) {
     echo "File exists";
 }
@@ -455,6 +475,7 @@ SMASH transpiles Light-JS. It is not a *complete* JavaScript interpeter. Meaning
 Example of too much complexity:
 
 ```
+#!/usr/bin/env smash
 x += (a + b) * (c - d) && foo(bar());
 ```
 
@@ -463,6 +484,7 @@ This will not transpile! it is too complex, even for BASH, and few can understan
 Instead, write it straight-forward procedurally:
 
 ```
+#!/usr/bin/env smash
 temp1 = a + b;
 temp2 = c - d;
 x += temp1 * temp2;
