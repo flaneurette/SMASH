@@ -108,7 +108,7 @@ DEFAULT_FLAGS = ['-e', '-o pipefail']  # Safe defaults
 
 ---
 
-## 2️⃣ `+=` (Extremely Useful)
+## `+=` (Extremely Useful)
 
 In Bash:
 
@@ -126,7 +126,7 @@ arr += "value";
 
 ---
 
-## 4️⃣ `for (item of array)` (Very Natural)
+## `for (item of array)` (Very Natural)
 
 Bash:
 
@@ -147,7 +147,3 @@ Transpile to:
 ```bash
 for item in "${arr[@]}"; do
 ```
-
-This would feel extremely natural and is very shell-appropriate.
-
----
