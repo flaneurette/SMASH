@@ -8,4 +8,11 @@ Alternative:
 sudo smash /examples/test-suite/test-suite.smash
 ```
 
+Debug:
+
+```
+sudo smash /examples/test-suite/test-suite.smash -test
+sudo smash /examples/test-suite/test-suite.smash -debug
+```
+
 It should run error free. If not, please open an issue to describe your finding.
