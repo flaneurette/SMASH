@@ -43,29 +43,18 @@ Tired of Bash's 1970s syntax? Write shell scripts with modern JavaScript-like (L
 "use strict";
 "use logging /var/log/disk.log";
 
-echo "System Health Check";
-echo "-------------------";
+// Check server memory
+let mem_usage = $(free | grep Mem | awk '{print int($3/$2 * 100)}');
+let today = date("time");
 
-// Get system info
-let system = $(uname -a);
-let uptime = $(uptime -p);
-
-echo "System: " + system;
-echo "Uptime: " + uptime;
-
-// Check disk space
-echo "Disk Space:";
-echo "-------------------";
-let disk_usage = $(df -h / | tail -1 | awk '{print $5}' | sed 's/%//');
-
-if (disk_usage > 80) {
-    echo "WARNING: Disk usage is " + disk_usage + "% (threshold: 80%)";
-	console.warn("Disk usage too high!");
-} else if (disk_usage > 60) {
-    echo "Disk usage: " + disk_usage + "% (getting high)";
-	console.log("Disk usage getting high.");
+if (mem_usage > 90) {
+    let warning = today + " - WARNING: Memory usage is " + mem_usage + "%";
+    echo `{warning}`;
+    console.warn(warning);
 } else {
-    echo "Disk usage: " + disk_usage + "% (OK)";
+    let ok = today + " - Memory usage: " + mem_usage + "% (OK)";
+    echo `{ok}`;
+    console.log(ok);
 }
 ```
 
@@ -121,6 +110,18 @@ let docker =  $(docker ps | grep nginx);
 let uri = $(curl -s https://api.github.com | jq '.items[0]');
 let ssh = $(ssh user@server "systemctl restart app");
 let log = $(find . -name "*.log" -mtime +7 -delete);
+```
+
+### Printing
+
+In SMASH, there are several ways to print. We do recommend SMASH `interpolation`
+
+```
+let today = date("time");
+
+echo `{today}`;      // Use text interpolation
+echo "" + today;	 // Concatenation
+echo $today;         // Bash style
 ```
 
 ### Flags
