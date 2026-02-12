@@ -24,6 +24,22 @@ def transpile_smash(code):
     - Loops: for (let x in *.txt) { }
     - Functions: function name() { }
     - All bash commands pass through unchanged
+    
+    # TRANSFORMATION ORDER (DO NOT CHANGE WITHOUT TESTING):
+    # 1. Preprocessing (whitespace, comments)
+    # 2. Pragmas/directives
+    # 3. Console methods
+    # 4. Imports
+    # 5. Functions
+    # 6. Arrays
+    # 7. Variables
+    # 8. Math
+    # 9. Conditionals
+    # 10. Loops
+    # 11. Operators
+    # 12. String methods
+    # 13. Cleanup
+
     """
 
     # SMASH HELPER FUNCTIONS

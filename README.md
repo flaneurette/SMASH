@@ -135,11 +135,13 @@ Possible flags/pragmas to set:
 "use emacs-mode";    	// Bash: set -o emacs
 "use verbose";       	// Bash: set -v (print commands as read)
 
-// Or combined:
+// Combined:
 "use strict pipefail errexit";
 
-// Specials:
-"use comments"		 	// By default, SMASH strips comments in bash runtime to prevent compilation errors.
+// Comments:
+"use comments"  		// Keep comments in generated bash (default: strip)
+						// Warning: Comments with keywords (let, var, function) may break transpiling
+// Console:						
 "use logging /app.log"; // Default: console.log, see all console functions further in readme.
 ```
 
