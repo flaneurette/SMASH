@@ -323,7 +323,7 @@ if(isfile("/usr/local/bin/smash")) {
 
 ### Limitations
 
-SMASH transpiles Light-JS. It is not a *complete* JavaScript interpeter. Meaning, only basic JavaScript features and nesting is supported. SMASH does not support nested weirdness, overly long and complex comparisons and operator edge cases. Keep is as simple as possible. Also easier to debug, and for others to understand the code.
+SMASH transpiles Light-JS. It is not a *complete* JavaScript interpeter. Meaning, only basic JavaScript features and nesting is supported. SMASH does not support nested weirdness, overly long and complex comparisons and operator edge cases. Keep it as simple as possible. Also easier to debug, and for others to understand the code.
 
 Example of too much complexity:
 
