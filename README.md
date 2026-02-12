@@ -26,7 +26,7 @@ SMASH is a modern JavaScript-style shell scripting language that transpiles dire
 	 
 ```
 
-Tired of Bash's 1970s syntax? Write shell scripts with modern JavaScript-like syntax that transpiles to bash.
+Tired of Bash's 1970s syntax? Write shell scripts with modern JavaScript-like (JS-Light) syntax that transpiles to bash.
 
 ## How it works
 
