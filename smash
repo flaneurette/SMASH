@@ -701,13 +701,18 @@ def show_help():
     
     SMASH v{VERSION} - JavaScript-style shell scripting
     
+    Installation:
+    sudo add-apt-repository ppa:flaneurette/smash
+    sudo apt update
+    sudo apt install smash
+
     Usage:
-        smash <script.smash>                  Run a SMASH script
-        smash <script.smash> -debug           Show generated bash code
-        smash <script.smash> -test            Show generated code without running
-        smash <script.smash> -emit build.sh   Build tool generator
-        smash -v                              Show version
-        smash -h                              Show this help
+        smash <script.smash>            		Run a SMASH script
+        smash <script.smash> -debug     		Show generated bash code
+        smash <script.smash> -test      		Show generated code without running
+		smash <script.smash> -emit mytool.sh    Build tool generator
+        smash -v								Show version
+        smash -h                   				Show this help
     
     Features:
      JavaScript-like syntax for shell scripts
@@ -721,10 +726,6 @@ def show_help():
         
         if (name == "world") {{
             echo "Hello, " + name + "!";
-        }}
-        
-        for (let file in *.txt) {{
-            cat $file | grep ERROR | wc -l;
         }}
         
         function greet(name) {{
