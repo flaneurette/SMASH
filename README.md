@@ -28,6 +28,36 @@ SMASH is a modern JavaScript-style shell scripting language that transpiles dire
 
 Tired of Bash's 1970s syntax? Write shell scripts with modern JavaScript-like (Light-JS) syntax that transpiles to bash.
 
+## SMASH scripting example
+
+```
+#!/usr/bin/env smash
+
+echo "System Health Check";
+echo "-------------------";
+
+// Get system info
+let hostname = $(hostname);
+let uptime = $(uptime -p);
+
+echo "Hostname: " + hostname;
+echo "Uptime: " + uptime;
+
+// Check disk space
+echo "Disk Space:";
+echo "-------------------";
+let disk_usage = $(df -h / | tail -1 | awk '{print $5}' | sed 's/%//');
+
+if (disk_usage > 80) {
+    echo "WARNING: Disk usage is " + disk_usage + "% (threshold: 80%)";
+    echo "Consider running cleanup scripts!";
+} else if (disk_usage > 60) {
+    echo "Disk usage: " + disk_usage + "% (getting high)";
+} else {
+    echo "Disk usage: " + disk_usage + "% (OK)";
+}
+```
+
 ## How it works
 
 SMASH is a runtime transpiler `it converts your JavaScript .smash` syntax to bash, instantly in memory and executes it:
