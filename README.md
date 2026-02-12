@@ -135,6 +135,8 @@ Possible flags/pragmas to set:
 "use emacs-mode";    // Bash: set -o emacs
 "use verbose";       // Bash: set -v (print commands as read)
 
+"use comments"		 // By default, SMASH strips comments to prevent compilation errors.
+
 // Or combined:
 "use strict pipefail errexit";
 ```
@@ -358,6 +360,11 @@ while (i < 10) {
 ```
 
 ### Comments
+
+By default, SMASH will remove comments to avoid difficult regex issues. You can unset this by setting the pragma: `"use comments"` at the top of your script.
+
+Advise: if you do use comments, try to avoid too much commenting or keep it minimal. Comments might break transpiling to bash if reserved words are use inside comments. 
+Keywords in comments such as: `function, let, var, const,` etc. etc. can lead to transpiling errors and edge cases.
 
 ```
 // Single line comment

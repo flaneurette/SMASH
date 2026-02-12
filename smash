@@ -52,7 +52,6 @@ def transpile_smash(code):
         """Convert // comments to # (only at line start)"""
         lines = code.split('\n')
         result = []
-        
         for line in lines:
             stripped = line.lstrip()
             if stripped.startswith('//'):
@@ -60,9 +59,20 @@ def transpile_smash(code):
                 indent = line[:len(line) - len(stripped)]
                 comment_text = stripped[2:]  # Remove //
                 line = indent + '#' + comment_text
-            
             result.append(line)
+        return '\n'.join(result)
+   
+    def strip_all_comments(code):
+        lines = code.split('\n')
+        result = []
         
+        for line in lines:
+            stripped = line.lstrip()
+            if stripped.startswith('//'):
+                # Get original indentation
+                indent = line[:len(line) - len(stripped)]
+                line = indent
+            result.append(line)
         return '\n'.join(result)
 
     def convert_block_comment(match):
@@ -135,6 +145,8 @@ def transpile_smash(code):
     
     # --------------------------------- BEGIN SMASH ---------------------------------
     
+    strip_comments = True;
+    
     # Preprocess first
     code = preprocess_code(code)
     original_code = code
@@ -179,6 +191,9 @@ def transpile_smash(code):
 
     if re.search(r'["\']use\s+verbose["\']', code):
         use_directives.append('-v')
+
+    if re.search(r'["\']use\s+comments["\']', code):
+        strip_comments = False;
         
     # Remove the directives from code
     code = re.sub(r'["\']use\s+[^"\']+["\'];?\n?', '', code)
@@ -192,11 +207,17 @@ def transpile_smash(code):
     # Conversions
     # ---------------------------------------------------
     
-    # Convert all comments to bash # comments
-    code = convert_comments(code)
+    if strip_comments == True:
+        code = strip_all_comments(code)
+        # Remove all block-comments
+        code = re.sub(r'/\*(.*?)\*/', '', code, flags=re.DOTALL) 
+        
+    if strip_comments == False:
+        # Convert all comments to bash # comments
+        code = convert_comments(code)
     
-    # Convert all block-comments to bash # comments
-    code = re.sub(r'/\*(.*?)\*/', convert_block_comment, code, flags=re.DOTALL)
+        # Convert all block-comments to bash # comments
+        code = re.sub(r'/\*(.*?)\*/', convert_block_comment, code, flags=re.DOTALL)
 
     # File Importing
     # ---------------------------------------------------
