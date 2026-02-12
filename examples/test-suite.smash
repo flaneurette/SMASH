@@ -407,6 +407,21 @@ if (mod == 2) {
 total = $(expr $total + 1);
 echo "";
 
+echo "Test 26: Operator string assignment.";
+let a = 1;
+let b = 1;
+let b += a;
+
+if (b == 2) {
+    echo "  PASS: Operator assignment works.";
+    passed = $(expr $passed + 1);
+} else {
+    echo "  FAIL: Operator assignment failed.";
+    failed = $(expr $failed + 1);
+}
+total = $(expr $total + 1);
+echo "";
+
 // Final results
 echo "======================";
 echo "Test Results";

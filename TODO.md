@@ -105,25 +105,6 @@ DEFAULT_FLAGS = ['-e', '-o pipefail']  # Safe defaults
 "no strict";  # Remove default flags
 ```
 
-
----
-
-## `+=` (Extremely Useful)
-
-In Bash:
-
-```bash
-x=$((x + 1))
-arr+=("value")
-```
-
-In SMASH:
-
-```js
-x += 1;
-arr += "value";
-```
-
 ---
 
 ## `for (item of array)` (Very Natural)

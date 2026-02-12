@@ -137,11 +137,15 @@ def transpile_smash(code):
     
     # Preprocess first
     code = preprocess_code(code)
-    
     original_code = code
-
+    
+    # Interpolation
+    # ---------------------------------------------------
     # Text interpolation
     code = text_interpolation(code)
+
+    # Flags and Pragmas
+    # ---------------------------------------------------
     
     # Detect "use X" directives at the top
     use_directives = []
@@ -184,13 +188,19 @@ def transpile_smash(code):
         unique_flags = list(dict.fromkeys(use_directives))  # Remove dupes
         set_cmd = 'set ' + ' '.join(unique_flags) + '\n\n'
         code = set_cmd + code
-        
+
+    # Conversions
+    # ---------------------------------------------------
+    
     # Convert all comments to bash # comments
     code = convert_comments(code)
     
     # Convert all block-comments to bash # comments
     code = re.sub(r'/\*(.*?)\*/', convert_block_comment, code, flags=re.DOTALL)
 
+    # File Importing
+    # ---------------------------------------------------
+    
     # Import statements: import("path") or import "path"
     code = re.sub(
         r'import\s*\(\s*["\']([^"\']+)["\']\s*\)\s*;?',
@@ -204,6 +214,9 @@ def transpile_smash(code):
         code
     )
 
+    # Arrays
+    # ---------------------------------------------------
+    
     # Array declarations: let arr = ["a", "b", "c"]
     code = re.sub(
         r'(let|const|var)\s+(\w+)\s*=\s*\[(.*?)\]',
@@ -233,6 +246,9 @@ def transpile_smash(code):
         r'\1+=("\2")',
         code
     )
+
+    # Math
+    # ---------------------------------------------------
     
     # Math (let result = x + y * 2; or let mod = x % 3;)
     code = re.sub(
@@ -240,6 +256,9 @@ def transpile_smash(code):
         convert_variable_assignment,
         code
     )   
+
+    # Variables
+    # ---------------------------------------------------
     
     # Variable declarations: let/const/var x = value -> x=value
     code = re.sub(r'\b(let|const|var)\s+(\w+)\s*=\s*([^;]+);?', r'\2=\3', code)
@@ -390,6 +409,9 @@ def transpile_smash(code):
                 result.append(line)
     
     code = '\n'.join(result)
+
+    # Array (continue, do not move)
+    # ---------------------------------------------------
     
     # Array iteration: for (let x in result)
     code = re.sub(
@@ -405,6 +427,9 @@ def transpile_smash(code):
         code
     )
 
+    # While loops
+    # ---------------------------------------------------
+    
     # While loops: while (x > 0) {
     code = re.sub(
         r'while\s*\(\s*(\w+)\s*>\s*(\d+)\s*\)\s*\{',
@@ -416,6 +441,9 @@ def transpile_smash(code):
         r'while [[ "$\1" -lt \2 ]]; do',
         code
     )
+ 
+    # Functions
+    # ---------------------------------------------------
     
     # Functions: function name(params) { -> name() {
     code = re.sub(
@@ -424,6 +452,79 @@ def transpile_smash(code):
         code
     )
 
+    # Specific Operators
+    # ---------------------------------------------------
+    
+    ARITH_EXPR = r'[A-Za-z0-9_+\-*/% ()]+'
+    
+    # Make sure: Array append: arr += ("Alice");
+    code = re.sub(
+        r'(\w+)\s*\+=\s*\(([^)]+)\);',
+        r'\1+=(\2)',
+        code
+    )
+
+    # +=
+    # numeric += only
+    code = re.sub(
+        r'(\w+)\s*\+=\s*(' + ARITH_EXPR + r');',
+        r'((\1 += \2))',
+        code
+    )
+
+
+    # -=
+    code = re.sub(
+        r'(\w+)\s*\-=\s*(' + ARITH_EXPR + r');',
+        r'((\1 -= \2))',
+        code
+    )
+
+    # /=
+    code = re.sub(
+        r'(\w+)\s*/=\s*(' + ARITH_EXPR + r');',
+        r'((\1 /= \2))',
+        code
+    )
+
+    # *=
+    code = re.sub(
+        r'(\w+)\s*\*=\s*(' + ARITH_EXPR + r');',
+        r'((\1 *= \2))',
+        code
+    )
+
+    # %=
+    code = re.sub(
+        r'(\w+)\s*%=\s*(' + ARITH_EXPR + r');',
+        r'((\1 %= \2))',
+        code
+    )
+
+    # &&
+    code = re.sub(
+        r'(\w+)\s*&&\s*([^;]+);',
+        r'((\1 && \2))',
+        code
+    )
+
+    # !
+    code = re.sub(
+        r'!\s*(\w+)\s*;',
+        r'((!\1))',
+        code
+    )
+
+    # x++ (AFTER LOOPS!)
+    code = re.sub(
+        r'(\w+)\s*\+\+\s*;',
+        r'((\1++))',
+        code
+    )
+
+    # String Operators
+    # ---------------------------------------------------
+    
     # Str.toUpperCase
     code = re.sub(
         r'(\w+)\.(toUpperCase|touppercase|toupper|up)\(\)',
@@ -458,12 +559,23 @@ def transpile_smash(code):
         code
     )
 
+    # File processing
+    # ---------------------------------------------------
+    
     # File operations
     code = re.sub(
         r'if\s*\(\s*(exists|isfile)\(\s*([^)]+)\s*\)\s*\)\s*\{',
         r'if [[ -f \2 ]]; then',
         code
     )
+    
+    # Cleanup
+    # ---------------------------------------------------
+    # Remove accidental "let ((...))"
+    code = re.sub(r'\blet\s+\(\(', '((', code)
+
+    # Other
+    # ---------------------------------------------------
     
     # Match echo statements with concatenation
     code = re.sub(r'echo\s+(.+?\+.+?)(?:;|\n|$)', fix_echo_concat, code, flags=re.MULTILINE)

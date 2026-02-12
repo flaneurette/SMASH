@@ -102,6 +102,33 @@ Possible flags/pragmas to set:
 "use strict pipefail errexit";
 ```
 
+### Operators
+
+```
+| Category        | Operator | Example  | Meaning             | Notes            |
+| --------------- | -------- | -------- | ------------------- |------------------|
+| Assignment      | `=`      | `x = 5`  | Assign value        |                  |
+| Add assign      | `+=`     | `x += 1` | Add and assign      | numeric += only  |
+| Sub assign      | `-=`     | `x -= 1` | Subtract and assign | numeric -= only  |
+| Multiply assign | `*=`     | `x *= 2` | Multiply and assign |                  |
+| Divide assign   | `/=`     | `x /= 2` | Divide and assign   |                  |
+| Add             | `+`      | `x + y`  | Addition            |                  |
+| Subtract        | `-`      | `x - y`  | Subtraction         |                  |
+| Multiply        | `*`      | `x * y`  | Multiplication      |                  |
+| Divide          | `/`      | `x / y`  | Division            |                  |
+| Modulo          | `%`      | `x % y`  | Remainder           |                  |
+| Greater than    | `>`      | `x > y`  | Comparison          |                  |
+| Less than       | `<`      | `x < y`  | Comparison          |                  |
+| Greater/equal   | `>=`     | `x >= y` | Comparison          |                  |
+| Less/equal      | `<=`     | `x <= y` | Comparison          |                  |
+| Equal           | `==`     | `x == y` | Comparison          |                  |
+| Not equal       | `!=`     | `x != y` | Comparison          |                  |
+| Logical AND     | `&&`     | `a && b` | Logical AND         |                  |
+| Logical NOT     | `!`      | `!x`     | Logical NOT         |                  |
+| Increment       | `++`     | `x++`    | Add 1               |                  |
+| Decrement       | `--`     | `x--`    | Subtract 1          |                  |
+```
+
 ### Variables
 
 ```
@@ -138,7 +165,7 @@ echo "Hello, " + name + "!";
 ### String operations
 
 ```
-str.substring(0, 5);
+str.substring(0,5);
 str.split(",");
 str.toUpperCase();
 str.toLowerCase() 
@@ -153,7 +180,6 @@ let upper = "LOWER";
 let a = lower.substring(2,3);
 echo `{a}`;
 
-// split() returns an array assigned to the left-hand variable.
 let splitter = "Hello,world";
 let a = splitter.split(",");
 echo a.length;
@@ -169,10 +195,10 @@ echo `Lower: {low}`;
 ### Array operations
 
 ```
-arr = [];		// Array creation
-arr.push();		// Push value unto array
-arr.length;		// Array length
-arr[0];			// Indexing
+arr = [];			// Array creation
+arr.push(value);	// Push value unto array
+arr.length;			// Array length
+arr[0];				// Indexing
 ```
 
 Examples:
@@ -290,6 +316,27 @@ ssh user@server "systemctl restart app";
 find . -name "*.log" -mtime +7 -delete;
 
 // You get the ENTIRE Linux ecosystem.
+```
+
+### Limitations
+
+SMASH transpiles Light-JS. It is not a *complete* JavaScript interpeter. Meaning, only basic JavaScript features and nesting is supported. SMASH does not support nested weirdness, overly long and complex comparisons and operator edge cases. Keep is as simple as possible. Also easier to debug, and for others to understand the code.
+
+Example of too much complexity:
+
+```
+x += (a + b) * (c - d) && foo(bar());
+```
+
+This will not transpile! it is too complex, even for BASH, and few can understand it instantly, which makes it also harder to maintain, let alone transpile correctly.
+
+Instead, write it straight-forward procedurally:
+
+```
+temp1 = a + b;
+temp2 = c - d;
+x += temp1 * temp2;
+...
 ```
 
 ## Usage
