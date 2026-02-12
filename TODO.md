@@ -81,23 +81,6 @@ declare -A config=(
 echo "${config[host]}"
 ```
 
-Built-in tests:
-
-```javascript
-// SMASH could make these readable:
-if (file.isDirectory(path)) { }
-if (file.isReadable(path)) { }
-if (string.isEmpty(str)) { }
-if (number.isEven(x)) { }
-
-// Instead of bash:
-if [[ -f "$path" ]]; then
-if [[ -d "$path" ]]; then
-if [[ -r "$path" ]]; then
-if [[ -z "$str" ]]; then
-if (( x % 2 == 0 )); then
-```
-
 Default SMASH behavior:
 
 We could make SMASH default to safe settings:
