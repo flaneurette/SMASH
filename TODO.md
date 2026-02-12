@@ -1,5 +1,6 @@
 
-**Process management:**
+Process management:
+
 ```javascript
 // Background jobs:
 let pid = background(() => {
@@ -13,7 +14,8 @@ pid=$!
 wait $pid
 ```
 
-**Pattern matching (case):**
+Pattern matching (case):
+
 ```javascript
 // SMASH:
 switch (var) {
@@ -41,7 +43,8 @@ case "$var" in
 esac
 ```
 
-**Error handling:**
+Error handling:
+
 ```javascript
 // SMASH:
 try {
@@ -56,7 +59,8 @@ if ! risky_command; then
 fi
 ```
 
-**Associative arrays (objects):**
+Associative arrays (objects):
+
 ```javascript
 // SMASH:
 let config = {
@@ -77,7 +81,7 @@ declare -A config=(
 echo "${config[host]}"
 ```
 
-**Built-in tests:**
+Built-in tests:
 ```javascript
 // SMASH could make these readable:
 if (file.isDirectory(path)) { }
@@ -93,7 +97,7 @@ if [[ -z "$str" ]]; then
 if (( x % 2 == 0 )); then
 ```
 
-**Default SMASH behavior:**
+Default SMASH behavior:
 
 You could make SMASH default to safe settings:
 
