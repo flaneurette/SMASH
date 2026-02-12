@@ -111,6 +111,8 @@ smash -v
 ### All Bash/Linux commands work out of the box
 
 ```
+#!/usr/bin/env smash
+
 // You get the ENTIRE Linux ecosystem.
 // $(...) is executed at runtime by Bash
 
@@ -241,6 +243,7 @@ let files = $(ls *.txt);
 
 ```
 #!/usr/bin/env smash
+
 let name = "world";
 
 if (name == "world") {
@@ -252,10 +255,9 @@ if (name == "world") {
 
 ```
 #!/usr/bin/env smash
+
 let name = "world";
 echo "Hello, " + name + "!";
-
-// Becomes: echo "Hello, $name!"
 ```
 
 ### String operations
@@ -272,6 +274,7 @@ Examples
 
 ```
 #!/usr/bin/env smash
+
 let lower = "hello";
 let upper = "LOWER";
 
@@ -303,6 +306,7 @@ Examples:
 
 ```
 #!/usr/bin/env smash
+
 let arr = ['a','b','c'];	// Array creation
 arr.push('d');				// Push value unto array
 echo arr.length;			// Array length
@@ -451,6 +455,7 @@ let x = "value"; // Inline comment
 ### Math operations
 ```
 #!/usr/bin/env smash
+
 let result = x + y * 2;
 let mod = x % 3;
 ```
@@ -459,6 +464,7 @@ let mod = x % 3;
 
 ```
 #!/usr/bin/env smash
+
 if(exists("/usr/local/bin/smash")) {
     echo "File exists";
 }
@@ -476,6 +482,7 @@ Example of too much complexity:
 
 ```
 #!/usr/bin/env smash
+
 x += (a + b) * (c - d) && foo(bar());
 ```
 
@@ -485,6 +492,7 @@ Instead, write it straight-forward procedurally:
 
 ```
 #!/usr/bin/env smash
+
 temp1 = a + b;
 temp2 = c - d;
 x += temp1 * temp2;
