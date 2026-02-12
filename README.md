@@ -30,7 +30,7 @@ Tired of Bash's 1970s syntax? Write shell scripts with modern JavaScript-like (J
 
 ## How it works
 
-SMASH is a runtime transpiler `it converts your JavaScript .smash` like syntax to bash, instantly in memory and executes it:
+SMASH is a runtime transpiler `it converts your JavaScript .smash` syntax to bash, instantly in memory and executes it:
 
 ```
 Your SMASH code
