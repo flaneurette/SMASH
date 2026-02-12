@@ -214,6 +214,51 @@ def transpile_smash(code):
         code
     )
 
+    # Functions
+    # ---------------------------------------------------
+ 
+    # Prepare functions first.
+    function_pattern = re.compile(
+        r'\bfunction\s*(\w+)\s*\([^)]*\)\s*\{([\s\S]*?)\}',
+        re.DOTALL
+    )
+
+    def transform_function(match):
+        name = match.group(1)
+        body = match.group(2)
+       
+        # Replace let/const/var assignments with local (Bash style)
+        body = re.sub(
+            r'\b(?:let|const|var)\s+(\w+)\s*=\s*([^;]+?)\s*;?',
+            r'local \1=\2',
+            body
+        )
+        
+        return f"function {name}() {{\n{body}\n}}"
+
+    code = function_pattern.sub(transform_function, code)
+
+    # Catch function string return
+    code = re.sub(
+        r'\breturn\s+["\']([^"\']+)["\'];?',
+        r'\n echo "\1"',
+        code
+    )
+    
+    # Catch function var;
+    code = re.sub(
+        r'\breturn\s+(\w+);?',
+        r'\n echo "$\1"',
+        code
+    )
+
+    # Function name(params) to: -> name()
+    code = re.sub(
+        r'function\s+(\w+)\s*\([^\)]*\)\s*\{',
+        r'\1() {',
+        code
+    )
+    
     # Arrays
     # ---------------------------------------------------
     
@@ -256,7 +301,7 @@ def transpile_smash(code):
         convert_variable_assignment,
         code
     )   
-
+    
     # Variables
     # ---------------------------------------------------
     
@@ -442,16 +487,6 @@ def transpile_smash(code):
         code
     )
  
-    # Functions
-    # ---------------------------------------------------
-    
-    # Functions: function name(params) { -> name() {
-    code = re.sub(
-        r'function\s+(\w+)\s*\([^\)]*\)\s*\{',
-        r'\1() {',
-        code
-    )
-
     # Specific Operators
     # ---------------------------------------------------
     

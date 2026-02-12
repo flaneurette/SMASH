@@ -281,14 +281,49 @@ if (count > 10) {
 
 ### Functions
 
+- Keep functions simple.
+  Heavy nesting or complex JavaScript patterns may break the transpiler.
+- Functions return via `echo`, not `return`.
+  The `return` keyword is converted to `echo` automatically.
+- Booleans are strings in Bash.
+  `true` and `false` are literal strings, not boolean types.
+  
 ```
-function testfunc() {
-    echo "function_works";
+// Variable returns
+function test() {
+    let a = 10;
+    return a;           // Becomes: echo "$a"
 }
+let result = $(test);   // Captures the echoed value
+echo `{result}`;        // Prints: 10
 
-let func_result = $(testfunc);
-echo `{func_result}`;
+// Direct string returns
+function test() {
+    return "success";   // Becomes: echo "success"
+}
+let result = $(test);
+echo `{result}`;        // Prints: success
+
+// Boolean handling
+function test() {
+    let a = false;
+    return a;           // Becomes: echo "$a"
+}
+let result = $(test);
+echo `{result}`;        // Prints: false (as a string)
+
+// To use booleans in conditions:
+if (result == "false") {
+    echo "It was false";
+}
 ```
+
+Key Points:
+
+- Bash has no boolean type - everything is a string or number
+- `true` and `false` are commands in Bash (exit codes 0 and 1)
+- SMASH transpiler treats them as string literals
+- Comparisons work fine: `if (x == "false")` or `if (x == "true")`
 
 ### Loops
 
