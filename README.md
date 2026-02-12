@@ -33,6 +33,8 @@ Tired of Bash's 1970s syntax? Write shell scripts with modern JavaScript-like (L
 ```
 #!/usr/bin/env smash
 
+"use strict";
+
 echo "System Health Check";
 echo "-------------------";
 
