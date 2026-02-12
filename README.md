@@ -170,6 +170,30 @@ Application started
 [DEBUG] Variable x = 42
 ```
 
+### Date
+
+```
+// Readable format
+let readable = date("D, M d, y");  // Monday, February 12, 2026
+
+// Custom formats (character translation)
+let custom = date("y-m-d");         // $(date "+%Y-%m-%d")
+let time = date("H:i:s");           // $(date "+%H:%M:%S")
+let mixed = date("y/m/d H:i");      // $(date "+%Y/%m/%d %H:%M")
+
+// Presets (just keywords)
+let iso = date("iso");              // $(date "+%Y-%m-%dT%H:%M:%S")
+let timestamp = date("sql");        // $(date "+%Y-%m-%d %H:%M:%S")
+let unix = date("unix");            // $(date "+%s")
+let time = date("time");            // $(date "+%s")
+let readable = date("human");       // $(date "+%A, %B %d, %Y")
+let log_time = date("log");         // $(date "+%Y-%m-%d %H:%M:%S")
+let file_safe = date("filename");   // $(date "+%Y-%m-%d_%H-%M-%S")
+
+console.log("Backup started at " + timestamp);
+```
+
+
 ### Operators
 
 ```
@@ -412,7 +436,6 @@ let result = x + y * 2;
 let mod = x % 3;
 ```
 
-
 ### File operations
 
 ```
@@ -540,7 +563,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
-Flaneurette, Claude AI (for drafting), and contributors.
+Flaneurette, Claude AI, and contributors.
 
 ## Links
 

@@ -158,6 +158,61 @@ def transpile_smash(code):
             content = re.sub(r'\{([^}]+)\}', r'${\1}', content)
             return f'"{content}"'
         return re.sub(r'`([^`]+)`', repl, code)
+
+    def transpile_date_function(code):
+        """Convert date("format") to bash date commands"""
+        
+        # Preset formats (shortcuts)
+        PRESETS = {
+            'iso': '%Y-%m-%dT%H:%M:%S',           # 2026-02-12T14:30:45
+            'sql': '%Y-%m-%d %H:%M:%S',           # 2026-02-12 14:30:45
+            'unix': '%s',                         # 1739369445
+            'time': '%s',                         # 1739369445
+            'human': '%A, %B %d, %Y',             # Monday, February 12, 2026
+            'log': '%Y-%m-%d %H:%M:%S',           # 2026-02-12 14:30:45
+            'filename': '%Y-%m-%d_%H-%M-%S',      # 2026-02-12_14-30-45
+            'date': '%Y-%m-%d',                   # 2026-02-12
+            'time': '%H:%M:%S',                   # 14:30:45
+            'datetime': '%Y-%m-%d %H:%M:%S',      # 2026-02-12 14:30:45
+        }
+        
+        # Character translation map for custom formats
+        CHAR_MAP = {
+            'y': '%Y',    # 4-digit year
+            'Y': '%y',    # 2-digit year
+            'm': '%m',    # month (01-12)
+            'd': '%d',    # day (01-31)
+            'H': '%H',    # hour 24h (00-23)
+            'h': '%I',    # hour 12h (01-12)
+            'i': '%M',    # minutes (00-59)
+            's': '%S',    # seconds (00-59)
+            'a': '%p',    # AM/PM
+            'D': '%A',    # Full weekday name
+            'M': '%B',    # Full month name
+        }
+        
+        def convert_format(match):
+            format_str = match.group(1)
+            
+            # Check if it's a preset first
+            if format_str in PRESETS:
+                bash_format = PRESETS[format_str]
+            else:
+                # Custom format - translate character by character
+                bash_format = format_str
+                for smash_char, bash_char in CHAR_MAP.items():
+                    bash_format = bash_format.replace(smash_char, bash_char)
+            
+            return f'$(date "+{bash_format}")'
+        
+        # Match date("format") or date('format')
+        code = re.sub(
+            r'date\s*\(\s*["\']([^"\']+)["\']\s*\)',
+            convert_format,
+            code
+        )
+        
+        return code
     
     # --------------------------------- BEGIN SMASH ---------------------------------
     
@@ -166,7 +221,11 @@ def transpile_smash(code):
     # Preprocess first
     code = preprocess_code(code)
     original_code = code
-    
+
+    # Date formatting
+    # ---------------------------------------------------
+    code = transpile_date_function(code)
+ 
     # Interpolation
     # ---------------------------------------------------
     # Text interpolation
