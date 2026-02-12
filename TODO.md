@@ -43,22 +43,6 @@ case "$var" in
 esac
 ```
 
-Error handling:
-
-```javascript
-// SMASH:
-try {
-    risky_command();
-} catch (error) {
-    echo "Failed: " + error;
-}
-
-// Bash equivalent:
-if ! risky_command; then
-    echo "Failed: $?"
-fi
-```
-
 Associative arrays (objects):
 
 ```javascript
