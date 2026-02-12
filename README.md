@@ -511,7 +511,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
-Flaneurette, Claude AI and contributors
+Flaneurette, Claude AI (for drafting), and contributors.
 
 ## Links
 
