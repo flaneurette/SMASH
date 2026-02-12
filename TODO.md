@@ -1,19 +1,3 @@
-
-Process management:
-
-```javascript
-// Background jobs:
-let pid = background(() => {
-    long_running_task();
-});
-wait(pid);
-
-// Bash:
-long_running_task &
-pid=$!
-wait $pid
-```
-
 Pattern matching (case):
 
 ```javascript
