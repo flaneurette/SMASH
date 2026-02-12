@@ -263,7 +263,6 @@ echo "Hello, " + name + "!";
 ### String operations
 
 ```
-#!/usr/bin/env smash
 str.substring(0,5);
 str.split(",");
 str.toUpperCase();
