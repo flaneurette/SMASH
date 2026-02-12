@@ -135,7 +135,7 @@ Possible flags/pragmas to set:
 "use emacs-mode";    // Bash: set -o emacs
 "use verbose";       // Bash: set -v (print commands as read)
 
-"use comments"		 // By default, SMASH strips comments to prevent compilation errors.
+"use comments"		 // By default, SMASH strips comments in bash runtime to prevent compilation errors.
 
 // Or combined:
 "use strict pipefail errexit";
