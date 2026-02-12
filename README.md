@@ -123,22 +123,46 @@ let log = $(find . -name "*.log" -mtime +7 -delete);
 Possible flags/pragmas to set:
 
 ```
-"use strict";        // Enable strict mode
+"use strict";        	// Enable strict mode
 
-"use pipefail";      // Bash: set -o pipefail
-"use errexit";       // Bash: set -e (exit on error)
-"use nounset";       // Bash: set -u (error on undefined vars)
-"use xtrace";        // Bash: set -x (debug/trace mode)
+"use pipefail";      	// Bash: set -o pipefail
+"use errexit";       	// Bash: set -e (exit on error)
+"use nounset";       	// Bash: set -u (error on undefined vars)
+"use xtrace";        	// Bash: set -x (debug/trace mode)
 
-"use noclobber";     // Bash: set -C (don't overwrite files with >)
-"use vi-mode";       // Bash: set -o vi
-"use emacs-mode";    // Bash: set -o emacs
-"use verbose";       // Bash: set -v (print commands as read)
-
-"use comments"		 // By default, SMASH strips comments in bash runtime to prevent compilation errors.
+"use noclobber";     	// Bash: set -C (don't overwrite files with >)
+"use vi-mode";       	// Bash: set -o vi
+"use emacs-mode";    	// Bash: set -o emacs
+"use verbose";       	// Bash: set -v (print commands as read)
 
 // Or combined:
 "use strict pipefail errexit";
+
+// Specials:
+"use comments"		 	// By default, SMASH strips comments in bash runtime to prevent compilation errors.
+"use logging /app.log"; // Default: console.log, see all console functions further in readme.
+```
+
+### Console
+
+```
+#!/usr/bin/env smash
+
+"use logging /home/admin/app.log";
+
+console.log("Application started");
+console.info("Processing 100 items");
+console.warn("Disk space at 85%");
+console.error("Database connection failed");
+console.debug("Variable x = " + x);
+```
+Result in app.log:
+```
+Application started
+[INFO] Processing 100 items
+[WARN] Disk space at 85%
+[ERROR] Database connection failed
+[DEBUG] Variable x = 42
 ```
 
 ### Operators

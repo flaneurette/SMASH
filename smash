@@ -194,8 +194,53 @@ def transpile_smash(code):
 
     if re.search(r'["\']use\s+comments["\']', code):
         strip_comments = False;
-        
-    # Remove the directives from code
+
+    # Console
+    # ---------------------------------------------------
+    
+    # Check for log file directive (default: console.log)
+    log_file_match = re.search(r'["\']use\s+logging\s+([^"\']+)["\']', code)
+    log_file = log_file_match.group(1) if log_file_match else 'console.log'
+    
+    # Remove the directive from code
+    code = re.sub(r'["\']use\s+logging\s+[^"\']+["\'];?\n?', '', code)
+    
+    # console.log -> echo to file
+    code = re.sub(
+        r'console\.log\s*\(\s*([^)]+)\s*\)',
+        rf'echo \1 >> {log_file}',
+        code
+    )
+    
+    # console.warn -> echo with [WARN] prefix
+    code = re.sub(
+        r'console\.warn\s*\(\s*([^)]+)\s*\)',
+        rf'echo "[WARN] \1" >> {log_file}',
+        code
+    )
+    
+    # console.error -> echo with [ERROR] prefix
+    code = re.sub(
+        r'console\.error\s*\(\s*([^)]+)\s*\)',
+        rf'echo "[ERROR] \1" >> {log_file}',
+        code
+    )
+    
+    # console.info -> echo with [INFO] prefix
+    code = re.sub(
+        r'console\.info\s*\(\s*([^)]+)\s*\)',
+        rf'echo "[INFO] \1" >> {log_file}',
+        code
+    )
+    
+    # console.debug -> echo with [DEBUG] prefix
+    code = re.sub(
+        r'console\.debug\s*\(\s*([^)]+)\s*\)',
+        rf'echo "[DEBUG] \1" >> {log_file}',
+        code
+    )
+         
+    # Remove all directives from code
     code = re.sub(r'["\']use\s+[^"\']+["\'];?\n?', '', code)
     
     # Add set command at the beginning
