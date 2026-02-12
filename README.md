@@ -1,6 +1,6 @@
 # SMASH - Simple Modern Advanced SHell
 
-Introducing: SMASH! - a JavaScript-style shell scripting.
+SMASH is a modern JavaScript-style shell scripting language that transpiles directly to Bash, with Unix power.
 
 ```
     ███████╗███╗   ███╗ █████╗ ███████╗██╗  ██╗
@@ -26,7 +26,7 @@ Introducing: SMASH! - a JavaScript-style shell scripting.
 	 
 ```
 
-Tired of bash's `seventies` syntax? Write shell scripts with modern JavaScript-like syntax that transpiles to bash.
+Tired of Bash's 1970s syntax? Write shell scripts with modern JavaScript-like syntax that transpiles to bash.
 
 ## How it works
 
@@ -41,6 +41,8 @@ Generated bash code
       |
 Executed by bash
 ```
+
+> SMASH is not a full-blown JavaScript interpreter. It is a small, controlled JavaScript-inspired DSL interpeter, designed specifically for shell scripting.
 
 ## Features
 
