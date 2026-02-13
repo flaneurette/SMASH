@@ -523,7 +523,7 @@ x += foo();
 ...
 ```
 
-> Rule of thumb: if you can do it simplistically/procedurally, then do it.
+> Rule of thumb: if you can do it simplistically/procedurally, then do it. SMASH is not a full fledged OOP.
 
 #### What SMASH Is Not
 
