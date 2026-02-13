@@ -278,8 +278,9 @@ def transpile_smash(code):
             'iso': '%Y-%m-%dT%H:%M:%S',           # 2026-02-12T14:30:45
             'sql': '%Y-%m-%d %H:%M:%S',           # 2026-02-12 14:30:45
             'unix': '%s',                         # 1739369445
-            'epoch': '%s',                        # 1739369445
-            'now': '%s',                          # 1739369445
+            'epoch': '%s',                        # Ibid
+            'timestamp': '%s',                    # Ibid
+            'now': '%s',                          # Ibid
             'human': '%A, %B %d, %Y',             # Monday, February 12, 2026
             'log': '%Y-%m-%d %H:%M:%S',           # 2026-02-12 14:30:45
             'filename': '%Y-%m-%d_%H-%M-%S',      # 2026-02-12_14-30-45
