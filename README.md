@@ -611,15 +611,15 @@ It intentionally supports only features that map cleanly and predictably to Bash
 
 ```
 # Run a script
-smash script.smash
+./script.smash
 
 # See generated bash code (debug)
-smash script.smash -d
-smash script.smash -debug
+./script.smash -d
+./script.smash -debug
 
 # Dry run (show code without executing)
-smash script.smash -test
-smash script.smash --dry-run
+./script.smash -test
+./script.smash --dry-run
 
 # Show help
 smash -h
