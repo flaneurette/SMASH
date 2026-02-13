@@ -28,6 +28,8 @@ def transpile_smash(code):
 
     def reserved_check(code):
         
+        # we allow (int), (float), (number) for casting.
+        
         RESERVED_WORDS = [
         'abstract','arguments','async','await',
         'boolean','break','byte','case',
@@ -35,10 +37,10 @@ def transpile_smash(code):
         'continue','debugge','default','delete',
         'do','double','else','enum',
         'eval','export','extends',
-        'final','finally','float',
+        'final','finally',
         'function','goto','if','implements',
         'import','instanceof',
-        'int','interface','let','long',
+        'interface','let','long',
         'native','new','package',
         'private','protected','public','return',
         'short','static','super','switch',
@@ -180,39 +182,48 @@ def transpile_smash(code):
         return f'echo "{"".join(result)}"'
 
     def text_interpolation(code):
+        # First, handle variable assignments with backticks separately
+        # Pattern: let var = `...` or var = `...`
+        def assignment_repl(match):
+            varname = match.group(1)
+            content = match.group(2)
+            
+            # Apply all the same transformations but DON'T wrap in quotes
+            content = re.sub(r'(?:n|\(int\))\s*\{(\w+)\}', r'$(( ${\1//[^0-9]/} ))', content)
+            content = re.sub(r'(?:f|\(float\))\s*\{(\w+)\}', r'$(printf "%.2f" ${\1//[^0-9.-]/} 2>/dev/null || echo "0.00")', content)
+            content = re.sub(r'(?:s|\(string\))\s*\{(\w+)\}', r'${\1}', content)
+            content = re.sub(r'(?:u|\(upper\))\s*\{(\w+)\}', r'${\1^^}', content)
+            content = re.sub(r'(?:l|\(lower\))\s*\{(\w+)\}', r'${\1,,}', content)
+            content = re.sub(r'(?:b|\(basename\))\s*\{(\w+)\}', r'$(basename $\1)', content)
+            content = re.sub(r'(?:d|\(dirname\))\s*\{(\w+)\}', r'$(dirname $\1)', content)
+            content = re.sub(r'(?<!\$)\{(\w+)\}', r'${\1}', content)
+            content = re.sub(r'#\{(\w+)\}', r'${\1}', content)
+            
+            return f'{varname}={content}'  # No quotes!
+        
+        # Match: var = `...`
+        code = re.sub(r'(\w+)\s*=\s*`([^`]+)`', assignment_repl, code)
+        
+        # Then handle regular backtick interpolation (in echo, etc.)
         def repl(match):
             content = match.group(1)
             
-            # Type-aware interpolation with TRUE casting
-            # Integer: strip non-digits
-            content = re.sub(
-                r'(?:n|\(int\))\s*\{([^}]+)\}',
-                r'$(( ${\1//[^0-9]/} ))',  # Single braces, not double
-                content
-            )
+            # Same transformations but WITH quotes
+            content = re.sub(r'(?:n|\(int\))\s*\{(\w+)\}', r'$(( ${\1//[^0-9]/} ))', content)
+            content = re.sub(r'(?:f|\(float\))\s*\{(\w+)\}', r'$(printf "%.2f" ${\1//[^0-9.-]/} 2>/dev/null || echo "0.00")', content)
+            content = re.sub(r'(?:s|\(string\))\s*\{(\w+)\}', r'${\1}', content)
+            content = re.sub(r'(?:u|\(upper\))\s*\{(\w+)\}', r'${\1^^}', content)
+            content = re.sub(r'(?:l|\(lower\))\s*\{(\w+)\}', r'${\1,,}', content)
+            content = re.sub(r'(?:b|\(basename\))\s*\{(\w+)\}', r'$(basename $\1)', content)
+            content = re.sub(r'(?:d|\(dirname\))\s*\{(\w+)\}', r'$(dirname $\1)', content)
+            content = re.sub(r'(?<!\$)\{(\w+)\}', r'${\1}', content)
+            content = re.sub(r'#\{(\w+)\}', r'${\1}', content)
             
-            # Float: strip non-numeric except . and -
-            content = re.sub(
-                r'(?:f|\(float\))\s*\{([^}]+)\}',
-                r'$(printf "%.2f" ${\1//[^0-9.-]/} 2>/dev/null || echo "0.00")',
-                content
-            )
-            
-            # String: explicit
-            content = re.sub(r'(?:s|\(string\))\s*\{([^}]+)\}', r'${\1}', content)
-            
-            # String operations
-            content = re.sub(r'(?:u|\(upper\))\s*\{([^}]+)\}', r'${\1^^}', content)
-            content = re.sub(r'(?:l|\(lower\))\s*\{([^}]+)\}', r'${\1,,}', content)
-            content = re.sub(r'(?:b|\(basename\))\s*\{([^}]+)\}', r'$(basename $\1)', content)
-            content = re.sub(r'(?:d|\(dirname\))\s*\{([^}]+)\}', r'$(dirname $\1)', content)
-            
-            # Standard interpolation
-            content = re.sub(r'(?<!\$)\{([^}]+)\}', r'${\1}', content)
-            content = re.sub(r'#\{([^}]+)\}', r'${\1}', content)
-            
-            return f'"{content}"'
-        return re.sub(r'`([^`]+)`', repl, code)
+            return f'"{content}"'  # With quotes for echo etc.
+        
+        code = re.sub(r'`([^`]+)`', repl, code)
+        
+        return code
 
     def split_on_plus(expr):
         parts = []

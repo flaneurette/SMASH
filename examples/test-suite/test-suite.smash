@@ -425,6 +425,34 @@ if (b == 2) {
 total = $(expr $total + 1);
 echo "";
 
+echo "Test 27: Typecasting.";
+
+let count = "Price:42";
+let count1 = "Price:42.6";
+
+let a = `(int) {count}`;
+let b = `(float) {count1}`;
+
+if (a == 42) {
+    echo "  PASS: Typecasting integers works.";
+    passed = $(expr $passed + 1);
+} else {
+    echo "  FAIL: Typecasting integers failed.";
+    failed = $(expr $failed + 1);
+}
+echo "";
+if (b == "42.60") {
+    echo "  PASS: Typecasting floats works.";
+    passed = $(expr $passed + 1);
+} else {
+    echo "  FAIL: Typecasting floats failed.";
+    failed = $(expr $failed + 1);
+}
+
+total = $(expr $total + 1);
+echo "";
+
+
 // Final results
 echo "======================";
 echo "Test Results";

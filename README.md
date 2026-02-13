@@ -197,7 +197,7 @@ echo $today;         		   // Bash and PHP style
 
 let name = "Alice";
 let count = "Price:42";
-let count1 = "Price:42.6";
+let count1 = "Price:133.60";
 
 echo `Count: (int) {count}`;    // Type cast integer
 echo `Count: (float) {count1}`; // Type cast float, printf.
