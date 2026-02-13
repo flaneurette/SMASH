@@ -202,12 +202,15 @@ let time = date("H:i:s");           // $(date "+%H:%M:%S")
 let mixed = date("y/m/d H:i");      // $(date "+%Y/%m/%d %H:%M")
 
 // Presets (just keywords)
-let iso = date("iso");              // $(date "+%Y-%m-%dT%H:%M:%S")
-let timestamp = date("sql");        // $(date "+%Y-%m-%d %H:%M:%S")
-let unix = date("unix");            // $(date "+%s")
-let readable = date("human");       // $(date "+%A, %B %d, %Y")
-let log_time = date("log");         // $(date "+%Y-%m-%d %H:%M:%S")
-let file_safe = date("filename");   // $(date "+%Y-%m-%d_%H-%M-%S")
+date("now");        // $(date "+%s") # Like Date.now() & PHP time()
+date("unix");       // $(date "+%s") # Ibid
+date("today");	    // $(date "+%Y-%m-%d")
+date("sql");        // $(date "+%Y-%m-%d %H:%M:%S")
+date("human");      // $(date "+%A, %B %d, %Y")
+date("log");        // $(date "+%Y-%m-%d %H:%M:%S")
+date("filename");   // $(date "+%Y-%m-%d_%H-%M-%S")
+date("iso");        // $(date "+%Y-%m-%dT%H:%M:%S")
+date("isostring")	// $(date "%Y-%m-%dT%H:%M:%S%z") # Like JS toISOString()
 
 console.log("Backup started at " + timestamp);
 ```
