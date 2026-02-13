@@ -452,6 +452,38 @@ if (b == "42.60") {
 total = $(expr $total + 1);
 echo "";
 
+echo "Test 28: Switches.";
+
+let fruit = "apple";
+let results = "mango";
+
+switch (fruit) {
+    case "apple":
+		results = "apple";
+        break;
+    case "banana":
+	    results = "banana";
+        break;
+    default:
+	    results = "nothing";
+        break;
+}
+
+if(results == "apple") {
+    echo "  PASS: Switch works.";
+    passed = $(expr $passed + 1);
+}
+
+if(results == "mango") {
+    echo "  FAIL: Switch failed.";
+    failed = $(expr $failed + 1);
+}
+
+echo "";
+
+total = $(expr $total + 1);
+echo "";
+
 
 // Final results
 echo "======================";

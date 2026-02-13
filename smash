@@ -99,6 +99,21 @@ def transpile_smash(code):
         code = code.replace('#!#usr#bin#env', '#!/usr/bin/env')
         code = code.replace('#!#bin#bash', '#!/bin/bash')
 
+        # Minor semicolon fix, to be certain.
+        code = code.replace('}";;','}";')
+
+        # Healing markers - remove these and what follows
+        markers = {
+            ':rem-brace: {': '',
+            ':rem-brace: }': '',
+            ':rem-semi: ;': '',
+            ':rem-paren: (': '',
+            ':rem-paren: )': '',
+        }
+        
+        for marker, replacement in markers.items():
+            code = code.replace(marker, replacement)
+        
         # At the end, do proper interpolation
         # ---------------------------------------------------
         # Interpolation
@@ -677,13 +692,38 @@ def transpile_smash(code):
         r'${#\1[@]}',
         code
     )
-
+    
+    # Array.push(value)
     code = re.sub(
         r'(\w+)\.push\(\s*[\'"]([^\'"]+)[\'"]\s*\)',
         r'\1+=("\2")',
         code
     )  
-    
+
+    # Array.filter(item => item.endsWith(".log"))
+    # NOTE: The ;; is required, as it's stripped later. Do not remove.
+    code = re.sub(
+        r'(\w+)\s*=\s*(\w+)\.filter\(\w+\s*=>\s*\w+\.endsWith\(["\']([^"\']+)["\']\)\)\s*;?',
+        r'\1=()\nfor item in "${\2[@]}";; do\n    [[ "$item" == *"\3" ]] && \1+=("$item")\ndone',
+        code
+    )
+
+    # Array.includes("value") - used in if conditions
+    # This is tricky because it needs to NOT add extra parens
+    # NOTE: :rem-brace: is a magic marker to cleanup after processing. Required.
+    code = re.sub(
+        r'if\s*\(\s*(\w+)\.includes\(["\']([^"\']+)["\']\)\s*\)',
+        r'if [[ " ${\1[@]} " =~ " \2 " ]]; then :rem-brace:',
+        code
+    )
+
+    # Array.join(",")
+    code = re.sub(
+        r'(\w+)\s*=\s*(\w+)\.join\(["\']([^"\']+)["\']\)\s*;?',
+        r'\1=$(IFS="\3"; echo "${\2[*]}")',
+        code
+    )
+
     # Variables
     # ---------------------------------------------------
     
@@ -1025,7 +1065,7 @@ def transpile_smash(code):
     code = re.sub(r'echo\s+(.+?\+.+?)(?:;|\n|$)', fix_echo_concat, code, flags=re.MULTILINE)
     
     # Remove trailing semicolons (bash doesn't strictly need them)
-    code = re.sub(r';(\s*)$', r'\1', code, flags=re.MULTILINE)
+    # code = re.sub(r';(\s*)$', r'\1', code, flags=re.MULTILINE)
     
     # Fix for loops - convert the last 'fi' in a for loop block to 'done'
     # This needs to happen AFTER fi conversion
