@@ -440,7 +440,10 @@ if (a == 42) {
     echo "  FAIL: Typecasting integers failed.";
     failed = $(expr $failed + 1);
 }
+
+total = $(expr $total + 1);
 echo "";
+
 if (b == "42.60") {
     echo "  PASS: Typecasting floats works.";
     passed = $(expr $passed + 1);

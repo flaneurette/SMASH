@@ -303,6 +303,63 @@ def transpile_smash(code):
         
         return code
 
+    def array_spread(code):
+        
+        pattern = r'(let|var|const)\s+(\w+)\s*=\s*\[(.*?)\];'
+        
+        def replace(match):
+            var_name = match.group(2)
+            contents = match.group(3)
+            
+            # Extract: ...arr -> arr
+            spread_vars = re.findall(r'\.\.\.(\w+)', contents)
+            
+            if spread_vars:
+                bash_arrays = ' '.join([f'"${{{v}[@]}}"' for v in spread_vars])
+                return f'{var_name}=({bash_arrays})'
+            return match.group(0)
+        
+        return re.sub(pattern, replace, code)
+
+    def array_slice(code):
+        """Convert JavaScript array.slice() to bash - simplified version"""
+        
+        # slice(start, end) - calculate length
+        def two_params(m):
+            var, arr, s1, start, s2, end = m.groups()
+            start, end = int(start), int(end)
+            
+            # Both positive: length = end - start
+            if not s1 and not s2:
+                return f'{var}=("${{{arr}[@]:{start}:{end-start}}}")'
+            # Positive start, negative end: runtime calc
+            if not s1 and s2:
+                return f'{var}=("${{{arr}[@]:{start}:$((${{#{arr}[@]}} - {abs(end)} - {start}))}}")'
+            # Both negative: length = start - end
+            if s1 and s2:
+                return f'{var}=("${{{arr}[@]: {s1}{start}:{start-end}}}")'
+            # Negative start, positive end: runtime calc  
+            return f'{var}=("${{{arr}[@]: {s1}{start}:$(({end}-(${{#{arr}[@]}}-{start})))}}")'
+        
+        # slice(start) - from start to end
+        def one_param(m):
+            var, arr, sign, start = m.groups()
+            space = ' ' if sign else ''  # Space needed before negative
+            return f'{var}=("${{{arr}[@]:{space}{sign or ""}{start}}}")'
+        
+        # Two params first (more specific)
+        code = re.sub(
+            r'\b(?:let|var|const)\s+(\w+)\s*=\s*(\w+)\.slice\(\s*(-?)(\d+)\s*,\s*(-?)(\d+)\s*\)',
+            two_params, code
+        )
+        # Then one param
+        code = re.sub(
+            r'\b(?:let|var|const)\s+(\w+)\s*=\s*(\w+)\.slice\(\s*(-?)(\d+)\s*\)',
+            one_param, code
+        )
+        
+        return code
+        
     def split_on_plus(expr):
         parts = []
         current = []
@@ -669,6 +726,9 @@ def transpile_smash(code):
     
     # Arrays
     # ---------------------------------------------------
+
+    # Array spread ...arr
+    code = array_spread(code)
     
     # Array declarations: let arr = ["a", "b", "c"]
     code = re.sub(
@@ -732,7 +792,10 @@ def transpile_smash(code):
         r'\1=$(IFS="\3"; echo "${\2[*]}")',
         code
     )   
-
+      
+    # Array.slice()
+    code = array_slice(code)
+    
     # Variables
     # ---------------------------------------------------
     
@@ -916,7 +979,14 @@ def transpile_smash(code):
     # Array (continue, do not move)
     # ---------------------------------------------------
     
-    # Array iteration: for (let x in result)
+    # Array iteration: for (let x in|of result)
+    
+    code = re.sub(
+        r'for\s*\(\s*(let|var|const|)\s*(\w+)\s*(in|of)\s*(\w+)\s*\)\s*{',
+        r'for \2 in "${\4[@]}"; do',
+        code
+    )    
+    
     code = re.sub(
         r'for\s*\(\s*let\s+(\w+)\s+(in|of)\s+(\w+)\s*\)\s*\{',
         r'for \1 in "${\3[@]}"; do',

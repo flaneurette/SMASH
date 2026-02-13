@@ -1,21 +1,4 @@
-## 2. Array Methods
-
-```
-let f = ["a.txt", "b.txt", "c.txt"];
-
-// map
-let uppercase = files.map(f => f.toUpperCase());
-
-// forEach
-files.forEach(f => {
-    echo "Processing: " + f;
-});
-
-// slice
-let first_two = files.slice(0, 2);
-```
-
-## 3. Object Literals / Associative Arrays
+## Object Literals / Associative Arrays
 
 ```
 let config = {
@@ -36,28 +19,7 @@ config[port]=8080
 echo ${config[host]}
 ```
 
-## 4. Try/Catch Error Handling
-
-```
-try {
-    let result = $(risky-command);
-    echo "Success: " + result;
-} catch (error) {
-    echo "Failed: " + error;
-    console.error(error);
-}
-```
-
-Bash:
-```
-if result=$(risky-command 2>&1); then
-    echo "Success: $result"
-else
-    echo "Failed: $result"
-fi
-```
-
-## 5. Destructuring
+## Destructuring
 
 ```
 let [first, second, ...rest] = arr;
@@ -68,7 +30,7 @@ echo rest;   // remaining elements
 let {host, port} = config;
 ```
 
-## 6. Default Parameters
+## Default Parameters
 
 ```
 function greet(name = "World") {
@@ -87,7 +49,7 @@ greet() {
 }
 ```
 
-## 7. String Methods
+## String Methods
 
 ```
 str.startsWith("http");
@@ -100,7 +62,7 @@ str.repeat(3);
 str.padStart(5, "0");  // "00042"
 ```
 
-## 8. Number Methods
+## Number Methods
 
 ```
 let x = "42.5";
@@ -112,7 +74,7 @@ Math.round(x);    // 43
 Math.abs(-5);     // 5
 ```
 
-## 9. JSON Support
+## JSON Support
 
 ```
 // Parse JSON
@@ -128,7 +90,7 @@ Use `jq` under the hood:
 data=$(echo "$response" | jq -r '.name')
 ```
 
-## 10. Async/Await
+## Async/Await
 
 ```
 // Run commands in parallel
@@ -152,7 +114,7 @@ wait
 echo "All deployed!"
 ```
 
-## 11. setTimeout/setInterval
+## setTimeout/setInterval
 
 ```
 setTimeout(() => {
@@ -173,12 +135,4 @@ while true; do
     echo "Every 10 seconds"
     sleep 10
 done
-```
-
-## 12. Spread Operator
-
-```
-let arr1 = [1, 2, 3];
-let arr2 = [4, 5, 6];
-let combined = [...arr1, ...arr2];
 ```

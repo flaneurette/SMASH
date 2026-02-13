@@ -345,10 +345,12 @@ echo `Lower: {low}`;
 
 ```
 arr = [];									// Array creation
+arr = [...array1, ...array2]				// Array spread operator
 arr[0];										// Indexing
 arr.length;									// Array length
 arr.push(value);							// Push value unto array
 arr.join(",");								// Join
+arr.slice(0, 2);							// Slice array
 arr.filter(item => item.endsWith(".log"));	// Filter array
 arr.forEach(f => {echo "File:" + f;}); 		// For Each loops.
 arr.includes("value");						// Used in if conditions
@@ -364,6 +366,11 @@ let arr 	= ['a','b','c']; // Array creation
 arr.push('d');				 // Push value unto array
 echo arr.length;			 // Array length
 echo arr[1];				 // Indexing
+
+// Spread
+let arr1 = [1, 2, 3];
+let arr2 = [4, 5, 6];
+let combined = [...arr1, ...arr2];
 
 if(arr[1] == 'b') {			 // Idx comparison
 	echo "Works fine";
