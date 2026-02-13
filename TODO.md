@@ -1,7 +1,7 @@
 ## 2. Array Methods
 
 ```
-let files = ["a.txt", "b.txt", "c.txt"];
+let f = ["a.txt", "b.txt", "c.txt"];
 
 // map
 let uppercase = files.map(f => f.toUpperCase());

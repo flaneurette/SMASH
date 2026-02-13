@@ -344,10 +344,13 @@ echo `Lower: {low}`;
 ### Array operations
 
 ```
-arr = [];			// Array creation
-arr.push(value);	// Push value unto array
-arr.length;			// Array length
-arr[0];				// Indexing
+arr = [];									// Array creation
+arr[0];										// Indexing
+arr.length;									// Array length
+arr.push(value);							// Push value unto array
+arr.join(",");								// Join
+arr.filter(item => item.endsWith(".log"));	// Filter array
+arr.includes("value");						// Used in if conditions
 ```
 
 Examples:
@@ -367,7 +370,24 @@ if(arr[1] == 'b') {			// Idx comparison
 let val = arr[1];			// New assignment
 if(val == 'b') { 			// Idx comparison
 	echo "Also works!";
-} 			
+} 
+
+let files = ["a.txt", "b.txt", "c.txt", "test.log"];
+
+// filter
+let logs = files.filter(f => f.endsWith(".log"));
+
+echo $logs;
+
+// includes
+if (files.includes("a.txt")) {
+    echo "Found it!";
+}
+
+// join
+let csv = files.join(",");  // "a.txt,b.txt,c.txt"
+
+echo $csv;
 ```
 
 ### If/Else statements
