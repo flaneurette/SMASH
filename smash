@@ -99,6 +99,8 @@ def transpile_smash(code):
         code = code.replace('#!#usr#bin#env', '#!/usr/bin/env')
         code = code.replace('#!#bin#bash', '#!/bin/bash')
 
+        # At the end, do proper interpolation
+        # ---------------------------------------------------
         # Interpolation
         # ---------------------------------------------------
         # Text interpolation
@@ -180,6 +182,66 @@ def transpile_smash(code):
             elif part:
                 result.append(part.strip('"'))
         return f'echo "{"".join(result)}"'
+
+    def transform_switch(code):
+        """Convert JavaScript-style switch to bash case"""
+        lines = code.split('\n')
+        result = []
+        in_switch = False
+        
+        for line in lines:
+            stripped = line.strip()
+            
+            # switch (var) {
+            if stripped.startswith('switch '):
+                match = re.match(r'switch\s*\(\s*(\w+)\s*\)\s*\{', stripped)
+                if match:
+                    var = match.group(1)
+                    indent = line[:len(line) - len(stripped)]
+                    result.append(f'{indent}case ${var} in')
+                    in_switch = True
+                    continue
+            
+            if in_switch:
+                # case "value":
+                if stripped.startswith('case '):
+                    case_match = re.match(r'case\s+"([^"]+)"\s*:', stripped)
+                    if case_match:
+                        value = case_match.group(1)
+                        indent = line[:len(line) - len(stripped)]
+                        result.append(f'{indent}"{value}")')
+                        continue
+                    
+                    # case variable:
+                    var_match = re.match(r'case\s+(\w+)\s*:', stripped)
+                    if var_match:
+                        var = var_match.group(1)
+                        indent = line[:len(line) - len(stripped)]
+                        result.append(f'{indent}${var})')
+                        continue
+                
+                # default:
+                if stripped == 'default:':
+                    indent = line[:len(line) - len(stripped)]
+                    result.append(f'{indent}*)')
+                    continue
+
+                # break; (more flexible matching)
+                if stripped == 'break;' or stripped == 'break':
+                    indent = line[:len(line) - len(stripped)]
+                    result.append(f'{indent};;')
+                    continue
+                    
+                # Closing }
+                if stripped == '}':
+                    indent = line[:len(line) - len(stripped)]
+                    result.append(f'{indent}esac')
+                    in_switch = False
+                    continue
+            
+            result.append(line)
+        
+        return '\n'.join(result)
 
     def text_interpolation(code):
         # First, handle variable assignments with backticks separately
@@ -510,7 +572,7 @@ def transpile_smash(code):
         unique_flags = list(dict.fromkeys(use_directives))  # Remove dupes
         set_cmd = 'set ' + ' '.join(unique_flags) + '\n\n'
         code = set_cmd + code
-
+        
     # Conversions
     # ---------------------------------------------------
     
@@ -752,7 +814,11 @@ def transpile_smash(code):
     
     # Else: } else {
     code = re.sub(r'\}\s*else\s*\{', 'else', code)
-    
+
+    # Switch/case statements
+    # ---------------------------------------------------
+    code = transform_switch(code)
+
     # Closing braces: } -> fi (for if statements) but keep function closing braces
     lines = code.split('\n')
     result = []
