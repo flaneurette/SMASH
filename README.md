@@ -195,16 +195,18 @@ echo $today;         		   // Bash and PHP style
 ```
 #!/usr/bin/env smash
 
-let name = "alice";
-let count = "test42";
-let count1 = "test42.6";
+let name = "Alice";
+let count = "Price:42";
+let count1 = "Price:42.6";
+
+echo `Count: (int) {count}`;    // Type cast integer
+echo `Count: (float) {count1}`; // Type cast float, printf.
+echo `Count: (string) {name}`;  // Type cast explicit string.
 
 echo `Count: n{count}`;         // Type cast integer
-echo `Count: (int) {count}`;    // Type cast integer
 echo `Count: f{count1}`;  		// Type cast float, printf.
-echo `Count: (float) {count1}`; // Type cast float, printf.
 echo `Count: s{name}`;  		// Type cast explicit string.
-echo `Count: (string) {count}`; // Type cast explicit string.
+
 echo `User: u{name}`;           // String upper
 echo `User: l{name}`;           // String lower
 echo `User: b{name}`;           // String basename
