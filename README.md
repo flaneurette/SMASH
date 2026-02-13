@@ -504,7 +504,7 @@ Example of too much complexity:
 ```
 #!/usr/bin/env smash
 
-x += (a + b) * (c - d) && foo(bar());
+x += (a + b) * (c - d) && foo(bar()) - x2 * (t / e + i);
 ```
 
 This will not transpile! it is too complex, even for BASH, and few can understand it instantly, which makes it also harder to maintain, let alone transpile correctly.
@@ -514,11 +514,16 @@ Instead, write it straight-forward procedurally:
 ```
 #!/usr/bin/env smash
 
-temp1 = a + b;
-temp2 = c - d;
-x += temp1 * temp2;
+let x = 0;
+let bar = bar();
+let foo = foo(bar);
+
+x += (a + b) * (c - d);
+x += foo();
 ...
 ```
+
+> Rule of thumb: if you can do it simplistically/procedurally, then do it.
 
 #### What SMASH Is Not
 
