@@ -472,11 +472,31 @@ for(let file in *.log) {
     cat $file | grep ERROR;
 }
 
-// Use very sparingly, breaks fast)
+// Use very sparingly...
 let i = 0;
 while (i < 10) {
     echo "Count: " + i;
     i = $(expr $i + 1);
+}
+```
+
+### Switches
+
+```
+#!/usr/bin/env smash
+
+let fruit = "apple";
+
+switch (fruit) {
+    case "apple":
+        echo "apple";
+        break;
+    case "banana":
+        echo "banana";
+        break;
+    default:
+        echo "Unknown fruit";
+        break;
 }
 ```
 
