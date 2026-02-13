@@ -190,14 +190,14 @@ echo "Today it is: " + today;  // Concatenation
 echo $today;         		   // Bash and PHP style
 ```
 
-### Type awareness, casting and interpolation
+### Type awareness, casting, type coercion and interpolation
 
 ```
 #!/usr/bin/env smash
 
 let name = "alice";
-let count = "42";
-let count1 = "42.6";
+let count = "test42";
+let count1 = "test42.6";
 
 echo `Count: n{count}`;         // Type cast integer
 echo `Count: (int) {count}`;    // Type cast integer
