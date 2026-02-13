@@ -318,29 +318,6 @@ str.toUpperCase();
 str.toLowerCase() 
 ```
 
-Examples
-
-```
-#!/usr/bin/env smash
-
-let lower = "hello";
-let upper = "LOWER";
-
-let a = lower.substring(2,3);
-echo `{a}`;
-
-let splitter = "Hello,world";
-let a = splitter.split(",");
-echo a.length;
-echo a[1];
-
-let up = lower.toUpperCase();
-let low = upper.toLowerCase();
-
-echo `Upper: {up}`;
-echo `Lower: {low}`;
-```
-
 ### Array operations
 
 ```
