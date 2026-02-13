@@ -46,7 +46,7 @@ def transpile_smash(code):
 
     def reserved_check(code):
         
-        reserved_words = [
+        RESERVED_WORDS = [
         'abstract','arguments','async','await',
         'boolean','break','byte','case',
         'catch','class','const',
@@ -65,28 +65,35 @@ def transpile_smash(code):
         'using','var','void','volatile',
         'while','yield']
         
-        escaped_words = '|'.join(re.escape(word) for word in reserved_words)
+        # Pre-compile reserved word pattern
+        ESCAPED_RESERVED = '|'.join(re.escape(word) for word in RESERVED_WORDS)
+
+        # Compile patterns once at module level
+        COMMENT_START_PATTERN = re.compile(r'^\s*(#|//|\/\*|\*\/)')
+        ECHO_START_PATTERN = re.compile(r'^\s*(echo|print)\s+')
+        RESERVED1 = re.compile(r'\b(var|let|const)\s+\b(' + ESCAPED_RESERVED + r')\b')
+        RESERVED2 = re.compile(r'\b(' + ESCAPED_RESERVED + r')\s*(\w+)\s*=\s*(\[|[^;])\s*(' + ESCAPED_RESERVED + r')\b')
         
         lines = code.split('\n')
         
         for line in lines:
-            for pat in reserved_words:
+
+            # Exclude comments
+            if COMMENT_START_PATTERN.search(line):
+                continue
+
+            # Exclude echo and print
+            if ECHO_START_PATTERN.search(line):
+                continue
                 
-                # Search illegal keyword assignments.
-                if re.search(r'\b(var|let|const)\s+\b(' + escaped_words + r')\b', line):
-                    return True
-                # Reserved / mistakes
-                if re.search(r'(' + escaped_words + r')\s*(\w+)\s*=\s*(\[|[^;])\s*(' + escaped_words + r')', line):
-                    return True
-                # Reserved / mistakes
-                if re.search(r'(' + escaped_words + r')\s*(\w+)\s*=\s*(\[|[^;])\s*' + pat, line):
-                    return True
-                # Invalid / mistakes
-                if re.search(r'(' + escaped_words + r')(\(|\)|[^;])\s*' + pat + r'\s*(\w+)\s*=\s*(\[|[^;])\s*', line):
-                    return True
-                # Reserved / mistakes
-                if re.search(r'(' + escaped_words + r')\s*([^;])\s*=\s*(\[|[^;])\s*' + pat, line):
-                    return True
+            # Search illegal keyword assignments and mistakes.
+            if RESERVED1.search(line):
+                print("Parsed line failed:" + line)
+                return True
+
+            if RESERVED2.search(line):
+                print("Parsed line failed:" + line)
+                return True
 
         return False
         
@@ -337,23 +344,33 @@ def transpile_smash(code):
         )
         
         return code
-
+        
+    # Module level
+    DANGEROUS_PATTERNS = re.compile(
+        r'rm\s+-r?f|'                       # File deletion (rm -rf, rm -f)
+        r'\brm\s+/|'                        # Root deletion (rm /)
+        r':\s*>\s*\w+|'                     # File truncation (: > file)
+        r'mkdir\s+/(?!tmp|var/tmp|var/log)|'# Root mkdir (allow /tmp)
+        r'dd\s+.*of=/dev|'                  # Disk overwrite
+        r'shred\b|mkfs\b|'                  # Destructive ops
+        r'chmod\s+-R\s+777|'                # Dangerous permissions
+        r'chown\s+-R|'                      # Recursive ownership change
+        r'sudo\s+chown|'                    # Elevated ownership change
+        r'\beval\(|\bexec\(|'               # Code execution
+        r'bash\s+-c|sh\s+-c|'               # Shell injection
+        r'nc\s+-e|ncat\s+-e|'               # Reverse shells
+        r'sudo\s+(rm|dd|chmod)|'            # Elevated dangerous ops
+        r'su\s+-?\s*(root|admin)|'          # User elevation
+        r':\(\)\s*\{|'                      # Fork bomb
+        r'scp\s+.*@|rsync\s+.*@|'           # Data exfiltration
+        r'>/dev/sd[a-z]'                    # Direct disk write
+        r'>/dev/sd[0-9]',                   # Direct disk write
+        flags=re.IGNORECASE
+    )
+        
     def detect_dangerous(code):
-        
-        dangerous_patterns = [
-            r'rm -f',
-            r'rm -rf',
-            r'mkdir',
-            r'\b(eval|exec)\b',
-        ]
-        
-        lines = code.split('\n')
-        for line in lines:
-            for pat in dangerous_patterns:
-                if re.search(pat, line):
-                    return True
-
-        return False
+        """Detect dangerous commands that could harm the system"""
+        return bool(DANGEROUS_PATTERNS.search(code))
         
     # --------------------------------- BEGIN SMASH ---------------------------------
     detect_risk = True;
