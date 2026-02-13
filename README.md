@@ -203,7 +203,7 @@ echo `Count: n{count}`;         // Type cast integer
 echo `Count: (int) {count}`;    // Type cast integer
 echo `Count: f{count1}`;  		// Type cast float, printf.
 echo `Count: (float) {count1}`; // Type cast float, printf.
-echo `Count: s{name}`;  		// Type cast float, printf.
+echo `Count: s{name}`;  		// Type cast explicit string.
 echo `Count: (string) {count}`; // Type cast explicit string.
 echo `User: u{name}`;           // String upper
 echo `User: l{name}`;           // String lower
