@@ -163,7 +163,7 @@ By default, some risky commands cannot be used. This prevents severe accidental 
 
 "use unsafe"; 
 
-let delete = $(rm -f /tmp/test.log);
+let remove_file = $(rm -f /tmp/test.log);
 ```
 
 ### Console
