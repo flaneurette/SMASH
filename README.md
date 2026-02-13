@@ -122,7 +122,7 @@ In SMASH, there are several ways to print. We do recommend SMASH `interpolation`
 let today = date("time");
 
 echo `Today it is: {today}`;   // Use text interpolation
-echo "" + today;	 		   // Concatenation
+echo "Today it is: " + today;  // Concatenation
 echo $today;         		   // Bash style
 ```
 
