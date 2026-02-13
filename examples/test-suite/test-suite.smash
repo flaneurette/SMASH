@@ -2,6 +2,9 @@
 // test-case.smash - SMASH test suite
 // Tests all supported features in v1.0-1
 
+"use unsafe";
+// set to unsafe, so we can remove test files with rm -f.
+
 echo "SMASH Test Suite v1.0-1";
 echo "======================";
 echo "";

@@ -159,9 +159,87 @@ def transpile_smash(code):
             return f'"{content}"'
         return re.sub(r'`([^`]+)`', repl, code)
 
+    def split_on_plus(expr):
+        parts = []
+        current = []
+        in_string = False
+        quote = None
+        escape = False
+
+        for ch in expr:
+            if escape:
+                current.append(ch)
+                escape = False
+                continue
+
+            if ch == '\\':
+                current.append(ch)
+                escape = True
+                continue
+
+            if in_string:
+                current.append(ch)
+                if ch == quote:
+                    in_string = False
+                continue
+
+            if ch in ('"', "'"):
+                in_string = True
+                quote = ch
+                current.append(ch)
+                continue
+
+            if ch == '+':
+                parts.append("".join(current))
+                current = []
+            else:
+                current.append(ch)
+
+        if current:
+            parts.append("".join(current))
+
+        return parts
+
+    def replace_assignment(match):
+        var = match.group(2)
+        expr = match.group(3).strip()
+        
+        if '$(' in expr:
+            return match.group(0)
+        
+        # STRING MODE (if quotes present)
+        if '"' in expr or "'" in expr:
+            parts = split_on_plus(expr)
+
+            result = ""
+            for part in parts:
+                part = part.strip()
+
+                # quoted literal
+                if (part.startswith('"') and part.endswith('"')) or \
+                   (part.startswith("'") and part.endswith("'")):
+                    literal = part[1:-1]
+
+                    # escape bash special chars
+                    literal = literal.replace('\\', '\\\\')
+                    literal = literal.replace('$', '\\$')
+                    literal = literal.replace('`', '\\`')
+
+                    result += literal
+                else:
+                    result += f"${{{part}}}"
+
+            return f'{var}="{result}"'
+
+        # MATH MODE (has operator, no quotes)
+        if re.search(r'[\+\-*/%]', expr):
+            return f'{var}=$(( {expr} ))'
+
+        # SIMPLE ASSIGNMENT
+        return f'{var}={expr}'
+
     def transpile_date_function(code):
         """Convert date("format") to bash date commands"""
-        
         # Preset formats (shortcuts)
         PRESETS = {
             'iso': '%Y-%m-%dT%H:%M:%S',           # 2026-02-12T14:30:45
@@ -213,10 +291,37 @@ def transpile_smash(code):
         )
         
         return code
-    
+
+    def detect_dangerous(code):
+        
+        dangerous_patterns = [
+            r'rm -f',
+            r'rm -rf',
+            r'mkdir',
+            r'\b(eval|exec)\b',
+        ]
+        
+        lines = code.split('\n')
+        for line in lines:
+            for pat in dangerous_patterns:
+                if re.search(pat, line):
+                    return True
+
+        return False
+        
     # --------------------------------- BEGIN SMASH ---------------------------------
-    
+    detect_risk = True;
     strip_comments = True;
+
+    if re.search(r'["\']use\s+unsafe["\']', code):
+        detect_risk = False;
+        
+    # Code safety check
+    check_dangerous = detect_dangerous(code)
+    
+    if detect_risk and check_dangerous:
+        raise ValueError("Unsafe construct or keyword detected. Quit transpiling to BASH.")
+        sys.exit(1)
     
     # Preprocess first
     code = preprocess_code(code)
@@ -431,7 +536,27 @@ def transpile_smash(code):
         r'(\w+)\.push\(\s*[\'"]([^\'"]+)[\'"]\s*\)',
         r'\1+=("\2")',
         code
+    )  
+    
+    # Variables
+    # ---------------------------------------------------
+    
+    # Variable declarations: let/const/var x = value -> x=value
+    code = re.sub(r'\b(let|const|var)\s+(\w+)\s*=\s*([a-zA-Z0-9\-_\"\']+)\s*;', r'\2=\3', code)
+    
+    # Variable reassignment (without let/const/var): x = value -> x=value
+    # But only if there's whitespace around the =, to avoid matching == comparisons
+    code = re.sub(r'^(\s*)(\w+)\s+=\s+([^;]+);?', r'\1\2=\3', code, flags=re.MULTILINE)
+
+    # Math concatenation: let x = (y + z / 2);
+    code = re.sub(r'\b(let|const|var)\s+(\w+)\s*=\s*([a-zA-Z0-9_()\s-]+(?:\s*[\+\-*/%]\s*[a-zA-Z0-9_()\s-]+)+)\s*;', r'\2=$(( \3 ))', code)
+    
+    # Complex string concatenation: let x = y + "abc" + z;
+    concat_pattern = re.compile(
+        r'\b(let|const|var)\s+(\w+)\s*=\s*([^;]+(?:\s*[\+\-*/%]\s*[a-zA-Z0-9_()\"\'\s-]+)+)\s*;'
     )
+    
+    code = concat_pattern.sub(replace_assignment, code)
 
     # Math
     # ---------------------------------------------------
@@ -441,18 +566,11 @@ def transpile_smash(code):
         r'\b(let|const|var)\s+(\w+)\s*=\s*([^;]+);?',
         convert_variable_assignment,
         code
-    )   
-    
-    # Variables
+    ) 
+ 
+    # Else if, else, if.
     # ---------------------------------------------------
     
-    # Variable declarations: let/const/var x = value -> x=value
-    code = re.sub(r'\b(let|const|var)\s+(\w+)\s*=\s*([^;]+);?', r'\2=\3', code)
-    
-    # Variable reassignment (without let/const/var): x = value -> x=value
-    # But only if there's whitespace around the =, to avoid matching == comparisons
-    code = re.sub(r'^(\s*)(\w+)\s+=\s+([^;]+);?', r'\1\2=\3', code, flags=re.MULTILINE)
-
     # Else if FIRST (before regular if statements)
     # This prevents the regular if regex from matching the if in "} else if"
     code = re.sub(
