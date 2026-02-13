@@ -154,6 +154,18 @@ Possible flags/pragmas to set:
 						// By default, dangerous commands are not allowed. Use with caution.
 ```
 
+### Elevated commands
+
+By default, some risky commands cannot be used. This prevents severe accidental issues. You'll need to set a pragma for it to bypass security:
+
+```
+#!/usr/bin/env smash
+
+"use unsafe"; 
+
+let delete = $(rm -f /tmp/test.log);
+```
+
 ### Console
 
 ```
