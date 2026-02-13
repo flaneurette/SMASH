@@ -43,7 +43,53 @@ def transpile_smash(code):
     """
 
     # SMASH HELPER FUNCTIONS
-    
+
+    def reserved_check(code):
+        
+        reserved_words = [
+        'abstract','arguments','async','await',
+        'boolean','break','byte','case',
+        'catch','class','const',
+        'continue','debugge','default','delete',
+        'do','double','else','enum',
+        'eval','export','extends',
+        'final','finally','float','for',
+        'function','goto','if','implements',
+        'import','instanceof',
+        'int','interface','let','long',
+        'native','new','package',
+        'private','protected','public','return',
+        'short','static','super','switch',
+        'synchronized','this','throw','throws',
+        'transient','try','typeof',
+        'using','var','void','volatile',
+        'while','yield']
+        
+        escaped_words = '|'.join(re.escape(word) for word in reserved_words)
+        
+        lines = code.split('\n')
+        
+        for line in lines:
+            for pat in reserved_words:
+                
+                # Search illegal keyword assignments.
+                if re.search(r'\b(var|let|const)\s+\b(' + escaped_words + r')\b', line):
+                    return True
+                # Reserved / mistakes
+                if re.search(r'(' + escaped_words + r')\s*(\w+)\s*=\s*(\[|[^;])\s*(' + escaped_words + r')', line):
+                    return True
+                # Reserved / mistakes
+                if re.search(r'(' + escaped_words + r')\s*(\w+)\s*=\s*(\[|[^;])\s*' + pat, line):
+                    return True
+                # Invalid / mistakes
+                if re.search(r'(' + escaped_words + r')(\(|\)|[^;])\s*' + pat + r'\s*(\w+)\s*=\s*(\[|[^;])\s*', line):
+                    return True
+                # Reserved / mistakes
+                if re.search(r'(' + escaped_words + r')\s*([^;])\s*=\s*(\[|[^;])\s*' + pat, line):
+                    return True
+
+        return False
+        
     def heal_code(code):
         """Fix patterns broken by comment conversion"""
         
@@ -322,6 +368,13 @@ def transpile_smash(code):
     if detect_risk and check_dangerous:
         raise ValueError("Unsafe construct or keyword detected. Quit transpiling to BASH.")
         sys.exit(1)
+    
+    # Reserved keywords check
+    check_reserved = reserved_check(code)
+    
+    if check_reserved:
+        raise ValueError("Reserved words or keywords are used improperly. Cannot parse this code.")
+        sys.exit(1)    
     
     # Preprocess first
     code = preprocess_code(code)
