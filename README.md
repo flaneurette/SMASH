@@ -506,18 +506,21 @@ while (i < 10) {
 #!/usr/bin/env smash
 
 let fruit = "apple";
+let result = "undefined";
 
 switch (fruit) {
     case "apple":
-        echo "apple";
+        result = "apple";
         break;
     case "banana":
-        echo "banana";
+        result = "banana";
         break;
     default:
-        echo "Unknown fruit";
+        result = "no fruit!";
         break;
 }
+
+echo `I like this fruit: {result}`;
 ```
 
 ### Comments
