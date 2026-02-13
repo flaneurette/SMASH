@@ -194,12 +194,13 @@ Application started
 #!/usr/bin/env smash
 
 // Readable format
-let readable = date("D, M d, y");  // Monday, February 12, 2026
+let readable = date("D, M d, y");  // Thursday, February 12, 2026
 
-// Custom formats (character translation)
-let custom = date("y-m-d");         // $(date "+%Y-%m-%d")
-let time = date("H:i:s");           // $(date "+%H:%M:%S")
-let mixed = date("y/m/d H:i");      // $(date "+%Y/%m/%d %H:%M")
+// Custom formats
+date("D, M d, y")   // $(date "+%A, %B %d, %Y")
+date("y-m-d")       // $(date "+%Y-%m-%d")
+date("H:i:s")       // $(date "+%H:%M:%S")
+date("y/m/d H:i")   // $(date "+%Y/%m/%d %H:%M")
 
 // Presets (just keywords)
 date("now");        // $(date "+%s") # Like Date.now() & PHP time()
