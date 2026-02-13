@@ -188,7 +188,23 @@ def transpile_smash(code):
     def text_interpolation(code):
         def repl(match):
             content = match.group(1)
-            content = re.sub(r'\{([^}]+)\}', r'${\1}', content)
+            
+            # Type-aware interpolation (process BEFORE generic {var})
+            content = re.sub(r'(?:n|\(int\))\s*\{([^}]+)\}', r'$(( \1 ))', content)              # Integer
+            content = re.sub(r'(?:f|\(float\))\s*\{([^}]+)\}', r'$(printf "%.2f" \1)', content)  # Float
+            content = re.sub(r'(?:s|\(string\))\s*\{([^}]+)\}', r'${\1}', content)               # String (explicit)
+            
+            # String operations
+            content = re.sub(r'(?:u|\(upper\))\s*\{([^}]+)\}', r'${\1^^}', content)              # Uppercase
+            content = re.sub(r'(?:l|\(lower\))\s*\{([^}]+)\}', r'${\1,,}', content)              # Lowercase
+            content = re.sub(r'(?:b|\(basename\))\s*\{([^}]+)\}', r'$(basename \1)', content)    # Basename
+            content = re.sub(r'(?:d|\(dirname\))\s*\{([^}]+)\}', r'$(dirname \1)', content)      # Dirname
+            
+            # Standard interpolation (AFTER type-aware)
+            content = re.sub(r'(?<!\$)\{([^}]+)\}', r'${\1}', content)                        # SMASH: {var}
+            content = re.sub(r'#\{([^}]+)\}', r'${\1}', content)                              # Ruby: #{var}
+            # ${var} stays as-is (already bash syntax, no conversion needed)
+            
             return f'"{content}"'
         return re.sub(r'`([^`]+)`', repl, code)
 

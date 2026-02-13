@@ -112,20 +112,6 @@ let ssh = $(ssh user@server "systemctl restart app");
 let log = $(find . -name "*.log" -mtime +7 -delete);
 ```
 
-### Printing
-
-In SMASH, there are several ways to print. We do recommend SMASH `interpolation`
-
-```
-#!/usr/bin/env smash
-
-let today = date("time");
-
-echo `Today it is: {today}`;   // Use text interpolation
-echo "Today it is: " + today;  // Concatenation
-echo $today;         		   // Bash style
-```
-
 ### Flags
 
 Possible flags/pragmas to set:
@@ -186,6 +172,43 @@ Application started
 [WARN] Disk space at 85%
 [ERROR] Database connection failed
 [DEBUG] Variable x = 42
+```
+
+### Printing
+
+In SMASH, there are several ways to print. We do recommend SMASH `interpolation`
+
+```
+#!/usr/bin/env smash
+
+let today = date("time");
+
+echo `Today it is: {today}`;   // SMASH text interpolation
+echo `Today it is: ${today}`;  // JS-style
+echo `Today it is: #{today}`;  // Ruby-style
+echo "Today it is: " + today;  // Concatenation
+echo $today;         		   // Bash and PHP style
+```
+
+### Type awareness, casting and interpolation
+
+```
+#!/usr/bin/env smash
+
+let name = "alice";
+let count = "42";
+let count1 = "42.6";
+
+echo `Count: n{count}`;         // Type cast integer
+echo `Count: (int) {count}`;    // Type cast integer
+echo `Count: f{count1}`;  		// Type cast float, printf.
+echo `Count: (float) {count1}`; // Type cast float, printf.
+echo `Count: s{name}`;  		// Type cast float, printf.
+echo `Count: (string) {count}`; // Type cast explicit string.
+echo `User: u{name}`;           // String upper
+echo `User: l{name}`;           // String lower
+echo `User: b{name}`;           // String basename
+echo `User: d{name}`;           // String dirname
 ```
 
 ### Date
