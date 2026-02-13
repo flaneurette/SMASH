@@ -18,13 +18,6 @@ def transpile_smash(code):
     """
     Convert JavaScript-style SMASH syntax to bash
     
-    Supports:
-    - Variables: let x = "value"
-    - If/else: if (x == y) { }
-    - Loops: for (let x in *.txt) { }
-    - Functions: function name() { }
-    - All bash commands pass through unchanged
-    
     # TRANSFORMATION ORDER (DO NOT CHANGE WITHOUT TESTING):
     # 1. Preprocessing (whitespace, comments)
     # 2. Pragmas/directives
@@ -53,7 +46,7 @@ def transpile_smash(code):
         'continue','debugge','default','delete',
         'do','double','else','enum',
         'eval','export','extends',
-        'final','finally','float','for',
+        'final','finally','float',
         'function','goto','if','implements',
         'import','instanceof',
         'int','interface','let','long',
@@ -128,19 +121,6 @@ def transpile_smash(code):
                 indent = line[:len(line) - len(stripped)]
                 comment_text = stripped[2:]  # Remove //
                 line = indent + '#' + comment_text
-            result.append(line)
-        return '\n'.join(result)
-   
-    def strip_all_comments(code):
-        lines = code.split('\n')
-        result = []
-        
-        for line in lines:
-            stripped = line.lstrip()
-            if stripped.startswith('//'):
-                # Get original indentation
-                indent = line[:len(line) - len(stripped)]
-                line = indent
             result.append(line)
         return '\n'.join(result)
 
@@ -503,7 +483,9 @@ def transpile_smash(code):
     # ---------------------------------------------------
     
     if strip_comments == True:
-        code = strip_all_comments(code)
+        # Strip all // comments
+        code = re.sub(r'\s*//.*$', '', code, flags=re.MULTILINE)
+        
         # Remove all block-comments
         code = re.sub(r'/\*(.*?)\*/', '', code, flags=re.DOTALL) 
         
@@ -789,15 +771,15 @@ def transpile_smash(code):
     
     # Array iteration: for (let x in result)
     code = re.sub(
-        r'for\s*\(\s*let\s+(\w+)\s+in\s+(\w+)\s*\)\s*\{',
-        r'for \1 in "${\2[@]}"; do',
+        r'for\s*\(\s*let\s+(\w+)\s+(in|of)\s+(\w+)\s*\)\s*\{',
+        r'for \1 in "${\3[@]}"; do',
         code
     )
 
     # Fallback glob/raw iteration
     code = re.sub(
-        r'for\s*\(\s*let\s+(\w+)\s+in\s+([^\)]+)\)\s*\{',
-        r'for \1 in \2; do',
+        r'for\s*\(\s*let\s+(\w+)\s+(in|of)\s+([^\)]+)\)\s*\{',
+        r'for \1 in \3; do',
         code
     )
 
@@ -881,8 +863,8 @@ def transpile_smash(code):
 
     # x++ (AFTER LOOPS!)
     code = re.sub(
-        r'(\w+)\s*\+\+\s*;',
-        r'((\1++))',
+        r'(\w+)\s*\+\+\s*;?',
+        r'\1=$(( \1 + 1 ))',
         code
     )
 
@@ -949,37 +931,47 @@ def transpile_smash(code):
     
     # Fix for loops - convert the last 'fi' in a for loop block to 'done'
     # This needs to happen AFTER fi conversion
-    # Strategy: Find 'for...do' blocks and replace the final 'fi' with 'done'
     lines = code.split('\n')
     result = []
-    in_for_loop = False
-    for_depth = 0
-    if_depth_in_for = 0
-    
+    block_stack = []  # Stack tracking block types: 'for', 'while', 'if'
+
     for line in lines:
-        if 'for ' in line and ' do' in line:
-            in_for_loop = True
-            for_depth += 1
-            if_depth_in_for = 0
+        stripped = line.strip()
+        
+        # Detect loop starts
+        if ('for ' in line and ' do' in line) or ('while ' in line and ' do' in line):
+            if 'for ' in line:
+                block_stack.append('for')
+            else:
+                block_stack.append('while')
             result.append(line)
-        elif in_for_loop:
-            # Track if statements inside for loop
-            if line.strip().startswith('if ') and ' then' in line:
-                if_depth_in_for += 1
-            elif line.strip() == 'fi':
-                if if_depth_in_for > 0:
-                    if_depth_in_for -= 1
-                    result.append(line)  # Keep this fi
-                else:
-                    # This is the for loop's closing - convert to done
+        
+        # Detect if starts
+        elif stripped.startswith('if ') and ' then' in stripped:
+            block_stack.append('if')
+            result.append(line)
+        
+        # elif and else don't change depth
+        elif stripped.startswith('elif ') or stripped == 'else':
+            result.append(line)
+        
+        # Handle closing
+        elif stripped == 'fi' or stripped == 'done':
+            # Check what we're closing
+            if block_stack:
+                block_type = block_stack.pop()
+                
+                if block_type in ('for', 'while'):
                     result.append('done')
-                    in_for_loop = False
-                    for_depth -= 1
-                continue
-            result.append(line)
+                elif block_type == 'if':
+                    result.append('fi')
+            else:
+                # No stack - keep original
+                result.append(line)
+        
         else:
             result.append(line)
-    
+
     code = '\n'.join(result)
     
     # Heal known mangled patterns
