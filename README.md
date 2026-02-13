@@ -494,6 +494,12 @@ for(let str in arr) {		// NOTE: In SMASH similar to `of`
     echo `{str}`;			// Required text interpolation
 }
 
+arr.forEach(f => 
+	{
+		echo "File:" + f;
+	}
+); 
+
 for(let file in *.log) {
     echo "Processing: " + file;
     cat $file | grep ERROR;
