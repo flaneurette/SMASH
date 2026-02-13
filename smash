@@ -104,15 +104,16 @@ def transpile_smash(code):
 
         # Healing markers - remove these and what follows
         markers = {
-            ':rem-brace: {': '',
-            ':rem-brace: }': '',
-            ':rem-semi: ;': '',
-            ':rem-paren: (': '',
-            ':rem-paren: )': '',
+            r':rem-brace-open:\s*\{': '',
+            r':rem-brace-closed:\s*\}': '',
+            r':rem-semi:\s*;': '',
+            r':rem-par-open:\s*\(': '',
+            r':rem-par-closed:\s*\)': '',
+            r':rem-par-semi:\s*\);': '',
         }
-        
+
         for marker, replacement in markers.items():
-            code = code.replace(marker, replacement)
+            code = re.sub(marker, replacement, code)
         
         # At the end, do proper interpolation
         # ---------------------------------------------------
@@ -708,12 +709,20 @@ def transpile_smash(code):
         code
     )
 
+    # Array.forEach(f => {echo "File:" + f;});
+    # NOTE: The ;; is required, as it's stripped later. Do not remove.
+    code = re.sub(
+        r'(\w+)\.forEach\(.*(\w+)\s*=\s*>\s*{([^.*]+)}',
+        r'for \2 in "${\1[@]}";; do\n \3 \ndone:rem-par-semi:',
+        code
+    )
+    
     # Array.includes("value") - used in if conditions
     # This is tricky because it needs to NOT add extra parens
     # NOTE: :rem-brace: is a magic marker to cleanup after processing. Required.
     code = re.sub(
         r'if\s*\(\s*(\w+)\.includes\(["\']([^"\']+)["\']\)\s*\)',
-        r'if [[ " ${\1[@]} " =~ " \2 " ]]; then :rem-brace:',
+        r'if [[ " ${\1[@]} " =~ " \2 " ]]; then :rem-brace-open:',
         code
     )
 
@@ -722,7 +731,7 @@ def transpile_smash(code):
         r'(\w+)\s*=\s*(\w+)\.join\(["\']([^"\']+)["\']\)\s*;?',
         r'\1=$(IFS="\3"; echo "${\2[*]}")',
         code
-    )
+    )   
 
     # Variables
     # ---------------------------------------------------

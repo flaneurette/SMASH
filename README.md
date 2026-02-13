@@ -350,6 +350,7 @@ arr.length;									// Array length
 arr.push(value);							// Push value unto array
 arr.join(",");								// Join
 arr.filter(item => item.endsWith(".log"));	// Filter array
+arr.forEach(f => {echo "File:" + f;}); 		// For Each loops.
 arr.includes("value");						// Used in if conditions
 ```
 
@@ -358,21 +359,27 @@ Examples:
 ```
 #!/usr/bin/env smash
 
-let arr = ['a','b','c'];	// Array creation
-arr.push('d');				// Push value unto array
-echo arr.length;			// Array length
-echo arr[1];				// Indexing
+let files 	= ["a.txt", "b.txt", "c.txt", "test.log"];
+let arr 	= ['a','b','c']; // Array creation
+arr.push('d');				 // Push value unto array
+echo arr.length;			 // Array length
+echo arr[1];				 // Indexing
 
-if(arr[1] == 'b') {			// Idx comparison
+if(arr[1] == 'b') {			 // Idx comparison
 	echo "Works fine";
 }
 
-let val = arr[1];			// New assignment
-if(val == 'b') { 			// Idx comparison
+let val = arr[1];			 // New assignment
+if(val == 'b') { 			 // Idx comparison
 	echo "Also works!";
-} 
+}
 
-let files = ["a.txt", "b.txt", "c.txt", "test.log"];
+// forEach
+files.forEach(f => 
+	{
+		echo "File:" + f;
+	}
+); 
 
 // filter
 let logs = files.filter(f => f.endsWith(".log"));
