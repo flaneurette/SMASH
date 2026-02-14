@@ -681,12 +681,14 @@ what if (disk_usage > 90) {
     echo "Disk almost full!";
 }
 
-what if (it == 123) {
-    console.report('/var/log/explain.log');	// Reports: Where is $it declared, what is accessing it? and so on.
+what if (password == 12356) {
+    console.report('/var/log/explain.log');	
+	// Reports: Where is $password declared, what is accessing it? and so on.
 }
 
 what if (user == 'admin') {
-    console.report('/var/log/explain.log');	// Reports: what code handles $user? etc.
+    console.report('/var/log/explain.log');	
+	// Reports: what code handles $user? etc.
 }
 ```
 
