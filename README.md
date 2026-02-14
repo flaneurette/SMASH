@@ -601,7 +601,7 @@ let it be;
 echo `{Final amount: $it}`;
 ```
 
-### Exotic: Execution Handling
+### Exotic: Execution Handling with Birds
 
 Smash has its own execution handlers: `run bird` and `free bird`.
 
