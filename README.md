@@ -681,7 +681,7 @@ what if (disk_usage > 90) {
     echo "Disk almost full!";
 }
 
-what if (password == 12356) {
+what if (password == 123456) {
     console.report('/var/log/explain.log');	
 	// Reports: Where is $password declared, what is accessing it? and so on.
 }
