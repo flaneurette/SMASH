@@ -555,32 +555,69 @@ switch (fruit) {
 echo `I like this fruit: {result}`;
 ```
 
-### Execution handling
+### Execution Handling
 
-Smash has it's own excution handler, called: `free bird`. Of course, you can also use `break`
+Smash has its own execution handlers: `run bird` and `free bird`.
+
+`free bird` is multi-purpose and context-aware. It automatically handles resource cleanup including resetting variables, arrays, integers, and stopping running services.
+
+> NOTE: All `birds` are required to be unique. Do not re-use any bird `variable, array, integer, or service`, as Smash tracks the first declaration only.
+
+
+#### `run bird <service>`
+
+Start a service or command and track it for automatic cleanup.
+
+Syntax:
 
 ```
+let $variable = run bird $(command);     # Explicit command
+let $variable = run bird servicename;    # Named service (uses systemctl)
+```
+
+Examples:
+
+```
+# Explicit command with parameters
+let $nginx = run bird $(systemctl start nginx);
+doWork();
+free bird $nginx;    # Automatically runs: systemctl stop nginx
+
+# Named service (SMASH adds systemctl)
+let $db = run bird postgresql;
+queryData();
+free bird $db;       # Runs: systemctl stop postgresql
+```
+
+#### `free bird <optional $var>`
+
+Context-aware cleanup and loop breaking.
+
+Syntax:
+
+```
+free bird;           # Break from loop
+free bird $variable; # Reset variable or stop service
+```
+
+Examples:
+
+```
+# Variable reset
+let $arr = [0, 1, 2, 3];
+let $str = "Hello";
+let $num = 7;
+
+free bird $arr;      # Resets to []
+free bird $num;      # Resets to 0
+free bird $str;      # Resets to ""
+
+# Loop breaking
 for item in $items {
     if ($item > 1000) {
-        free bird;    # Breaks the loop
+        free bird;   # Breaks the loop
     }
 }
-```
-
-`free bird` is intended to be multi-purpose: in the future it will be context-aware, automatically handling resource cleanup such as closing file pointers, database connections, and freeing memory allocations.
-
-Future implementation will cover:
-
-```
-free bird; 					// Currently exists: is alias of `break`
-free bird $array; 			// If array, it empties or resets array []
-free bird $number;  		// If number, it resets it to: 0
-free bird $string;  		// If string, it resets it to: ""
-free bird $pointer  		// Closes your pointer, if pointer.
-
-# Tracked cleanup
-let $service = $(systemctl start nginx);
-free bird $service;        // Knows to run 'systemctl stop nginx'
 ```
 
 ### Comments

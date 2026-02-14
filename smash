@@ -23,6 +23,10 @@ def transpile_smash(code):
     NOTE: Always first run test-suite.smash before commiting
     ---------------------------------------------------------
     """
+    # Track PID
+    SMASH_UNIQUE_PID = 1
+    # Global tracking dictionary
+    SMASH_PROCESSES = {}  # {pid: {'var': 'nginx', 'cmd': 'systemctl start nginx'}}
 
     # SMASH HELPER FUNCTIONS
 
@@ -306,15 +310,132 @@ def transpile_smash(code):
     def let_it_be(code):
         # For now, return
         return code
+
+    def run_bird(code):
+        global SMASH_UNIQUE_PID, SMASH_PROCESSES
         
-    def free_bird(code):
-        # For now, it aliasses break;
-        pattern = r'free\s+bird;'
-        replace = 'break;'
-        code = re.sub(pattern, replace, code)
+        run_pattern1 = r'(let|var|const)\s+\$?(\w+)\s*=\s*run\s+bird\s+\$\((.*?)\);'
+        run_pattern2 = r'(let|var|const)\s+\$?(\w+)\s*=\s*run\s+bird\s+([a-zA-Z0-9]+);'
+        
+        def start_command(match):
+            
+            global SMASH_UNIQUE_PID
+            var_name = match.group(2)
+            command = match.group(3)
+            
+            pid_var = f"{var_name}_PID_{SMASH_UNIQUE_PID}"
+            
+            # Track it
+            SMASH_PROCESSES[SMASH_UNIQUE_PID] = {
+                'var': var_name,
+                'cmd': command,
+                'pid_var': pid_var
+            }
+            
+            SMASH_UNIQUE_PID += 1
+            return f"{pid_var}=$( {command} )"
+
+    def start_service(match):
+        var_name = match.group(2)
+        service_name = match.group(3)  # The actual service
+        command = 'systemctl start ' + service_name
+        
+        pid_var = f"{var_name}_PID_{SMASH_UNIQUE_PID}"
+        
+        SMASH_PROCESSES[SMASH_UNIQUE_PID] = {
+            'var': var_name,
+            'cmd': command,
+            'pid_var': pid_var,
+            'service': service_name  # Track service name separately
+        }
+        
+        SMASH_UNIQUE_PID += 1
+        return f"{pid_var}=$(systemctl start {service_name})"
+            
+        code = re.sub(run_pattern1, start_command, code)
+        code = re.sub(run_pattern2, start_service, code)
         
         return code
+
+    def alias_bird(code):
+        # Alias of `break`
+        alias_pattern = r'free\s+bird;'
+        alias_replace = 'break;'
+        code = re.sub(alias_pattern, alias_replace, code)
+        return code
+
+    def free_bird(code):
         
+        match_bird = re.search(r'free\s+bird\s+\$(\w+);', code)
+        
+        if match_bird:
+            var_name = match_bird.group(1)
+            
+            p1 = r'(let|var|const)\s+\$?' + var_name + r'\s*=\s*\[(.*?)\];'
+            p2 = r'(let|var|const)\s+\$?' + var_name + r'\s*=\s*(\"|\')(.*?)(\"|\')\s*;'
+            p3 = r'(let|var|const)\s+\$?' + var_name + r'\s*=\s*[0-9]+\s*;'
+            
+            is_arr = re.search(p1, code)  # Changed to search
+            is_var = re.search(p2, code)  # Changed to search
+            is_int = re.search(p3, code)  # Changed to search
+            
+            free_pattern = r'free\s+bird\s+\$' + var_name + r';'
+            
+            if is_arr:
+                code = re.sub(free_pattern, f"{var_name}=[];", code)
+            elif is_var:
+                code = re.sub(free_pattern, f"{var_name}='';", code)
+            elif is_int:
+                code = re.sub(free_pattern, f"{var_name}=0;", code)
+                
+        return code
+        
+    def free_bird_services(code):
+        
+        global SMASH_PROCESSES
+        
+        free_pattern = r'free\s+bird\s+\$(\w+);'
+        
+        def replace_func(match):
+            var_name = match.group(1)
+            
+            # Find the process info
+            pid_to_remove = None
+            for pid, info in SMASH_PROCESSES.items():
+                if info['var'] == var_name:
+                    cmd = info['cmd']
+                    pid_to_remove = pid  # Mark for deletion
+                    
+                    # Generate stop command based on start command
+                    if 'systemctl start' in cmd:
+                        stop_cmd = cmd.replace('start', 'stop')
+                    elif 'service' in cmd and 'start' in cmd:
+                        stop_cmd = cmd.replace('start', 'stop')
+                    elif 'docker run' in cmd:
+                        stop_cmd = f"docker stop ${info['pid_var']}"
+
+                    # Clean up tracking
+                    if pid_to_remove is not None:
+                        del SMASH_PROCESSES[pid_to_remove]
+                    
+                    if(stop_cmd):
+                        return f"$( {stop_cmd} )"
+                    else:
+                        return
+            
+            # If not found, maybe it's just resetting a variable
+            return code
+        
+        code = re.sub(free_pattern, replace_func, code)
+        return code
+        
+    def code_birds(code):
+        code = alias_bird(code)
+        code = run_bird(code)
+        code = free_bird(code)
+        code = free_bird_services(code)
+        return code
+   
     def array_spread(code):
         
         pattern = r'(let|var|const)\s+(\w+)\s*=\s*\[(.*?)\];'
@@ -565,7 +686,7 @@ def transpile_smash(code):
     
     # Custom smash keyword extractions/replacements
     # ---------------------------------------------------   
-    code = free_bird(code) # smash keyword: `free bird;`
+    code = code_birds(code) # smash keyword: `free bird;`
     code = let_it_be(code) # smash keyword: `let it be;`
     
     # Copy code

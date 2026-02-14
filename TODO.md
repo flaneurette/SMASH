@@ -19,6 +19,16 @@ config[port]=8080
 echo ${config[host]}
 ```
 
+// let it be. - operator structure
+
+it = value // unknown type, but we want int.
+be = (int) // type
+
+let it be;
+
+it becomes: (int)value;
+
+
 ## Destructuring
 
 ```
