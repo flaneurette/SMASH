@@ -694,6 +694,13 @@ def transpile_smash(code):
         # SIMPLE ASSIGNMENT
         return f'{var}={expr}'
 
+    def alias_keywords(code):
+        # Allow `print` and `document.write` to be an alias for `echo`
+        code = re.sub(r'document\.write\((.*)\)\s*;', 'echo \1;', code)
+        code = re.sub(r'print\((.*)\)\s*;', 'echo \1;', code)
+        code = re.sub(r'print\s+(\"\')(.*)(\"\')\s*;', 'echo "\2";', code)
+        return code
+        
     def transpile_date_function(code):
         """Convert date("format") to bash date commands"""
         # Preset formats (shortcuts)
@@ -801,13 +808,14 @@ def transpile_smash(code):
     if check_reserved:
         raise ValueError("Reserved words or keywords are used improperly. Cannot parse this code.")
         sys.exit(1)    
-
+    
     # Copy code
     # ---------------------------------------------------    
     original_code = code
     
     # Custom smash keyword extractions/replacements
-    # ---------------------------------------------------   
+    # ---------------------------------------------------  
+    code = alias_keywords(code) # allow `echo` alias: document.write, print, etc. 
     code = code_birds(code) # smash keyword: `free bird;`
     code = let_it_be(code) # smash keyword: `let it be;`
     code = what_if(code, original_code) # what if reporting
@@ -1404,6 +1412,11 @@ def transpile_smash(code):
     # Remove accidental "let ((...))"
     code = re.sub(r'\blet\s+\(\(', '((', code)
 
+    # Remove unmatched birds, better to remove it than accidentally trigger a service/restart/stop signal! (as it's passed directly to GNU/Linux)
+    code = re.sub(r'(let|var|const)\s+\w+\s*=\s*(run|free)\s+bird\s*([a-zA-Z0-9]+)\s{0,3};', '', code)
+    code = re.sub(r'(run|free)\s+bird\s*([a-zA-Z0-9]+)\s{0,3};', '', code)
+    code = re.sub(r'free\s+bird\s*\$\(([a-zA-Z0-9]+)\)\s{0,3};', '', code)
+    
     # Other
     # ---------------------------------------------------
     
