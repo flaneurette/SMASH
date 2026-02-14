@@ -665,9 +665,13 @@ free bird $arr;      // Resets to []
 free bird $num;      // Resets to 0
 free bird $str;      // Resets to ""
 
+// You must reassign the array.
+let arr = [5, 6, 7, 8];
+
 // Loop breaking
-for item in arr {
-    if (item > 2) {
+for(item in arr) {
+    echo $item;
+    if (item > 7) {
         free bird;   // Breaks the loop
     }
 }
