@@ -303,6 +303,18 @@ def transpile_smash(code):
         
         return code
 
+    def let_it_be(code):
+        # For now, return
+        return code
+        
+    def free_bird(code):
+        # For now, it aliasses break;
+        pattern = r'free\s+bird;'
+        replace = 'break;'
+        code = re.sub(pattern, replace, code)
+        
+        return code
+        
     def array_spread(code):
         
         pattern = r'(let|var|const)\s+(\w+)\s*=\s*\[(.*?)\];'
@@ -525,6 +537,8 @@ def transpile_smash(code):
         return bool(DANGEROUS_PATTERNS.search(code))
         
     # --------------------------------- BEGIN SMASH ---------------------------------
+    # Default smash flags and checks.
+    # --------------------------------------------------- 
     detect_risk = True;
     strip_comments = True;
 
@@ -545,8 +559,17 @@ def transpile_smash(code):
         raise ValueError("Reserved words or keywords are used improperly. Cannot parse this code.")
         sys.exit(1)    
     
-    # Preprocess first
+    # Preprocess
+    # ---------------------------------------------------   
     code = preprocess_code(code)
+    
+    # Custom smash keyword extractions/replacements
+    # ---------------------------------------------------   
+    code = free_bird(code) # smash keyword: `free bird;`
+    code = let_it_be(code) # smash keyword: `let it be;`
+    
+    # Copy code
+    # ---------------------------------------------------    
     original_code = code
 
     # Date formatting

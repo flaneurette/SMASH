@@ -1,6 +1,6 @@
-# SMASH - Simple Modern Advanced SHell
+# Smash - Simple Modern Advanced SHell
 
-SMASH is a modern JavaScript-style shell scripting language that transpiles directly to Bash.
+Smash is a modern JavaScript-style shell scripting language that transpiles directly to Bash.
 
 ```
     ███████╗███╗   ███╗ █████╗ ███████╗██╗  ██╗
@@ -16,8 +16,8 @@ SMASH is a modern JavaScript-style shell scripting language that transpiles dire
     sudo apt install smash
 
     Usage:
-	    <script.smash>            		        Run a SMASH script
-        smash <script.smash>            		Run a SMASH script
+	    <script.smash>            		        Run a Smash script
+        smash <script.smash>            		Run a Smash script
         smash <script.smash> -debug     		Show generated bash code
         smash <script.smash> -test      		Show generated code without running
 		smash <script.smash> -emit mytool.sh    Build tool generator
@@ -34,7 +34,7 @@ SMASH is a modern JavaScript-style shell scripting language that transpiles dire
 
 Tired of Bash's 1970s syntax? Write shell scripts with modern JavaScript-like (Light-JS) syntax that transpiles to bash.
 
-## SMASH scripting example
+## Smash scripting example
 
 ```
 #!/usr/bin/env smash
@@ -60,10 +60,10 @@ if (mem_usage > 90) {
 
 ## How it works
 
-SMASH is a runtime transpiler `it converts your JavaScript .smash` syntax to bash, instantly in memory and executes it:
+Smash is a runtime transpiler `it converts your JavaScript .smash` syntax to bash, instantly in memory and executes it:
 
 ```
-Your SMASH code
+Your Smash code
       |
 Python transpiler
       |
@@ -72,7 +72,7 @@ Generated bash code
 Executed by bash
 ```
 
-> SMASH is not a full-blown JavaScript interpreter. It is a small, controlled JavaScript-inspired DSL interpeter, designed specifically for shell scripting.
+> Smash is not a full-blown JavaScript interpreter. It is a small, controlled JavaScript-inspired DSL interpeter, designed specifically for shell scripting.
 
 ## Features
 
@@ -80,7 +80,7 @@ Executed by bash
 - All Linux commands work. Pipes, redirects, grep, awk, everything
 - Transpiles to bash. Works everywhere bash works
 - No runtime dependencies. Just Python 3 and bash
-- Drop-in replacement. Use SMASH for new scripts, keep old bash scripts
+- Drop-in replacement. Use Smash for new scripts, keep old bash scripts
 - Debug mode. See the generated bash code
 - Emit mode. Convert JavaScript smash directly to .sh scripts.
 
@@ -176,14 +176,14 @@ Application started
 
 ### Printing
 
-In SMASH, there are several ways to print. We do recommend SMASH `interpolation`
+In Smash, there are several ways to print. We do recommend Smash `interpolation`
 
 ```
 #!/usr/bin/env smash
 
 let today = date("time");
 
-echo `Today it is: {today}`;   // SMASH text interpolation
+echo `Today it is: {today}`;   // Smash text interpolation
 echo `Today it is: ${today}`;  // JS-style
 echo `Today it is: #{today}`;  // Ruby-style
 echo "Today it is: " + today;  // Concatenation
@@ -211,6 +211,39 @@ echo `User: u{name}`;           // String upper
 echo `User: l{name}`;           // String lower
 echo `User: b{name}`;           // String basename
 echo `User: d{name}`;           // String dirname
+```
+
+# Deferred coercion.
+
+Smash has deferred coercion: `let it be;` for known or unknown strings, values or expressions.
+
+`let it be` is:
+
+- A placeholder for unknown/dynamic values: "I don't know what this is yet"
+- The subject of transformation: "Whatever it is, do this to it"
+
+```
+let it	= $value; 							// Known or unknown. Often "it" means: unknown.
+be 		= string or (expression|typecast);	// An expressiong or typecast.
+let it be;									// Processing.
+echo $it;									// Result
+```
+
+Examples:
+
+```
+let it = $value; 		// Known or unknown value.
+be = (int);				// Type cast
+let it be;				// Now holds value, but is casted.
+
+echo $it;				// Processed result
+
+// Calculate compound interest
+let it = principal;
+be = (it * (1 + rate) * years);
+let it be;
+
+echo `{Final amount: $it}`;
 ```
 
 ### Date
@@ -450,7 +483,7 @@ Key Points:
 
 - Bash has no boolean type - everything is a string or number
 - `true` and `false` are `commands` in Bash (exit codes 0 and 1)
-- SMASH transpiler treats them as string literals
+- Smash transpiler treats them as string literals
 - Comparisons work fine: `if (x == "false")` or `if (x == "true")`
 
 ### Loops
@@ -476,7 +509,7 @@ for(let str of arr) {
     echo `{str}`;			// Required text interpolation
 }
 
-for(let str in arr) {		// NOTE: In SMASH similar to `of`
+for(let str in arr) {		// NOTE: In Smash similar to `of`
     echo `{str}`;			// Required text interpolation
 }
 
@@ -522,9 +555,37 @@ switch (fruit) {
 echo `I like this fruit: {result}`;
 ```
 
+### Execution handling
+
+Smash has it's own excution handler, called: `free bird`. Of course, you can also use `break`
+
+```
+for item in $items {
+    if ($item > 1000) {
+        free bird;    # Breaks the loop
+    }
+}
+```
+
+`free bird` is intended to be multi-purpose: in the future it will be context-aware, automatically handling resource cleanup such as closing file pointers, database connections, and freeing memory allocations.
+
+Future implementation will cover:
+
+```
+free bird; 					// Currently exists: is alias of `break`
+free bird $array; 			// If array, it empties or resets array []
+free bird $number;  		// If number, it resets it to: 0
+free bird $string;  		// If string, it resets it to: ""
+free bird $pointer  		// Closes your pointer, if pointer.
+
+# Tracked cleanup
+let $service = $(systemctl start nginx);
+free bird $service;        // Knows to run 'systemctl stop nginx'
+```
+
 ### Comments
 
-By default, SMASH will remove comments to avoid difficult regex issues. You can unset this by setting the pragma: `"use comments"` at the top of your script.
+By default, Smash will remove comments to avoid difficult regex issues. You can unset this by setting the pragma: `"use comments"` at the top of your script.
 
 Advise: if you do use comments, try to avoid too much commenting or keep it minimal. Comments might break transpiling to bash if reserved words are use inside comments. 
 Keywords in comments such as: `function, let, var, const,` etc. etc. can lead to transpiling errors and edge cases.
@@ -566,7 +627,7 @@ if(isfile("/usr/local/bin/smash")) {
 
 ### Limitations
 
-SMASH transpiles Light-JS. It is not a *complete* JavaScript interpeter. Meaning, only basic JavaScript features and nesting is supported. SMASH does not support nested weirdness, overly long and complex comparisons and operator edge cases. Keep it as simple as possible. Also easier to debug, and for others to understand the code.
+Smash transpiles Light-JS. It is not a *complete* JavaScript interpeter. Meaning, only basic JavaScript features and nesting is supported. Smash does not support nested weirdness, overly long and complex comparisons and operator edge cases. Keep it as simple as possible. Also easier to debug, and for others to understand the code.
 
 Example of too much complexity:
 
@@ -592,9 +653,9 @@ x += foo();
 ...
 ```
 
-> Rule of thumb: if you can do it simplistically/procedurally, then do it. SMASH is not a full fledged OOPL.
+> Rule of thumb: if you can do it simplistically/procedurally, then do it. Smash is not a full fledged OOPL.
 
-#### What SMASH Is Not
+#### What Smash Is Not
 
 - Not a JS interpreter
 - Not ECMAScript compliant
@@ -635,7 +696,7 @@ smash --version
 # Add shebang to your script
 echo '#!/usr/bin/env smash' > myscript.smash
 cat >> myscript.smash <<'EOF'
-let name = "SMASH";
+let name = "Smash";
 echo "Hello from " + name;
 EOF
 
@@ -659,17 +720,17 @@ A: If you have bash, yes. Linux, macOS, WSL, BSD, anywhere bash runs.
 Q: Is it slow?  
 A: The transpilation is instant (milliseconds). The execution speed is identical to bash because it IS bash.
 
-Q: Can I mix SMASH and bash?  
-A: Yes! Any bash command works in SMASH. You can gradually migrate scripts.
+Q: Can I mix Smash and bash?  
+A: Yes! Any bash command works in Smash. You can gradually migrate scripts.
 
 Q: What about errors?  
-A: SMASH shows bash errors directly. Use `-debug` to see the generated bash code.
+A: Smash shows bash errors directly. Use `-debug` to see the generated bash code.
 
 Q: Is this production- ready?  
 A: v1.0-1 is experimental. Use for new projects, automation scripts. Test thoroughly for critical systems.
 
 Q: Why not just use Python/Node?  
-A: Those are great for complex logic. SMASH is for shell scripts - when you need to glue Linux commands together. You still want pipes, redirects, and instant access to all CLI tools.
+A: Those are great for complex logic. Smash is for shell scripts - when you need to glue Linux commands together. You still want pipes, redirects, and instant access to all CLI tools.
 
 ## Contributing
 
