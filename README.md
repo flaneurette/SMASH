@@ -32,7 +32,7 @@ Smash is a modern JavaScript-style shell scripting language that transpiles dire
 	 
 ```
 
-Tired of Bash's 1970s syntax? Write shell scripts with modern JavaScript-like (Light-JS) syntax that transpiles to bash.
+Tired of Bash's 1970s syntax? Write shell scripts with modern JavaScript-like syntax that transpiles to bash.
 
 ## Smash scripting example
 
@@ -60,7 +60,7 @@ if (mem_usage > 90) {
 
 ## How it works
 
-Smash is a runtime transpiler `it converts your JavaScript .smash` syntax to bash, instantly in memory and executes it:
+Smash is a runtime transpiler, it converts your Smash syntax to bash, instantly in memory and executes it:
 
 ```
 Your Smash code
