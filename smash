@@ -367,67 +367,108 @@ def transpile_smash(code):
         return code
     
     def let_it_be(code):
+        """Process 'let it be' constructs"""
         max_iterations = 10
         iteration = 0
         
+        print("\n=== LET IT BE DEBUG ===")
+        
         while re.search(r'let\s+it\s+be;', code) and iteration < max_iterations:
             iteration += 1
+            print(f"\n--- Iteration {iteration} ---")
             
             match_let_it_be = re.search(r'let\s+it\s+be;', code)
             if not match_let_it_be:
                 break
             
             let_it_be_pos = match_let_it_be.start()
+            print(f"Found 'let it be;' at position {let_it_be_pos}")
+            
             code_before = code[:let_it_be_pos]
             
+            # Find the last "let it = ..."
             match_it = None
             for match in re.finditer(r'let\s+it\s*=\s*([^;]+);', code_before):
                 match_it = match
             
             if not match_it:
+                print("No 'let it = ...' found")
                 break
             
             it_value = match_it.group(1).strip()
+            print(f"Found 'let it = {it_value};' at position {match_it.start()}")
             
+            # Find the last "be = ..."
             match_be = None
             for match in re.finditer(r'be\s*=\s*([^;\n]+);?', code_before):
                 match_be = match
             
             if not match_be:
+                print("No 'be = ...' found")
                 break
             
             be_value = match_be.group(1).strip()
+            print(f"Found 'be = {be_value};'")
             
-            # Type cast
+            # Check if there's a loop between "let it" and "let it be"
+            code_between = code[match_it.end():let_it_be_pos]
+            
+            # Detect both SMASH syntax and bash syntax loops
+            has_loop = (
+                '; do' in code_between or 
+                ' do\n' in code_between or
+                'for (let' in code_between or
+                'for (' in code_between or
+                'while (' in code_between or
+                '{' in code_between  # Any block with braces
+            )
+            
+            print(f"Has loop between? {has_loop}")
+            print(f"Code between:\n{code_between}")
+            
+            # Build replacement
             type_cast_match = re.match(r'^\(?(int|float|string)\)?$', be_value)
             
             if type_cast_match:
                 cast_type = type_cast_match.group(1)
                 
                 if cast_type == 'int':
-                    # Two lines: assign, then transform
-                    replacement = f'it={it_value}\nit=$(( ${{it//[^0-9]/}} ))'
+                    transform = 'it=$(( ${it//[^0-9]/} ))'
                 elif cast_type == 'float':
-                    replacement = f'it={it_value}\nit=$(printf "%.2f" ${{it//[^0-9.-]/}} 2>/dev/null || echo "0.00")'
+                    transform = 'it=$(printf "%.2f" ${it//[^0-9.-]/} 2>/dev/null || echo "0.00")'
                 elif cast_type == 'string':
-                    replacement = f'it="{it_value}"'
-            
+                    transform = f'it="{it_value}"'
+                
+                replacement = transform if has_loop else f'it={it_value}\n{transform}'
+                    
             elif be_value.startswith('(') and be_value.endswith(')'):
                 expression = be_value[1:-1]
                 expression = re.sub(r'\bit\b', '$it', expression)
-                replacement = f'it={it_value}\nit=$(( {expression} ))'
+                transform = f'it=$(( {expression} ))'
+                
+                replacement = transform if has_loop else f'it={it_value}\n{transform}'
             
             else:
-                replacement = f'it={it_value}\nit={be_value}'
+                replacement = f'it={be_value}' if has_loop else f'it={it_value}\nit={be_value}'
             
-            # Remove the "let it = ..." line
-            code = code.replace(match_it.group(0), '', 1)
+            print(f"Replacement: {replacement}")
             
-            # Remove the "be = ..." line  
+            # Remove "let it = ..." only if NOT in loop
+            if not has_loop:
+                print("Removing 'let it = ...'")
+                code = code.replace(match_it.group(0), '', 1)
+            else:
+                print("Keeping 'let it = ...' (will be transpiled normally)")
+            
+            # Remove "be = ..."
             code = code.replace(match_be.group(0), '', 1)
             
-            # Replace "let it be;" with the transformation
+            # Replace "let it be;"
             code = code.replace('let it be;', replacement, 1)
+            
+            print("\nCODE AFTER:")
+            print(code)
+            print("=" * 50)
         
         return code
 

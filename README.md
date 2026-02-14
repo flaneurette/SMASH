@@ -597,6 +597,8 @@ Smash has deferred coercion: `let it be;` for known or unknown strings, values o
 - A placeholder for unknown/dynamic values: "I don't know what this is yet"
 - The subject of transformation: "Whatever it is, do this to it"
 
+> NOTE: does not yet support floats!
+
 ```
 let it	= value; 							// Known or unknown. Often "it" means: unknown.
 be 		= string or (expression|typecast);	// An expression or type-cast.
@@ -604,7 +606,7 @@ let it be;									// Processing.
 echo $it;									// Result
 ```
 
-Examples:
+Casting
 
 ```
 #!/usr/bin/env smash
@@ -613,11 +615,49 @@ let it = "Yesterday 123";
 be = (int);
 let it be;
 echo $it;   // Outputs: 123
+```
 
-let it = 32;
-be = (it * (1 + 10) * 3);
+Interest rate conversion
+
+```
+#!/usr/bin/env smash
+let it = 1000;
+let rate = 5; // 5% interest
+
+for (let year in 1 2 3 4 5) {
+    be = (it + (it * rate / 100));  // Add 5% each year
+    let it be;
+    echo `Year {year}: ${it}`;
+}
+```
+
+Temperature conversion
+
+```
+#!/usr/bin/env smash
+let temps = [32, 68, 98, 212];
+
+for (let f in ${temps[@]}) {
+    let it = f;
+    be = ((it - 32) * 5 / 9);
+    let it be;
+    echo `{f}°F = {it}°C`;
+}
+```
+
+Progressive price calculations
+
+```
+#!/usr/bin/env smash
+let it = 100;
+be = (it * 121 / 100);  // Add 21% VAT
 let it be;
-echo $it;   // Outputs: 1056
+be = (it + 50);         // Add shipping
+let it be;
+be = (it * 90 / 100);   // Apply 10% discount
+let it be;
+
+echo `Final price: {it}`;
 ```
 
 ### Exotic: Execution Handling

@@ -1,3 +1,15 @@
+## Float support for let it be
+
+// User writes clean code
+let it = 100;
+be = (it * 1.21);
+let it be;
+
+// Bash:
+
+it=$(awk "BEGIN {print $it * 1.21}")
+
+
 ## Object Literals / Associative Arrays
 
 ```
