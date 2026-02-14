@@ -213,39 +213,6 @@ echo `User: b{name}`;           // String basename
 echo `User: d{name}`;           // String dirname
 ```
 
-### Deferred coercion.
-
-Smash has deferred coercion: `let it be;` for known or unknown strings, values or expressions.
-
-`let it be` is:
-
-- A placeholder for unknown/dynamic values: "I don't know what this is yet"
-- The subject of transformation: "Whatever it is, do this to it"
-
-```
-let it	= value; 							// Known or unknown. Often "it" means: unknown.
-be 		= string or (expression|typecast);	// An expression or type-cast.
-let it be;									// Processing.
-echo $it;									// Result
-```
-
-Examples:
-
-```
-let it = "Yesterday 123"; 	// Known or unknown value.
-be = (int);					// Type cast
-let it be;					// Now holds value, but is casted.
-
-echo $it;					// Processed result: 123.
-
-// Calculate compound interest
-let it = principal;
-be = (it * (1 + rate) * years);
-let it be;
-
-echo `{Final amount: $it}`;
-```
-
 ### Date
 
 ```
@@ -555,76 +522,6 @@ switch (fruit) {
 echo `I like this fruit: {result}`;
 ```
 
-### Execution Handling
-
-Smash has its own execution handlers: `run bird` and `free bird`.
-
-`free bird` is multi-purpose and context-aware. It automatically handles resource cleanup including resetting variables, arrays, integers, and stopping running services.
-
-> NOTE: All `birds` are required to be unique. Do not re-use any bird `variable, array, integer, or service`, as Smash tracks the first declaration only.
-
-
-#### run bird <service to start>
-
-Start a service or command and track it for automatic cleanup.
-
-Syntax:
-
-```
-let variable = run bird $(command);     # Explicit command
-let variable = run bird servicename;    # Named service (uses systemctl)
-```
-
-Examples:
-
-```
-// Explicit command
-let nginx = run bird $(systemctl start nginx);
-doWork();
-free bird $nginx;    # Automatically runs: systemctl stop nginx
-
-// Named service
-let db = run bird postgresql;
-queryData();
-free bird $db;       # Runs: systemctl stop postgresql
-```
-
-#### free bird <optional $var>
-
-Context-aware cleanup and loop breaking.
-
-Syntax:
-
-```
-free bird;           # Break from loop
-free bird $variable; # Reset variable or stop service
-```
-
-Examples:
-
-```
-// Variable reset
-let arr = [0, 1, 2, 3];
-let str = "Hello";
-let num = 7;
-
-free bird $arr;      # Resets to []
-free bird $num;      # Resets to 0
-free bird $str;      # Resets to ""
-
-// Loop breaking
-for item in arr {
-    if (item > 2) {
-        free bird;   # Breaks the loop
-    }
-}
-
-// Services
-let db = run bird postgresql;
-queryData();
-free bird $db;       # Runs: systemctl stop postgresql
-```
-
 ### Comments
 
 By default, Smash will remove comments to avoid difficult regex issues. You can unset this by setting the pragma: `"use comments"` at the top of your script.
@@ -665,6 +562,113 @@ if(exists("/usr/local/bin/smash")) {
 if(isfile("/usr/local/bin/smash")) {
     echo "File exists";
 }
+```
+
+# Smash Exotics
+
+Smash has it's own reserved keywords you could use. Some of them are quite useful, but still exotic.
+
+### Exotic: Deferred coercion.
+
+Smash has deferred coercion: `let it be;` for known or unknown strings, values or expressions.
+
+`let it be` is:
+
+- A placeholder for unknown/dynamic values: "I don't know what this is yet"
+- The subject of transformation: "Whatever it is, do this to it"
+
+```
+let it	= value; 							// Known or unknown. Often "it" means: unknown.
+be 		= string or (expression|typecast);	// An expression or type-cast.
+let it be;									// Processing.
+echo $it;									// Result
+```
+
+Examples:
+
+```
+let it = "Yesterday 123"; 	// Known or unknown value.
+be = (int);					// Type cast
+let it be;					// Now holds value, but is casted.
+
+echo $it;					// Processed result: 123.
+
+// Calculate compound interest
+let it = principal;
+be = (it * (1 + rate) * years);
+let it be;
+
+echo `{Final amount: $it}`;
+```
+
+### Exotic: Execution Handling
+
+Smash has its own execution handlers: `run bird` and `free bird`.
+
+`free bird` is multi-purpose and context-aware. It automatically handles resource cleanup including resetting variables, arrays, integers, and stopping running services.
+
+> NOTE: All `birds` are required to be unique. Do not re-use any bird `variable, array, integer, or service`, as Smash tracks the first declaration only.
+
+
+#### run bird <service to start>
+
+Start a service or command and track it for automatic cleanup.
+
+Syntax:
+
+```
+let variable = run bird $(command);     // Explicit command
+let variable = run bird servicename;    // Named service (uses systemctl)
+```
+
+Examples:
+
+```
+// Explicit command
+let nginx = run bird $(systemctl start nginx);
+doWork();
+free bird $nginx;    // Automatically runs: systemctl stop nginx
+
+// Named service
+let db = run bird postgresql;
+queryData();
+free bird $db;       // Runs: systemctl stop postgresql
+```
+
+#### free bird <optional $var>
+
+Context-aware cleanup and loop breaking.
+
+Syntax:
+
+```
+free bird;           // Break from loop
+free bird $variable; // Reset variable or stop service
+```
+
+Examples:
+
+```
+// Variable reset
+let arr = [0, 1, 2, 3];
+let str = "Hello";
+let num = 7;
+
+free bird $arr;      // Resets to []
+free bird $num;      // Resets to 0
+free bird $str;      // Resets to ""
+
+// Loop breaking
+for item in arr {
+    if (item > 2) {
+        free bird;   // Breaks the loop
+    }
+}
+
+// Services
+let db = run bird postgresql;
+queryData();
+free bird $db;       // Runs: systemctl stop postgresql
 ```
 
 ### Limitations
