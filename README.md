@@ -609,7 +609,7 @@ let it be;
 echo $it;   // Outputs: 1056
 ```
 
-### Exotic: Execution Handling with Birds
+### Exotic: Execution Handling
 
 Smash has its own execution handlers: `run bird` and `free bird`.
 
