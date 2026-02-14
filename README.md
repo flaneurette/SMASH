@@ -572,9 +572,9 @@ Current exotics:
 
 ```
 let it be;				// Deferred coercion	
-run bird <service>;		// Execustion handler
-free bird <service>;	// Execustion handler
-what if() {}			// Code explaination with reporting, and custom IF statement.
+run bird <service>;		// Execution handler
+free bird <service>;	// Execution handler
+what if() {}			// Code explaination with file log reporting, and/or custom IF statement.
 ```
 
 ### Exotic: Deferred Coercion.
