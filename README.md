@@ -449,7 +449,7 @@ if (result == "false") {
 Key Points:
 
 - Bash has no boolean type - everything is a string or number
-- `true` and `false` are commands in Bash (exit codes 0 and 1)
+- `true` and `false` are `commands` in Bash (exit codes 0 and 1)
 - SMASH transpiler treats them as string literals
 - Comparisons work fine: `if (x == "false")` or `if (x == "true")`
 
