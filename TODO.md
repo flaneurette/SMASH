@@ -136,3 +136,35 @@ while true; do
     sleep 10
 done
 ```
+
+
+### Useful 
+
+```
+hostnamectl
+```
+
+### CPU details
+
+```
+lscpu
+```
+
+### Memory
+
+```
+free -h
+```
+
+### Disk type (see if it's SSD/NVMe)
+
+```
+lsblk -o NAME,SIZE,TYPE,MOUNTPOINT
+```
+
+### Full hardware summary
+
+```
+sudo lshw -short
+```
+

@@ -695,10 +695,29 @@ def transpile_smash(code):
         return f'{var}={expr}'
 
     def alias_keywords(code):
-        # Allow `print` and `document.write` to be an alias for `echo`
-        code = re.sub(r'document\.write\((.*)\)\s*;', 'echo \1;', code)
-        code = re.sub(r'print\((.*)\)\s*;', 'echo \1;', code)
-        code = re.sub(r'print\s+(\"\')(.*)(\"\')\s*;', 'echo "\2";', code)
+        """Allow print and document.write as aliases for echo"""
+        
+        # document.write(anything) -> echo anything
+        code = re.sub(
+            r'document\.write\s*\(\s*([^)]+)\s*\)\s*;?',
+            r'echo \1',
+            code
+        )
+        
+        # print(anything) -> echo anything
+        code = re.sub(
+            r'\bprint\s*\(\s*([^)]+)\s*\)\s*;?',
+            r'echo \1',
+            code
+        )
+        
+        # print anything; (without parentheses - like Python)
+        code = re.sub(
+            r'\bprint\s+([^;]+)\s*;?',
+            r'echo \1',
+            code
+        )
+        
         return code
         
     def transpile_date_function(code):
