@@ -564,32 +564,32 @@ Smash has its own execution handlers: `run bird` and `free bird`.
 > NOTE: All `birds` are required to be unique. Do not re-use any bird `variable, array, integer, or service`, as Smash tracks the first declaration only.
 
 
-#### `run bird <service>`
+#### run bird <service>
 
 Start a service or command and track it for automatic cleanup.
 
 Syntax:
 
 ```
-let $variable = run bird $(command);     # Explicit command
-let $variable = run bird servicename;    # Named service (uses systemctl)
+let variable = run bird $(command);     # Explicit command
+let variable = run bird servicename;    # Named service (uses systemctl)
 ```
 
 Examples:
 
 ```
-# Explicit command with parameters
-let $nginx = run bird $(systemctl start nginx);
+# Explicit command
+let nginx = run bird $(systemctl start nginx);
 doWork();
 free bird $nginx;    # Automatically runs: systemctl stop nginx
 
-# Named service (SMASH adds systemctl)
-let $db = run bird postgresql;
+# Named service
+let db = run bird postgresql;
 queryData();
 free bird $db;       # Runs: systemctl stop postgresql
 ```
 
-#### `free bird <optional $var>`
+#### free bird <optional $var>
 
 Context-aware cleanup and loop breaking.
 
@@ -604,17 +604,17 @@ Examples:
 
 ```
 # Variable reset
-let $arr = [0, 1, 2, 3];
-let $str = "Hello";
-let $num = 7;
+let arr = [0, 1, 2, 3];
+let str = "Hello";
+let num = 7;
 
 free bird $arr;      # Resets to []
 free bird $num;      # Resets to 0
 free bird $str;      # Resets to ""
 
 # Loop breaking
-for item in $items {
-    if ($item > 1000) {
+for item in arr {
+    if (item > 2) {
         free bird;   # Breaks the loop
     }
 }
