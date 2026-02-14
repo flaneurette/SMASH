@@ -610,7 +610,7 @@ Smash has its own execution handlers: `run bird` and `free bird`.
 > NOTE: All `birds` are required to be unique. Do not re-use any bird `variable, array, integer, or service`, as Smash tracks subsequent declarations.
 
 
-#### run bird `<service>`
+#### run bird `service`
 
 Start a service or command and track it for automatic cleanup.
 
@@ -635,7 +635,7 @@ queryData();
 free bird $db;       // Runs: systemctl stop postgresql
 ```
 
-#### free bird `<optional $var>`
+#### free bird `optional $var`
 
 Context-aware cleanup and loop breaking.
 
