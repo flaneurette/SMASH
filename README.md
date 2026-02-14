@@ -223,7 +223,7 @@ Smash has deferred coercion: `let it be;` for known or unknown strings, values o
 - The subject of transformation: "Whatever it is, do this to it"
 
 ```
-let it	= $value; 							// Known or unknown. Often "it" means: unknown.
+let it	= value; 							// Known or unknown. Often "it" means: unknown.
 be 		= string or (expression|typecast);	// An expression or type-cast.
 let it be;									// Processing.
 echo $it;									// Result
@@ -232,11 +232,11 @@ echo $it;									// Result
 Examples:
 
 ```
-let it = $value; 		// Known or unknown value.
-be = (int);				// Type cast
-let it be;				// Now holds value, but is casted.
+let it = "Yesterday 123"; 	// Known or unknown value.
+be = (int);					// Type cast
+let it be;					// Now holds value, but is casted.
 
-echo $it;				// Processed result
+echo $it;					// Processed result: 123.
 
 // Calculate compound interest
 let it = principal;
