@@ -642,6 +642,7 @@ let variable = run bird servicename;    // Named service (uses systemctl)
 Examples:
 
 ```
+#!/usr/bin/env smash
 // Explicit command
 let nginx = run bird $(systemctl start nginx);
 doWork();
@@ -667,6 +668,7 @@ free bird $variable; // Reset variable or stop service
 Examples:
 
 ```
+#!/usr/bin/env smash
 // Variable reset
 let arr = [0, 1, 2, 3];
 let str = "Hello";
@@ -700,8 +702,10 @@ It is possible with Smash to run tests in runtime. For example, you migth want t
 For reporting, we can use: `console.report(file)` this is function only works for `what if`. Reports are written `during` transpilation.
 
 ```
+#!/usr/bin/env smash
+
 what if (disk_usage > 90) {
-    echo "Disk almost full!";
+    echo "Then disk is almost full!";
 }
 
 what if (password == 123456) {
@@ -770,22 +774,22 @@ It intentionally supports only features that map cleanly and predictably to Bash
 ### Basic usage
 
 ```
-# Run a script
+// Run a script
 ./script.smash
 
-# See generated bash code (debug)
+// See generated bash code (debug)
 ./script.smash -d
 ./script.smash -debug
 
-# Dry run (show code without executing)
+// Dry run (show code without executing)
 ./script.smash -test
 ./script.smash --dry-run
 
-# Show help
+// Show help
 smash -h
 smash --help
 
-# Show version
+// Show version
 smash -v
 smash --version
 ```
@@ -793,17 +797,17 @@ smash --version
 ### Making scripts executable
 
 ```
-# Add shebang to your script
+// Add shebang to your script
 echo '#!/usr/bin/env smash' > myscript.smash
 cat >> myscript.smash <<'EOF'
 let name = "Smash";
 echo "Hello from " + name;
 EOF
 
-# Make it executable
+// Make it executable
 chmod +x myscript.smash
 
-# Run it directly
+// Run it directly
 ./myscript.smash
 ```
 
@@ -831,17 +835,6 @@ A: v1.0-1 is experimental. Use for new projects, automation scripts. Test thorou
 
 Q: Why not just use Python/Node?  
 A: Those are great for complex logic. Smash is for shell scripts - when you need to glue Linux commands together. You still want pipes, redirects, and instant access to all CLI tools.
-
-## Contributing
-
-Contributions welcome! Here's how you can help:
-
-- Report bugs
-- Suggest features
-- Improve documentation
-- Submit pull requests
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 
