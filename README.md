@@ -670,6 +670,36 @@ queryData();
 free bird $db;       // Runs: systemctl stop postgresql
 ```
 
+### Exotic: What if?
+
+It is possible with Smash to run tests in runtime. For example, you migth want to know what a certain abstract variable is doing (if there is much code). Or, you might want to log all occurences to a log file for explaination of the code.
+
+For reporting, we can use: `console.report(file)` this is function only works for `what if`. Reports are written `during` transpilation.
+
+```
+what if (disk_usage > 90) {
+    echo "Disk almost full!";
+}
+
+what if (it == 123) {
+    console.report('/var/log/explain.log');	// Reports: Where is $it declared, what is accessing it? and so on.
+}
+
+what if (user == 'admin') {
+    console.report('/var/log/explain.log');	// Reports: what code handles $user? etc.
+}
+```
+
+Report format:
+
+```
+=== WHAT IF: user == admin ===
+Line 1: user = "admin";  // Admin has extra rights
+Line 5: if (user == 'admin') {
+Line 12: echo "Hello, $user";
+Line 20: // Check user permissions
+```
+
 ### Limitations
 
 Smash transpiles Light-JS. It is not a *complete* JavaScript interpeter. Meaning, only basic JavaScript features and nesting is supported. Smash does not support nested weirdness, overly long and complex comparisons and operator edge cases. Keep it as simple as possible. Also easier to debug, and for others to understand the code.

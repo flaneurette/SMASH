@@ -306,7 +306,66 @@ def transpile_smash(code):
         code = re.sub(r'`([^`]+)`', repl, code)
         
         return code
+
+    def what_if(code, original_smash_code):
+        """
+        what if (condition) { ... }
+        - If console.report() present: writes report to file during transpilation
+        - Otherwise: executes custom code inside braces
+        """
         
+        # Pattern to match what if blocks
+        pattern = r'what\s+if\s*\(\s*(\w+)\s*(==|!=|>|<|>=|<=)\s*([^)]+)\)\s*\{([^}]+)\}'
+        
+        def replace_func(match):
+            var_name = match.group(1)
+            operator = match.group(2)
+            value = match.group(3).strip()
+            body = match.group(4).strip()
+            
+            # Check if console.report() is present
+            report_match = re.search(r'console\.report\([\'"]([^\'"]+)[\'"]\)', body)
+            
+            if report_match:
+                log_file = report_match.group(1)
+                
+                # Generate report lines
+                report_lines = []
+                report_lines.append(f"=== WHAT IF: {var_name} {operator} {value} ===")
+                
+                lines = original_smash_code.split('\n')
+                for i, line in enumerate(lines, 1):
+                    if var_name in line:
+                        # Extract comment if present
+                        comment = ""
+                        if '//' in line:
+                            comment_part = line.split('//')[1].strip()
+                            comment = f"  // {comment_part}"
+                        
+                        report_lines.append(f"Line {i}: {line.strip()}{comment}")
+                
+                # Write report to file NOW (during transpilation)
+                try:
+                    with open(log_file, 'a') as f:
+                        f.write('\n'.join(report_lines) + '\n')
+                except Exception as e:
+                    print(f"Warning: Could not write to {log_file}: {e}")
+                
+                # Remove console.report() from body and keep other commands
+                custom_body = re.sub(r'console\.report\([^)]+\);\s*', '', body)
+                
+                # Return only the custom commands (if any)
+                if custom_body.strip():
+                    return custom_body
+                else:
+                    return ''  # Remove the what if block entirely
+            else:
+                # No console.report - just return the body as-is (it's custom logic)
+                return body
+        
+        code = re.sub(pattern, replace_func, code, flags=re.DOTALL)
+        return code
+    
     def let_it_be(code):
         max_iterations = 10
         iteration = 0
@@ -741,19 +800,20 @@ def transpile_smash(code):
     if check_reserved:
         raise ValueError("Reserved words or keywords are used improperly. Cannot parse this code.")
         sys.exit(1)    
- 
+
+    # Copy code
+    # ---------------------------------------------------    
+    original_code = code
+    
     # Custom smash keyword extractions/replacements
     # ---------------------------------------------------   
     code = code_birds(code) # smash keyword: `free bird;`
     code = let_it_be(code) # smash keyword: `let it be;`
+    code = what_if(code, original_code) # what if reporting
     
     # Preprocess
     # ---------------------------------------------------   
     code = preprocess_code(code)
-    
-    # Copy code
-    # ---------------------------------------------------    
-    original_code = code
 
     # Date formatting
     # ---------------------------------------------------
