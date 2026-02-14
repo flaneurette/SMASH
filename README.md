@@ -587,18 +587,17 @@ echo $it;									// Result
 Examples:
 
 ```
-let it = "Yesterday 123"; 	// Known or unknown value.
-be = (int);					// Type cast
-let it be;					// Now holds value, but is casted.
+#!/usr/bin/env smash
 
-echo $it;					// Processed result: 123.
-
-// Calculate compound interest
-let it = principal;
-be = (it * (1 + rate) * years);
+let it = "Yesterday 123";
+be = (int);
 let it be;
+echo $it;   // Outputs: 123
 
-echo `{Final amount: $it}`;
+let it = 32;
+be = (it * (1 + 10) * 3);
+let it be;
+echo $it;   // Outputs: 1056
 ```
 
 ### Exotic: Execution Handling with Birds

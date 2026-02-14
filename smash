@@ -32,7 +32,7 @@ def transpile_smash(code):
 
     def reserved_check(code):
         
-        # we allow (int), (float), (number) for casting.
+        # we allow (int), (float), (string) for casting.
         
         RESERVED_WORDS = [
         'abstract','arguments','async','await',
@@ -306,9 +306,70 @@ def transpile_smash(code):
         code = re.sub(r'`([^`]+)`', repl, code)
         
         return code
-
+        
     def let_it_be(code):
-        # For now, return
+        max_iterations = 10
+        iteration = 0
+        
+        while re.search(r'let\s+it\s+be;', code) and iteration < max_iterations:
+            iteration += 1
+            
+            match_let_it_be = re.search(r'let\s+it\s+be;', code)
+            if not match_let_it_be:
+                break
+            
+            let_it_be_pos = match_let_it_be.start()
+            code_before = code[:let_it_be_pos]
+            
+            match_it = None
+            for match in re.finditer(r'let\s+it\s*=\s*([^;]+);', code_before):
+                match_it = match
+            
+            if not match_it:
+                break
+            
+            it_value = match_it.group(1).strip()
+            
+            match_be = None
+            for match in re.finditer(r'be\s*=\s*([^;\n]+);?', code_before):
+                match_be = match
+            
+            if not match_be:
+                break
+            
+            be_value = match_be.group(1).strip()
+            
+            # Type cast
+            type_cast_match = re.match(r'^\(?(int|float|string)\)?$', be_value)
+            
+            if type_cast_match:
+                cast_type = type_cast_match.group(1)
+                
+                if cast_type == 'int':
+                    # Two lines: assign, then transform
+                    replacement = f'it={it_value}\nit=$(( ${{it//[^0-9]/}} ))'
+                elif cast_type == 'float':
+                    replacement = f'it={it_value}\nit=$(printf "%.2f" ${{it//[^0-9.-]/}} 2>/dev/null || echo "0.00")'
+                elif cast_type == 'string':
+                    replacement = f'it="{it_value}"'
+            
+            elif be_value.startswith('(') and be_value.endswith(')'):
+                expression = be_value[1:-1]
+                expression = re.sub(r'\bit\b', '$it', expression)
+                replacement = f'it={it_value}\nit=$(( {expression} ))'
+            
+            else:
+                replacement = f'it={it_value}\nit={be_value}'
+            
+            # Remove the "let it = ..." line
+            code = code.replace(match_it.group(0), '', 1)
+            
+            # Remove the "be = ..." line  
+            code = code.replace(match_be.group(0), '', 1)
+            
+            # Replace "let it be;" with the transformation
+            code = code.replace('let it be;', replacement, 1)
+        
         return code
 
     def run_bird(code):
@@ -335,22 +396,24 @@ def transpile_smash(code):
             SMASH_UNIQUE_PID += 1
             return f"{pid_var}=$( {command} )"
 
-    def start_service(match):
-        var_name = match.group(2)
-        service_name = match.group(3)  # The actual service
-        command = 'systemctl start ' + service_name
-        
-        pid_var = f"{var_name}_PID_{SMASH_UNIQUE_PID}"
-        
-        SMASH_PROCESSES[SMASH_UNIQUE_PID] = {
-            'var': var_name,
-            'cmd': command,
-            'pid_var': pid_var,
-            'service': service_name  # Track service name separately
-        }
-        
-        SMASH_UNIQUE_PID += 1
-        return f"{pid_var}=$(systemctl start {service_name})"
+        def start_service(match):
+            
+            global SMASH_UNIQUE_PID
+            var_name = match.group(2)
+            service_name = match.group(3)  # The actual service
+            command = 'systemctl start ' + service_name
+            
+            pid_var = f"{var_name}_PID_{SMASH_UNIQUE_PID}"
+            
+            SMASH_PROCESSES[SMASH_UNIQUE_PID] = {
+                'var': var_name,
+                'cmd': command,
+                'pid_var': pid_var,
+                'service': service_name  # Track service name separately
+            }
+            
+            SMASH_UNIQUE_PID += 1
+            return f"{pid_var}=$(systemctl start {service_name})"
             
         code = re.sub(run_pattern1, start_command, code)
         code = re.sub(run_pattern2, start_service, code)
@@ -421,10 +484,9 @@ def transpile_smash(code):
                     if(stop_cmd):
                         return f"$( {stop_cmd} )"
                     else:
-                        return
-            
-            # If not found, maybe it's just resetting a variable
-            return code
+                        return match.group(0)
+                        
+            return match.group(0)
         
         code = re.sub(free_pattern, replace_func, code)
         return code
@@ -679,15 +741,15 @@ def transpile_smash(code):
     if check_reserved:
         raise ValueError("Reserved words or keywords are used improperly. Cannot parse this code.")
         sys.exit(1)    
-    
-    # Preprocess
-    # ---------------------------------------------------   
-    code = preprocess_code(code)
-    
+ 
     # Custom smash keyword extractions/replacements
     # ---------------------------------------------------   
     code = code_birds(code) # smash keyword: `free bird;`
     code = let_it_be(code) # smash keyword: `let it be;`
+    
+    # Preprocess
+    # ---------------------------------------------------   
+    code = preprocess_code(code)
     
     # Copy code
     # ---------------------------------------------------    
@@ -795,7 +857,7 @@ def transpile_smash(code):
     
     if strip_comments == True:
         # Strip all // comments
-        code = re.sub(r'\s*//.*$', '', code, flags=re.MULTILINE)
+        code = re.sub(r'(^|\s)//.*$', r'\1', code, flags=re.MULTILINE)
         
         # Remove all block-comments
         code = re.sub(r'/\*(.*?)\*/', '', code, flags=re.DOTALL) 
@@ -944,7 +1006,7 @@ def transpile_smash(code):
     # ---------------------------------------------------
     
     # Variable declarations: let/const/var x = value -> x=value
-    code = re.sub(r'\b(let|const|var)\s+(\w+)\s*=\s*([a-zA-Z0-9\-_\"\']+)\s*;', r'\2=\3', code)
+    code = re.sub(r'\b(let|const|var)\s+(?!be\b)(\w+)\s*=\s*([a-zA-Z0-9\-_\"\']+)\s*;', r'\2=\3', code)
     
     # Variable reassignment (without let/const/var): x = value -> x=value
     # But only if there's whitespace around the =, to avoid matching == comparisons
