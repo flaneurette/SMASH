@@ -213,7 +213,7 @@ echo `User: b{name}`;           // String basename
 echo `User: d{name}`;           // String dirname
 ```
 
-# Deferred coercion.
+### Deferred coercion.
 
 Smash has deferred coercion: `let it be;` for known or unknown strings, values or expressions.
 
