@@ -201,28 +201,6 @@ print()
 document.write();
 ```
 
-Examples:
-
-```
-// Literal strings
-print("hello");
-document.write("world");
-
-// Variables
-print(warning);
-print($warning);
-
-// Concatenation
-print("Time: " + today);
-
-// Text interpolation
-print(`{warning}`);
-
-// Without parentheses (Python-style)
-print warning;
-print "hello world";
-```
-
 ### Type awareness, casting, type coercion and interpolation
 
 ```
