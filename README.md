@@ -568,6 +568,15 @@ if(isfile("/usr/local/bin/smash")) {
 
 Smash has it's own reserved keywords you could use. Some of them are quite useful, but still exotic.
 
+Current exotics:
+
+```
+let it be;				// Deferred coercion	
+run bird <service>;		// Execustion handler
+free bird <service>;	// Execustion handler
+what if() {}			// Code explaination with reporting, and custom IF statement.
+```
+
 ### Exotic: Deferred Coercion.
 
 Smash has deferred coercion: `let it be;` for known or unknown strings, values or expressions.
@@ -607,7 +616,6 @@ Smash has its own execution handlers: `run bird` and `free bird`.
 `free bird` is multi-purpose and context-aware. It automatically handles resource cleanup including resetting variables, arrays, integers, and stopping running services.
 
 > NOTE: All `birds` are required to be unique. Do not re-use any bird `variable, array, integer, or service`, as Smash tracks subsequent declarations.
-
 
 #### run bird `service`
 
