@@ -224,7 +224,7 @@ Smash has deferred coercion: `let it be;` for known or unknown strings, values o
 
 ```
 let it	= $value; 							// Known or unknown. Often "it" means: unknown.
-be 		= string or (expression|typecast);	// An expressiong or typecast.
+be 		= string or (expression|typecast);	// An expression or type-cast.
 let it be;									// Processing.
 echo $it;									// Result
 ```
