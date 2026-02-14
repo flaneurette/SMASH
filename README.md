@@ -564,7 +564,7 @@ Smash has its own execution handlers: `run bird` and `free bird`.
 > NOTE: All `birds` are required to be unique. Do not re-use any bird `variable, array, integer, or service`, as Smash tracks the first declaration only.
 
 
-#### run bird <service>
+#### run bird <service to start>
 
 Start a service or command and track it for automatic cleanup.
 
@@ -578,12 +578,12 @@ let variable = run bird servicename;    # Named service (uses systemctl)
 Examples:
 
 ```
-# Explicit command
+// Explicit command
 let nginx = run bird $(systemctl start nginx);
 doWork();
 free bird $nginx;    # Automatically runs: systemctl stop nginx
 
-# Named service
+// Named service
 let db = run bird postgresql;
 queryData();
 free bird $db;       # Runs: systemctl stop postgresql
@@ -603,7 +603,7 @@ free bird $variable; # Reset variable or stop service
 Examples:
 
 ```
-# Variable reset
+// Variable reset
 let arr = [0, 1, 2, 3];
 let str = "Hello";
 let num = 7;
@@ -612,12 +612,17 @@ free bird $arr;      # Resets to []
 free bird $num;      # Resets to 0
 free bird $str;      # Resets to ""
 
-# Loop breaking
+// Loop breaking
 for item in arr {
     if (item > 2) {
         free bird;   # Breaks the loop
     }
 }
+
+// Services
+let db = run bird postgresql;
+queryData();
+free bird $db;       # Runs: systemctl stop postgresql
 ```
 
 ### Comments
