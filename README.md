@@ -621,7 +621,8 @@ Interest rate conversion
 
 ```
 #!/usr/bin/env smash
-let it = 1000;
+
+let it = 1000; // Principal
 let rate = 5; // 5% interest
 
 for (let year in 1 2 3 4 5) {
