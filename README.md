@@ -723,8 +723,8 @@ Context-aware cleanup and loop breaking.
 Syntax:
 
 ```
-free bird;           // Break from loop
-free bird $variable; // Reset variable or stop service
+free bird;       // Break from loop
+free bird $var;  // Reset variable, int, float, array or stop a `service`
 ```
 
 Examples:
