@@ -731,6 +731,12 @@ Examples:
 
 ```
 #!/usr/bin/env smash
+
+// Services
+let db = run bird postgresql;
+queryData();
+free bird $db;       // Automatically runs: systemctl stop postgresql
+
 // Variable reset
 let arr = [0, 1, 2, 3];
 let str = "Hello";
@@ -750,11 +756,6 @@ for(item in arr) {
         free bird;   // Breaks the loop
     }
 }
-
-// Services
-let db = run bird postgresql;
-queryData();
-free bird $db;       // Runs: systemctl stop postgresql
 ```
 
 ### Exotic: What if?
