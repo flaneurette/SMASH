@@ -1,4 +1,4 @@
-# Smash - Simple Modern Advanced SHell
+# Smash - Simple Modern Advanced Shell
 
 Smash is a modern JavaScript-style shell scripting language that transpiles directly to Bash.
 
