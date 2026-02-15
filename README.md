@@ -777,7 +777,7 @@ what if (userId < 2) {
 }
 
 what if (userId == 233622) {
-    echo "Then user is moderator of the forum!";
+    echo "Then user is moderator of the forum, that is the account of moderator Alice!";
 }
 
 what if (password == "123456") {
