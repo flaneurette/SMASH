@@ -132,6 +132,9 @@ Possible flags/pragmas to set:
 // Combined
 "use strict pipefail errexit";
 
+// Floats
+"use precision 4"		// Precision of floating points. Default value (if not set): 2
+
 "use comments"  		// Keep comments in generated bash (default: strip)
 						// Warning: Comments with keywords (let, var, function) may break transpiling					
 "use logging /app.log"; // Default: console.log, see all console functions further in readme.
@@ -613,8 +616,7 @@ Smash has deferred coercion: `let it be;` for known or unknown strings, values o
 
 - A placeholder for unknown/dynamic values: "I don't know what this is yet"
 - The subject of transformation: "Whatever it is, do this to it"
-
-> NOTE: does not yet support floats!
+- And supports "quoted" floating points.
 
 ```
 let it	= value; 							// Known or unknown. Often "it" means: unknown.
@@ -629,14 +631,15 @@ Interest rate conversion
 #!/usr/bin/env smash
 
 let it = 1000; // Principal
-let rate = 5; // 5% interest
-
+let rate = 1.5; // 1.5% interest
 for (let year in 1 2 3 4 5) {
     be = (it + (it * rate / 100));  // Add 5% each year
     let it be;
     echo `Year {year}: ${it}`;
 }
 ```
+
+> Note: Smash uses precision 2 with floats. i.e. 1.50 - If you want higher, then declare: "use precision 4" at the top of the script.
 
 Temperature conversion
 
