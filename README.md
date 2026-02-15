@@ -775,7 +775,11 @@ what if (userId < 2) {
 }
 
 what if (password == 123456) {
+
+	echo "Then the user set a very insecure password!";
+	
     console.report('/var/log/explain.log');	
+	
 	// Reports: Where is $password declared, what is accessing it? and so on.
 }
 
