@@ -769,7 +769,7 @@ Example cases where it might be of use:
 #!/usr/bin/env smash
 
 what if (vda_usage > 90) {
-    echo "Then disk is almost full! vda_usage, is disk 1 on system X and client Y!";
+    echo "Then disk is almost full! vda_usage is disk 1 on system X and client Y!";
 }
 
 what if (userId < 2) {
