@@ -136,7 +136,7 @@ Possible flags/pragmas to set:
 "use precision 4"		// Precision of floating points. Default value (if not set): 2
 
 "use comments"  		// Keep comments in generated bash (default: strip)
-						// Warning: keywords (let, var, function) may break.					
+						// Warning: keywords in comments (let, var, function) may break transpiling
 "use logging /app.log"; // Default: console.log, see all console functions in readme.
 
 "use unsafe"; 			// Disable code security. If set, you can use: rm -f, exec, etc.
