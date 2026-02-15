@@ -544,21 +544,30 @@ Avoid this:
 
 ```
 let x = 1; // let y = 2; but should be: 3;
+
+/*
+foo = bar;
+let foo = test;
+hello = [1,2,3];
+*/
 ```
+
+If you *do* use code in comments, transpiling *might* fail. We cannot be 100% certain, so try to avoid it if you can. Or use the flag `-test` or `-debug`
 
 Better:
 
 ```
 #!/usr/bin/env smash
 
-// Single line comment
+// Single line comment, just textual hint
 
 /*
    Multi- line
    comment
+   Just textual hint
 */
 
-let x = "value"; // Inline comment
+let x = "value"; // Inline comment, just textual hint
 ```
 
 ### Math operations
