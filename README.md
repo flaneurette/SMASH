@@ -540,6 +540,14 @@ By default, Smash will remove comments to avoid difficult regex issues. You can 
 Advise: if you do use comments, try to avoid too much commenting or keep it minimal. Comments might break transpiling to bash if reserved words are use inside comments. 
 Keywords in comments such as: `function, let, var, const,` etc. etc. can lead to transpiling errors and edge cases.
 
+Avoid this:
+
+```
+let x = 1; // let y = 2; but should be: 3;
+```
+
+Better:
+
 ```
 #!/usr/bin/env smash
 
