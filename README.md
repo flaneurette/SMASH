@@ -233,22 +233,22 @@ echo `User: d{name}`;           // String dirname
 let readable = date("D, M d, y");  // Thursday, February 12, 2026
 
 // Custom formats
-date("D, M d, y")   // $(date "+%A, %B %d, %Y")
-date("y-m-d")       // $(date "+%Y-%m-%d")
-date("H:i:s")       // $(date "+%H:%M:%S")
-date("y/m/d H:i")   // $(date "+%Y/%m/%d %H:%M")
+date("D, M d, y")   // "+%A, %B %d, %Y"
+date("y-m-d")       // "+%Y-%m-%d"
+date("H:i:s")       // "+%H:%M:%S"
+date("y/m/d H:i")   // "+%Y/%m/%d %H:%M"
 
 // Presets (just keywords)
-date("today");	    // $(date "+%Y-%m-%d")
-date("now");        // $(date "+%s") # Like Date.now() & PHP time()
-date("unix");       // $(date "+%s") # Ibid
-date("timestamp");  // $(date "+%s") # Ibid
-date("sql");        // $(date "+%Y-%m-%d %H:%M:%S")
-date("human");      // $(date "+%A, %B %d, %Y")
-date("log");        // $(date "+%Y-%m-%d %H:%M:%S")
-date("filename");   // $(date "+%Y-%m-%d_%H-%M-%S")
-date("iso");        // $(date "+%Y-%m-%dT%H:%M:%S")
-date("isostring")	// $(date "%Y-%m-%dT%H:%M:%S%z") # Like JS toISOString()
+date("today");	    // "+%Y-%m-%d"
+date("now");        // "+%s" # Like JS Date.now() & PHP time()
+date("unix");       // "+%s" # Ibid
+date("timestamp");  // "+%s" # Ibid
+date("sql");        // "+%Y-%m-%d %H:%M:%S"
+date("human");      // "+%A, %B %d, %Y"
+date("log");        // "+%Y-%m-%d %H:%M:%S"
+date("filename");   // "+%Y-%m-%d_%H-%M-%S"
+date("iso");        // "+%Y-%m-%dT%H:%M:%S"
+date("isostring")	// "%Y-%m-%dT%H:%M:%S%z" # Like JS toISOString()
 
 let timestamp = date("timestamp");
 
