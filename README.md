@@ -633,7 +633,7 @@ Interest rate conversion
 let it = 1000; // Principal
 let rate = 1.5; // 1.5% interest
 for (let year in 1 2 3 4 5) {
-    be = (it + (it * rate / 100));  // Add 5% each year
+    be = (it + (it * rate / 100));  // Add 1.5% each year.
     let it be;
     echo `Year {year}: ${it}`;
 }
