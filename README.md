@@ -686,7 +686,7 @@ echo $it;   // Outputs: 267
 
 Smash has its own execution handlers: `run bird` and `free bird`.
 
-`free bird` is multi-purpose and context-aware. It automatically handles resource cleanup including resetting variables, arrays, integers, and stopping running services.
+`free bird` 🐥 is multi-purpose and context-aware. It automatically handles resource cleanup including resetting variables, arrays, integers, and stopping running services.
 
 > NOTE: All `birds` are required to be unique. Do not re-use any bird `variable, array, integer, or service`, as Smash tracks subsequent declarations.
 
