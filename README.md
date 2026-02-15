@@ -606,17 +606,6 @@ let it be;									// Processing.
 echo $it;									// Result
 ```
 
-Casting
-
-```
-#!/usr/bin/env smash
-
-let it = "Yesterday 123";
-be = (int);
-let it be;
-echo $it;   // Outputs: 123
-```
-
 Interest rate conversion
 
 ```
@@ -636,6 +625,7 @@ Temperature conversion
 
 ```
 #!/usr/bin/env smash
+
 let temps = [32, 68, 98, 212];
 
 for (let f in ${temps[@]}) {
@@ -650,6 +640,7 @@ Progressive price calculations
 
 ```
 #!/usr/bin/env smash
+
 let it = 100;
 be = (it * 121 / 100);  // Add 21% VAT
 let it be;
@@ -659,6 +650,19 @@ be = (it * 90 / 100);   // Apply 10% discount
 let it be;
 
 echo `Final price: {it}`;
+```
+
+Casting
+
+```
+#!/usr/bin/env smash
+
+let it = "Yesterday's score: 167";
+be = (int);
+let it be;
+be = (it + 100);
+let it be;
+echo $it;   // Outputs: 267
 ```
 
 ### Exotic: Execution Handling
