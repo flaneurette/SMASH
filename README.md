@@ -763,19 +763,21 @@ It is possible with Smash to run tests in runtime. For example, you migth want t
 
 For reporting, we can use: `console.report(file)` this is function only works for `what if`. Reports are written `during` transpilation.
 
+Example cases where it might be of use:
+
 ```
 #!/usr/bin/env smash
 
-what if (disk_usage > 90) {
-    echo "Then disk is almost full!";
+what if (vda_usage > 90) {
+    echo "Then disk is almost full! vda_usage, is disk 1 on system X and client Y!";
 }
 
 what if (userId < 2) {
-    echo "Then user becomes admin!";
+    echo "Then user is admin!";
 }
 
 what if (userId == 233622) {
-    echo "Then user becomes moderator of the forum!";
+    echo "Then user is moderator of the forum!";
 }
 
 what if (password == "123456") {
