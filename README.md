@@ -538,26 +538,10 @@ echo `I like this fruit: {result}`;
 
 ### Comments
 
-By default, Smash will remove comments to avoid difficult regex issues. You can unset this by setting the pragma: `"use comments"` at the top of your script.
+By default, Smash will remove comments in the `generated bash` to avoid difficult regex issues. You can unset this by setting the pragma: `"use comments"` at the top of your script.
 
 Advise: if you do use comments, try to avoid too much commenting or keep it minimal. Comments might break transpiling to bash if reserved words are use inside comments. 
 Keywords in comments such as: `function, let, var, const,` etc. etc. can lead to transpiling errors and edge cases.
-
-Avoid this:
-
-```
-let x = 1; // let y = 2; but should be: 3;
-
-/*
-foo = bar;
-let foo = test;
-hello = [1,2,3];
-*/
-```
-
-If you *do* use code in comments, transpiling *might* fail. We cannot be 100% certain, so try to avoid it if you can. Or use the flag `-test` or `-debug`
-
-Better:
 
 ```
 #!/usr/bin/env smash
