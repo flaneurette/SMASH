@@ -639,7 +639,7 @@ for (let year in 1 2 3 4 5) {
 }
 ```
 
-> Note: Smash uses precision 2 with floats. i.e. 1.50 - If you want higher, then declare: "use precision 4" at the top of the script. 4, can be any number.
+> Note: By default, Smash uses precision 2 with floats. i.e. 1.50 - If you want higher, then declare: "use precision 4" at the top of the script. 4, can be any number.
 
 Temperature conversion
 
