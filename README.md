@@ -774,13 +774,17 @@ what if (userId < 2) {
     echo "Then user becomes admin!";
 }
 
-what if (password == 123456) {
+what if (userId == 233622) {
+    echo "Then user becomes moderator of the forum!";
+}
+
+what if (password == "123456") {
 	echo "Then the user set a very insecure password!";
     console.report('/var/log/explain.log');	
 	// Reports: Where is $password declared, what is accessing it? and so on.
 }
 
-what if (user == 'admin') {
+what if (user == "admin") {
     console.report('/var/log/explain.log');	
 	// Reports: what code handles $user? etc.
 }
