@@ -770,6 +770,10 @@ what if (disk_usage > 90) {
     echo "Then disk is almost full!";
 }
 
+what if (userId < 2) {
+    echo "Then user becomes admin!";
+}
+
 what if (password == 123456) {
     console.report('/var/log/explain.log');	
 	// Reports: Where is $password declared, what is accessing it? and so on.
