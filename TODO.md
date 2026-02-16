@@ -1,3 +1,5 @@
+
+
 ## Object Literals / Associative Arrays
 
 ```
@@ -112,29 +114,6 @@ rsync -av /app server2:/deploy &
 rsync -av /app server3:/deploy &
 wait
 echo "All deployed!"
-```
-
-## setTimeout/setInterval
-
-```
-setTimeout(() => {
-    echo "5 seconds later...";
-}, 5);
-
-setInterval(() => {
-    echo "Every 10 seconds";
-}, 10);
-```
-
-Bash:
-```
-sleep 5
-echo "5 seconds later..."
-
-while true; do
-    echo "Every 10 seconds"
-    sleep 10
-done
 ```
 
 

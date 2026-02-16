@@ -19,6 +19,9 @@ SMASH_UNIQUE_PID = 1
 SMASH_PROCESSES = {}  # {pid: {'var': 'nginx', 'cmd': 'systemctl start nginx'}}
 # Precision of floating points
 FLOAT_PRECISION = 2
+# Functions
+FUNC_PREFIX = "smashFunc"
+FUNC_PID = 1
 
 def transpile_smash(code):
     """
@@ -367,6 +370,95 @@ def transpile_smash(code):
         
         code = re.sub(pattern, replace_func, code, flags=re.DOTALL)
         return code
+
+    def time_travel(code):
+        
+        global FUNC_PREFIX, FUNC_PID
+        
+        def build_func(timetype, time, name, code_body, values=None):
+            val_heap = ''
+            func = ''
+            
+            if values:
+                for val in values:
+                    val_heap += f'local {val}\n'
+            
+            if name:
+                # Build bash function
+                func = f'{name}() {{\n'
+                if val_heap:
+                    func += val_heap
+                func += f'{code_body}\n'
+                func += '}\n'
+            
+            return func
+        
+        def timertype(timetype, time, func_name): 
+            result = ''
+            # Convert milliseconds to seconds
+            time_sec = int(time) / 1000
+            
+            if timetype == 'setTimeout' and time:
+                result += f'sleep {time_sec}\n'
+                result += f'{func_name}\n'
+            elif timetype == 'setInterval' and time:
+                result += f'while true; do\n'
+                result += f'  {func_name}\n'
+                result += f'  sleep {time_sec}\n'
+                result += f'done\n'
+            
+            return result
+        
+        new_code = code
+        
+        # Patterns with closing parenthesis
+        m1 = r'(setTimeout|setInterval)\(\(\)\s*=>\s*\{([^}]*)}\s*,\s*([0-9]+)\)\s*(;?)'
+        m2 = r'(setTimeout|setInterval)\(function\s*\(\)\s*\{([^}]*)}\s*,\s*([0-9]+)\)\s*(;?)'
+        m3 = r'(setTimeout|setInterval)\((\w+),\s*([0-9]+)\)\s*(;?)'
+        
+        # Arrow functions
+        timespace1 = re.search(m1, new_code)
+        if timespace1:
+            s1 = timespace1.group(1)  # setTimeout or setInterval
+            s2 = timespace1.group(2)  # code body
+            s3 = timespace1.group(3)  # time in ms
+            
+            new_func_name = FUNC_PREFIX + str(FUNC_PID)
+            func_def = build_func(s1, s3, new_func_name, s2)
+            timer_call = timertype(s1, s3, new_func_name)
+            
+            replacement = func_def + '\n' + timer_call
+            new_code = re.sub(m1, replacement, new_code, count=1)
+            FUNC_PID += 1
+        
+        # Function declarations
+        timespace2 = re.search(m2, new_code)
+        if timespace2:
+            s1 = timespace2.group(1)
+            s2 = timespace2.group(2)
+            s3 = timespace2.group(3)
+            
+            new_func_name = FUNC_PREFIX + str(FUNC_PID)
+            func_def = build_func(s1, s3, new_func_name, s2)
+            timer_call = timertype(s1, s3, new_func_name)
+            
+            replacement = func_def + '\n' + timer_call
+            new_code = re.sub(m2, replacement, new_code, count=1)
+            FUNC_PID += 1
+        
+        # Named function references
+        timespace3 = re.search(m3, new_code)
+        if timespace3:
+            s1 = timespace3.group(1)
+            s2 = timespace3.group(2)  # existing function name
+            s3 = timespace3.group(3)
+            
+            # Just create timer call, function already exists
+            timer_call = timertype(s1, s3, s2)
+            
+            new_code = re.sub(m3, timer_call, new_code, count=1)
+        
+        return new_code
     
     def let_it_be(code):
         """Process 'let it be' constructs"""
@@ -1033,6 +1125,10 @@ def transpile_smash(code):
         code
     )
 
+    # Time: setTimeout, setInterval (must come before functions)
+    # ---------------------------------------------------
+    code = time_travel(code)
+
     # Functions
     # ---------------------------------------------------
  
@@ -1547,7 +1643,7 @@ def transpile_smash(code):
         
         else:
             result.append(line)
-
+    
     code = '\n'.join(result)
     
     # Heal known mangled patterns

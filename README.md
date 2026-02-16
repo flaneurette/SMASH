@@ -513,6 +513,27 @@ while (i < 10) {
 }
 ```
 
+## Special functions
+
+setTimeout/setInterval
+
+```
+setTimeout(() => {
+    echo "5 seconds later...";
+}, 5);
+
+setInterval(() => {
+    echo "Every 10 seconds";
+}, 10);
+
+// function
+daft() {
+	echo "Around the world!";
+}
+
+setTimeout(daft, 5);
+```
+
 ### Switches
 
 ```
