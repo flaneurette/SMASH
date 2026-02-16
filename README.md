@@ -579,7 +579,7 @@ if(isfile("/usr/local/bin/smash")) {
 }
 ```
 
-## Special functions
+### Special functions
 
 setTimeout/setInterval
 
