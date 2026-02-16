@@ -595,7 +595,7 @@ setInterval(() => {
 }, 10);
 
 // function
-daft() {
+function daft() {
 	echo "Around the world!";
 }
 
