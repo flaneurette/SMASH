@@ -595,11 +595,11 @@ setInterval(() => {
 }, 10);
 
 // function
-function daft() {
+function draft() {
 	echo "Around the world!";
 }
 
-setTimeout(daft, 5);
+setTimeout(draft, 5);
 ```
 
 # Smash Exotics
