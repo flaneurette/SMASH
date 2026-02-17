@@ -1796,7 +1796,7 @@ def show_help():
     |     | | \  / | |     | |     | |     |    
     |_____  |  \/  | |_____| |_____  |_____|    
           | |      | |     |       | |     |    
-	______| |      | |     | |_____| |     |____.flaneurette'26
+    ______| |      | |     | |_____| |     |____.flaneurette'26
     
     SMASH v{VERSION} - JavaScript-style shell scripting
     
@@ -1806,14 +1806,14 @@ def show_help():
     sudo apt install smash
 
     Usage:
-        ./<script.smash>            		    Run a SMASH script
-        smash <script.smash>            		Run a SMASH script
-        smash <script.smash> -debug     		Show generated bash code
-        smash <script.smash> -test      		Show generated code
-		smash <script.smash> -emit mytool.sh    Build tool generator
-        smash -v								Show version
-        smash -h                   				Show this help
-    
+        ./<script.smash>                        Run a SMASH script
+        smash <script.smash>                    Run a SMASH script
+        smash <script.smash> -debug             Show generated bash code
+        smash <script.smash> -test              Show generated code
+        smash <script.smash> -emit mytool.sh    Build tool generator
+        smash -v                                Show version
+        smash -h                                   Show this help
+        
     Features:
      - JavaScript-like syntax for shell scripts
      - All Linux commands work (pipes, redirects, everything)

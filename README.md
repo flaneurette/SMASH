@@ -2,34 +2,36 @@
 
 Smash is a modern JavaScript-style shell scripting language that transpiles directly to Bash.
 
+<sup>
 ```
      _____   _    _   _____   _____ _       _
     |     | | \  / | |     | |     | |     |    
     |_____  |  \/  | |_____| |_____  |_____|    
           | |      | |     |       | |     |    
-	______| |      | |     | |_____| |     |____.flaneurette'26
-	
+    ______| |      | |     | |_____| |     |____.flaneurette'26
+    
     Installation:
     sudo add-apt-repository ppa:flaneurette/smash
     sudo apt update
     sudo apt install smash
 
     Usage:
-	    ./<script.smash>            		    Run a Smash script
-        smash <script.smash>            		Run a Smash script
-        smash <script.smash> -debug     		Show generated bash code
-        smash <script.smash> -test      		Show generated code without running
-		smash <script.smash> -emit mytool.sh    Build tool generator
-        smash -v								Show version
-        smash -h                   				Show this help
+        ./<script.smash>                        Run a Smash script
+        smash <script.smash>                    Run a Smash script
+        smash <script.smash> -debug             Show generated bash code
+        smash <script.smash> -test              Show generated code without running
+        smash <script.smash> -emit mytool.sh    Build tool generator
+        smash -v                                Show version
+        smash -h                                   Show this help
     
     Features:
      JavaScript-like syntax for shell scripts
      All Linux commands work (pipes, redirects, everything)
      Transpiles to bash (works everywhere)
      No dependencies except Python 3 and bash
-	 
+     
 ```
+</sup>
 
 Tired of Bash's 1970s syntax? Write shell scripts with modern JavaScript-like syntax that transpiles to bash.
 
@@ -46,7 +48,7 @@ Tired of Bash's 1970s syntax? Write shell scripts with modern JavaScript-like sy
 let mem_usage = $(free | grep Mem | awk '{print int($3/$2 * 100)}');
 let today = date("time");
 
-if (mem_usage > 90) {
+if (mem_usage > 90) {    
     let warning = today + " - WARNING: Memory usage is " + mem_usage + "%";
     echo `{warning}`;
     console.warn(warning);
@@ -114,30 +116,30 @@ let log = $(find . -name "*.log" -mtime +7 -delete);
 Possible flags/pragmas to set:
 
 ```
-"use strict";        	// Enable strict mode
+"use strict";            // Enable strict mode
 
-"use pipefail";      	// Bash: set -o pipefail
-"use errexit";       	// Bash: set -e (exit on error)
-"use nounset";       	// Bash: set -u (error on undefined vars)
-"use xtrace";        	// Bash: set -x (debug/trace mode)
+"use pipefail";          // Bash: set -o pipefail
+"use errexit";           // Bash: set -e (exit on error)
+"use nounset";           // Bash: set -u (error on undefined vars)
+"use xtrace";            // Bash: set -x (debug/trace mode)
 
-"use noclobber";     	// Bash: set -C (don't overwrite files with >)
-"use vi-mode";       	// Bash: set -o vi
-"use emacs-mode";    	// Bash: set -o emacs
-"use verbose";       	// Bash: set -v (print commands as read)
+"use noclobber";         // Bash: set -C (don't overwrite files with >)
+"use vi-mode";           // Bash: set -o vi
+"use emacs-mode";        // Bash: set -o emacs
+"use verbose";           // Bash: set -v (print commands as read)
 
 // Combined
 "use strict pipefail errexit";
 
 // Floats
-"use precision 4"		// Precision of floating points. Default value (if not set): 2
+"use precision 4"        // Precision of floating points. Default value (if not set): 2
 
-"use comments"  		// Keep comments in generated bash (default: strip)
-						// Warning: keywords in comments (let, var, function) may break transpiling
+"use comments"          // Keep comments in generated bash (default: strip)
+                        // Warning: keywords in comments (let, var, function) may break transpiling
 "use logging /app.log"; // Default: console.log, see all console functions in readme.
 
-"use unsafe"; 			// Disable code security. If set, you can use: rm -f, exec, etc.
-						// By default, dangerous commands are not allowed. Use with caution.
+"use unsafe";             // Disable code security. If set, you can use: rm -f, exec, etc.
+                        // By default, dangerous commands are not allowed. Use with caution.
 ```
 
 ### Elevated commands
@@ -187,7 +189,7 @@ echo `Today it is: {today}`;   // Smash text interpolation
 echo `Today it is: ${today}`;  // JS-style
 echo `Today it is: #{today}`;  // Ruby-style
 echo "Today it is: " + today;  // Concatenation
-echo $today;         		   // Bash and PHP style
+echo $today;                    // Bash and PHP style
 ```
 
 ### Syntactic sugar
@@ -215,8 +217,8 @@ echo `Count: (float) {count1}`; // Type cast float, printf.
 echo `Count: (string) {name}`;  // Type cast explicit string.
 
 echo `Count: n{count}`;         // Type cast integer
-echo `Count: f{count1}`;  		// Type cast float, printf.
-echo `Count: s{name}`;  		// Type cast explicit string.
+echo `Count: f{count1}`;          // Type cast float, printf.
+echo `Count: s{name}`;          // Type cast explicit string.
 
 echo `User: u{name}`;           // String upper
 echo `User: l{name}`;           // String lower
@@ -239,7 +241,7 @@ date("H:i:s")       // "%H:%M:%S"
 date("y/m/d H:i")   // "%Y/%m/%d %H:%M"
 
 // Presets (just keywords)
-date("today");	    // "%Y-%m-%d"
+date("today");        // "%Y-%m-%d"
 date("now");        // "%s" # Like JS Date.now() & PHP time()
 date("unix");       // "%s" # Ibid
 date("timestamp");  // "%s" # Ibid
@@ -248,7 +250,7 @@ date("human");      // "%A, %B %d, %Y"
 date("log");        // "%Y-%m-%d %H:%M:%S"
 date("filename");   // "%Y-%m-%d_%H-%M-%S"
 date("iso");        // "%Y-%m-%dT%H:%M:%S"
-date("isostring")	// "%Y-%m-%dT%H:%M:%S%z" # Like JS toISOString()
+date("isostring")    // "%Y-%m-%dT%H:%M:%S%z" # Like JS toISOString()
 
 let timestamp = date("timestamp");
 
@@ -306,8 +308,8 @@ let name = "world";
 
 if (name == "world") {
     echo `Hello {name}`;
-	echo `Hello ${name}`; // also works
-	echo `Hello #{name}`; // also works
+    echo `Hello ${name}`; // also works
+    echo `Hello #{name}`; // also works
 }
 ```
 
@@ -332,16 +334,16 @@ str.toLowerCase()
 ### Array operations
 
 ```
-arr = [];									// Array creation
-arr = [...array1, ...array2]				// Array spread operator
-arr[0];										// Indexing
-arr.length;									// Array length
-arr.push(value);							// Push value unto array
-arr.join(",");								// Join
-arr.slice(0, 2);							// Slice array
-arr.filter(item => item.endsWith(".log"));	// Filter array
-arr.forEach(f => {echo "File:" + f;}); 		// For Each loops.
-arr.includes("value");						// Used in if conditions
+arr = [];                                    // Array creation
+arr = [...array1, ...array2]                // Array spread operator
+arr[0];                                        // Indexing
+arr.length;                                    // Array length
+arr.push(value);                            // Push value unto array
+arr.join(",");                                // Join
+arr.slice(0, 2);                            // Slice array
+arr.filter(item => item.endsWith(".log"));    // Filter array
+arr.forEach(f => {echo "File:" + f;});         // For Each loops.
+arr.includes("value");                        // Used in if conditions
 ```
 
 Examples:
@@ -349,31 +351,31 @@ Examples:
 ```
 #!/usr/bin/env smash
 
-let files 	= ["a.txt", "b.txt", "c.txt", "test.log"];
-let arr 	= ['a','b','c']; // Array creation
-arr.push('d');				 // Push value unto array
-echo arr.length;			 // Array length
-echo arr[1];				 // Indexing
+let files     = ["a.txt", "b.txt", "c.txt", "test.log"];
+let arr     = ['a','b','c']; // Array creation
+arr.push('d');                 // Push value unto array
+echo arr.length;             // Array length
+echo arr[1];                 // Indexing
 
 // Spread
 let arr1 = [1, 2, 3];
 let arr2 = [4, 5, 6];
 let combined = [...arr1, ...arr2];
 
-if(arr[1] == 'b') {			 // Idx comparison
-	echo "Works fine";
+if(arr[1] == 'b') {             // Idx comparison
+    echo "Works fine";
 }
 
-let val = arr[1];			 // New assignment
-if(val == 'b') { 			 // Idx comparison
-	echo "Also works!";
+let val = arr[1];             // New assignment
+if(val == 'b') {              // Idx comparison
+    echo "Also works!";
 }
 
 // forEach
 files.forEach(f => 
-	{
-		echo "File:" + f;
-	}
+    {
+        echo "File:" + f;
+    }
 ); 
 
 // filter
@@ -440,8 +442,8 @@ let isp = config.host;
 let db = db.name;
 
 if(db == "mydb") {
-	echo "Yes mydb database is correct";
-	echo "My ISP is: " + isp;
+    echo "Yes mydb database is correct";
+    echo "My ISP is: " + isp;
 }
 ```
 
@@ -518,18 +520,18 @@ Example:
 
 let arr = ['a','b','c'];
 
-for(let str of arr) {		
-    echo `{str}`;			// Required text interpolation
+for(let str of arr) {        
+    echo `{str}`;            // Required text interpolation
 }
 
-for(let str in arr) {		// NOTE: In Smash similar to `of`
-    echo `{str}`;			// Required text interpolation
+for(let str in arr) {        // NOTE: In Smash similar to `of`
+    echo `{str}`;            // Required text interpolation
 }
 
 arr.forEach(f => 
-	{
-		echo "File:" + f;
-	}
+    {
+        echo "File:" + f;
+    }
 ); 
 
 for(let file in *.log) {
@@ -628,7 +630,7 @@ setInterval(() => {
 
 // function
 function draft() {
-	echo "Around the world!";
+    echo "Around the world!";
 }
 
 setTimeout(draft, 5);
@@ -641,10 +643,10 @@ Smash has it's own reserved keywords you could use. Some of them are quite usefu
 Current exotics:
 
 ```
-let it be;				// Deferred coercion	
-run bird <service>;		// Execution handler
-free bird <service>;	// Execution handler
-what if() {}			// Code explaination with file log reporting, and/or custom IF statement.
+let it be;                // Deferred coercion    
+run bird <service>;        // Execution handler
+free bird <service>;    // Execution handler
+what if() {}            // Code explaination with file log reporting, and/or custom IF statement.
 ```
 
 ### Exotic: Deferred Coercion.
@@ -658,10 +660,10 @@ Smash has deferred coercion: `let it be;` for known or unknown strings, values o
 - And supports "quoted" floating points.
 
 ```
-let it	= value; 							// Known or unknown. Often "it" means: unknown.
-be 		= string or (expression|typecast);	// An expression or type-cast.
-let it be;									// Processing.
-echo $it;									// Result
+let it    = value;                             // Known or unknown. Often "it" means: unknown.
+be         = string or (expression|typecast);    // An expression or type-cast.
+let it be;                                    // Processing.
+echo $it;                                    // Result
 ```
 
 Interest rate conversion
@@ -824,14 +826,14 @@ what if (userId == 233622) {
 }
 
 what if (password == "123456") {
-	echo "Then the user set a very insecure password!";
-    console.report('/var/log/explain.log');	
-	// Reports: Where is $password declared, what is accessing it? and so on.
+    echo "Then the user set a very insecure password!";
+    console.report('/var/log/explain.log');    
+    // Reports: Where is $password declared, what is accessing it? and so on.
 }
 
 what if (user == "admin") {
-    console.report('/var/log/explain.log');	
-	// Reports: what code handles $user? etc.
+    console.report('/var/log/explain.log');    
+    // Reports: what code handles $user? etc.
 }
 ```
 
