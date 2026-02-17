@@ -1792,11 +1792,11 @@ def run_smash(filename, debug=False, dry_run=False, emit=False, emit_file=False)
 def show_help():
     """Display help message"""
     print("""
-     _____   _    _   _____   _____ _       _
-    |     | | \  / | |     | |     | |     |    
-    |_____  |  \/  | |_____| |_____  |_____|    
-          | |      | |     |       | |     |    
-    |_____| |      | |     | |_____| |     |____.flaneurette'26
+     _____   _   _   _____   _____ _       _
+    |     | | | | | |     | |     | |     |
+    |_____  |  |  | |_____| |_____  |_____|    
+          | |     | |     |       | |     |    
+    |_____| |     | |     | |_____| |     |____.flaneurette'26
     
     SMASH v{VERSION} - JavaScript-style shell scripting
     
