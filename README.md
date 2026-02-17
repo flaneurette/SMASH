@@ -75,7 +75,8 @@ Executed by bash
 ## Features
 
 <sup>
-- JavaScript-like syntax. Familiar to millions of developers
+
+- JavaScript like syntax. Familiar to millions of developers
 
 - All Linux commands work. Pipes, redirects, grep, awk, everything
 
