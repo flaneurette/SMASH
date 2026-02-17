@@ -15,7 +15,7 @@ Smash is a modern JavaScript-style shell scripting language that transpiles dire
     sudo apt install smash
 
     Usage:
-	    <script.smash>            		        Run a Smash script
+	    ./<script.smash>            		    Run a Smash script
         smash <script.smash>            		Run a Smash script
         smash <script.smash> -debug     		Show generated bash code
         smash <script.smash> -test      		Show generated code without running
