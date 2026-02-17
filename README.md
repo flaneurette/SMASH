@@ -448,7 +448,7 @@ if(db == "mydb") {
 }
 ```
 
-<sup><sub>NOTE: Be careful with complex nested objects, it might not work as expected. </sub></sup>
+<sup>NOTE: Be careful with complex nested objects, it might not work as expected.</sup>
 <sup><sub>NOTE: To avoid confusion, associative array access is not allowed on objects i.e. `config[port]`</sub></sup>
 <sup><sub>NOTE: Object destructuring is not possible (yet) i.e. `let {host, port} = config;`, and probably won't be, as variable assignment suffices for simple tasks. </sub></sup>
 
