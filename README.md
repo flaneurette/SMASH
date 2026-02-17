@@ -7,7 +7,7 @@ Smash is a modern JavaScript-style shell scripting language that transpiles dire
     |     | | \  / | |     | |     | |     |    
     |_____  |  \/  | |_____| |_____  |_____|    
           | |      | |     |       | |     |    
-    ______| |      | |     | |_____| |     |____.flaneurette'26
+    |_____| |      | |     | |_____| |     |____.flaneurette'26
     
     Installation:
     sudo add-apt-repository ppa:flaneurette/smash
