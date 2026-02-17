@@ -2,7 +2,8 @@
 
 Smash is a modern JavaScript-style shell scripting language that transpiles directly to Bash.
 
-```  _____   _    _   _____   _____     
+```
+     _____   _    _   _____   _____     
     |     | | \  / | |     | |     | |     |    
     |_____  |  \/  | |_____| |_____  |_____|    
           | |      | |     |       | |     |    
