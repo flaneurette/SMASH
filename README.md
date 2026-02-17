@@ -448,7 +448,8 @@ if(db == "mydb") {
 }
 ```
 
-> NOTE:  Be careful of complex nested objects, it might not work as expected.
+- NOTE: Be careful of complex nested objects, it might not work as expected. 
+- NOTE: To avoid confusion, associative array access is not allowed on objects i.e. `config[port]`
 
 ### Functions
 
