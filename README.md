@@ -76,11 +76,17 @@ Executed by bash
 
 <sup>
 - JavaScript-like syntax. Familiar to millions of developers
+
 - All Linux commands work. Pipes, redirects, grep, awk, everything
+
 - Transpiles to bash. Works everywhere bash works
+
 - No runtime dependencies. Just Python 3 and bash
+
 - Drop-in replacement. Use Smash for new scripts, keep old bash scripts
+
 - Debug mode. See the generated bash code
+
 - Emit mode. Convert JavaScript smash directly to .sh scripts.
 </sup>
 
