@@ -1813,7 +1813,7 @@ def show_help():
         smash <script.smash> -test              Show generated code
         smash <script.smash> -emit mytool.sh    Build tool generator
         smash -v                                Show version
-        smash -h                                   Show this help
+        smash -h                                Show this help
         
     Features:
      - JavaScript-like syntax for shell scripts
