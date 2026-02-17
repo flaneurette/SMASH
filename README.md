@@ -424,6 +424,8 @@ if (count > 10) {
 Smash has support for `basic` objects, or objects literals.
 
 ```
+#!/usr/bin/env smash
+
 let config = {
     host: "localhost",
     port: 8080,
