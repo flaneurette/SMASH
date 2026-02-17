@@ -1,33 +1,3 @@
-## Destructuring
-
-```
-let [first, second, ...rest] = arr;
-echo first;  // arr[0]
-echo rest;   // remaining elements
-
-// Object destructuring
-let {host, port} = config;
-```
-
-## Default Parameters
-
-```
-function greet(name = "World") {
-    echo "Hello, " + name;
-}
-
-greet();           // Hello, World
-greet("Alice");    // Hello, Alice
-```
-
-Bash:
-```
-greet() {
-    local name=${1:-World}
-    echo "Hello, $name"
-}
-```
-
 ## String Methods
 
 ```
@@ -66,14 +36,11 @@ echo data.name;
 
 // Stringify
 let json = JSON.stringify(obj);
-
-
 ```
 
 Use `jq` under the hood:
 ```
 data=$(echo "$response" | jq -r '.name')
-
 ```
 
 ## Async/Await
@@ -99,7 +66,6 @@ rsync -av /app server3:/deploy &
 wait
 echo "All deployed!"
 ```
-
 
 ### Useful 
 
@@ -130,4 +96,3 @@ lsblk -o NAME,SIZE,TYPE,MOUNTPOINT
 ```
 sudo lshw -short
 ```
-
