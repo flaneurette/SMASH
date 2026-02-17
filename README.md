@@ -419,9 +419,9 @@ if (count > 10) {
 }
 ```
 
-### Objects
+### Object Literals
 
-Smash supports simple objects.
+Smash has support for `basic` objects, or objects literals.
 
 ```
 let config = {
