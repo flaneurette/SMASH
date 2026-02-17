@@ -131,13 +131,13 @@ Possible flags/pragmas to set:
 "use strict pipefail errexit";
 
 // Floats
-"use precision 4"        // Precision of floating points. Default value (if not set): 2
+"use precision 4"       // Precision of floating points. Default value (if not set): 2
 
 "use comments"          // Keep comments in generated bash (default: strip)
                         // Warning: keywords in comments (let, var, function) may break transpiling
 "use logging /app.log"; // Default: console.log, see all console functions in readme.
 
-"use unsafe";             // Disable code security. If set, you can use: rm -f, exec, etc.
+"use unsafe";           // Disable code security. If set, you can use: rm -f, exec, etc.
                         // By default, dangerous commands are not allowed. Use with caution.
 ```
 
@@ -188,7 +188,7 @@ echo `Today it is: {today}`;   // Smash text interpolation
 echo `Today it is: ${today}`;  // JS-style
 echo `Today it is: #{today}`;  // Ruby-style
 echo "Today it is: " + today;  // Concatenation
-echo $today;                    // Bash and PHP style
+echo $today;                   // Bash and PHP style
 ```
 
 ### Syntactic sugar
@@ -216,7 +216,7 @@ echo `Count: (float) {count1}`; // Type cast float, printf.
 echo `Count: (string) {name}`;  // Type cast explicit string.
 
 echo `Count: n{count}`;         // Type cast integer
-echo `Count: f{count1}`;          // Type cast float, printf.
+echo `Count: f{count1}`;        // Type cast float, printf.
 echo `Count: s{name}`;          // Type cast explicit string.
 
 echo `User: u{name}`;           // String upper
@@ -240,7 +240,7 @@ date("H:i:s")       // "%H:%M:%S"
 date("y/m/d H:i")   // "%Y/%m/%d %H:%M"
 
 // Presets (just keywords)
-date("today");        // "%Y-%m-%d"
+date("today");      // "%Y-%m-%d"
 date("now");        // "%s" # Like JS Date.now() & PHP time()
 date("unix");       // "%s" # Ibid
 date("timestamp");  // "%s" # Ibid
@@ -249,7 +249,7 @@ date("human");      // "%A, %B %d, %Y"
 date("log");        // "%Y-%m-%d %H:%M:%S"
 date("filename");   // "%Y-%m-%d_%H-%M-%S"
 date("iso");        // "%Y-%m-%dT%H:%M:%S"
-date("isostring")    // "%Y-%m-%dT%H:%M:%S%z" # Like JS toISOString()
+date("isostring")   // "%Y-%m-%dT%H:%M:%S%z" # Like JS toISOString()
 
 let timestamp = date("timestamp");
 
@@ -333,16 +333,16 @@ str.toLowerCase()
 ### Array operations
 
 ```
-arr = [];                                    // Array creation
+arr = [];                                   // Array creation
 arr = [...array1, ...array2]                // Array spread operator
-arr[0];                                        // Indexing
-arr.length;                                    // Array length
+arr[0];                                     // Indexing
+arr.length;                                 // Array length
 arr.push(value);                            // Push value unto array
-arr.join(",");                                // Join
+arr.join(",");                              // Join
 arr.slice(0, 2);                            // Slice array
-arr.filter(item => item.endsWith(".log"));    // Filter array
-arr.forEach(f => {echo "File:" + f;});         // For Each loops.
-arr.includes("value");                        // Used in if conditions
+arr.filter(item => item.endsWith(".log"));  // Filter array
+arr.forEach(f => {echo "File:" + f;});      // For Each loops.
+arr.includes("value");                      // Used in if conditions
 ```
 
 Examples:
@@ -352,7 +352,7 @@ Examples:
 
 let files     = ["a.txt", "b.txt", "c.txt", "test.log"];
 let arr     = ['a','b','c']; // Array creation
-arr.push('d');                 // Push value unto array
+arr.push('d');               // Push value unto array
 echo arr.length;             // Array length
 echo arr[1];                 // Indexing
 
@@ -361,7 +361,7 @@ let arr1 = [1, 2, 3];
 let arr2 = [4, 5, 6];
 let combined = [...arr1, ...arr2];
 
-if(arr[1] == 'b') {             // Idx comparison
+if(arr[1] == 'b') {           // Idx comparison
     echo "Works fine";
 }
 
@@ -642,8 +642,8 @@ Smash has it's own reserved keywords you could use. Some of them are quite usefu
 Current exotics:
 
 ```
-let it be;                // Deferred coercion    
-run bird <service>;        // Execution handler
+let it be;              // Deferred coercion    
+run bird <service>;     // Execution handler
 free bird <service>;    // Execution handler
 what if() {}            // Code explaination with file log reporting, and/or custom IF statement.
 ```
@@ -660,9 +660,9 @@ Smash has deferred coercion: `let it be;` for known or unknown strings, values o
 
 ```
 let it    = value;                             // Known or unknown. Often "it" means: unknown.
-be         = string or (expression|typecast);    // An expression or type-cast.
-let it be;                                    // Processing.
-echo $it;                                    // Result
+be         = string or (expression|typecast);  // An expression or type-cast.
+let it be;                                     // Processing.
+echo $it;                                     // Result
 ```
 
 Interest rate conversion
