@@ -1,5 +1,3 @@
-
-
 ## Object Literals / Associative Arrays
 
 ```
@@ -61,7 +59,6 @@ str.trim();
 str.replace("old", "new");
 str.replaceAll("old", "new");
 str.repeat(3);
-str.padStart(5, "0");  // "00042"
 ```
 
 ## Number Methods
@@ -80,16 +77,24 @@ Math.abs(-5);     // 5
 
 ```
 // Parse JSON
-let data = JSON.parse(response);
+let data = JSON.parse(response,jq=null);
+echo data.name;
+
+// detect is jq is present, then let user give custom jq command:
+let jq = ('echo "$response"' | jq -r '.name');
+let data = JSON.parse(response,jq);
 echo data.name;
 
 // Stringify
 let json = JSON.stringify(obj);
+
+
 ```
 
 Use `jq` under the hood:
 ```
 data=$(echo "$response" | jq -r '.name')
+
 ```
 
 ## Async/Await

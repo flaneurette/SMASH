@@ -628,6 +628,73 @@ def transpile_smash(code):
         
         return code
 
+    def object_parsing(code):
+        pat = r'(let|var|const)\s*(\w+)\s*=\s*\{\s*([\s\S]+?)\}\s*;'
+        pat2 = r'\b(\w+)\s*:\s*(["\']?)((\"|\')[a-zA-Z]+(\"|\')|[0-9]+\.[0-9]+|[0-9]+)\s*,?'
+
+        for matches in re.finditer(pat, code):
+            if matches.group(2):
+                build_command = f"declare -A {matches.group(2)}\n"
+                block = matches.group(3)
+                block = re.sub(r'^\n', '', block)
+
+                for match in re.finditer(pat2, block):
+                    key = match.group(1)
+                    value = match.group(3)
+                    if value.isdigit():
+                        build_command += f"{matches.group(2)}[{key}]={value}\n"
+                    elif value.replace('.', '', 1).isdigit():
+                        build_command += f'{matches.group(2)}[{key}]="{value}"\n'
+                    else:
+                        value = value.strip('"\'')
+                        build_command += f'{matches.group(2)}[{key}]="{value}"\n'
+
+                # matches.group(0) is the entire JS object match
+                # re.escape ensures special characters in the match don't break the substitution
+                code = re.sub(re.escape(matches.group(0)), build_command, code)
+
+        return code
+        
+        
+    def find_object_declarations(code):
+        pat = r'(let|var|const)\s*(\w+)\s*=\s*(\w+)\.(\w+)\s*;'
+
+        for match in re.finditer(pat, code):
+            var_name = match.group(2)
+            obj = match.group(3)
+            key = match.group(4)
+            new_command = f'{var_name}="${{{obj}[{key}]}}"'
+            code = code.replace(match.group(0), new_command)
+
+        return code
+        
+    def detect_object_access(code):
+        # First replace all JS objects with Bash associative arrays
+        code = object_parsing(code)
+
+        # Match: echo obj.key; or print obj.key;
+        pat1 = r'(echo|print)\s+(\w+)\.(\w+)\s*;'
+        # Match: print(obj.key);
+        pat2 = r'print\((\w+)\.(\w+)\)\s*;'
+
+        # Handle echo/print obj.key
+        for match in re.finditer(pat1, code):
+            obj = match.group(2)
+            key = match.group(3)
+            new_command = f'echo "${{{obj}[{key}]}}"'
+            code = code.replace(match.group(0), new_command)
+        
+        # Handle print(obj.key)
+        for match in re.finditer(pat2, code):
+            obj = match.group(1)
+            key = match.group(2)
+            new_command = f'echo "${{{obj}[{key}]}}"'
+            code = code.replace(match.group(0), new_command)
+        
+        code = find_object_declarations(code)
+        
+        return code
+
     def alias_bird(code):
         # Alias of `break`
         alias_pattern = r'free\s+bird;'
@@ -639,25 +706,26 @@ def transpile_smash(code):
 
         matches = re.finditer(r'free\s+bird\s+\$(\w+);', code)
 
-        for match in matches:
-            var_name = match.group(1)
+        if matches:
+            for match in matches:
+                var_name = match.group(1)
 
-            p1 = r'(let|var|const)\s+\$?' + var_name + r'\s*=\s*\[.*?\]\s*;'
-            p2 = r'(let|var|const)\s+\$?' + var_name + r'\s*=\s*(\"|\').*?(\"|\')\s*;'
-            p3 = r'(let|var|const)\s+\$?' + var_name + r'\s*=\s*[0-9]+\s*;'
+                p1 = r'(let|var|const)\s+\$?' + var_name + r'\s*=\s*\[.*?\]\s*;'
+                p2 = r'(let|var|const)\s+\$?' + var_name + r'\s*=\s*(\"|\').*?(\"|\')\s*;'
+                p3 = r'(let|var|const)\s+\$?' + var_name + r'\s*=\s*[0-9]+\s*;'
 
-            is_arr = re.search(p1, code)
-            is_var = re.search(p2, code)
-            is_int = re.search(p3, code)
+                is_arr = re.search(p1, code)
+                is_var = re.search(p2, code)
+                is_int = re.search(p3, code)
 
-            free_pattern = r'free\s+bird\s+\$' + var_name + r';'
+                free_pattern = r'free\s+bird\s+\$' + var_name + r';'
 
-            if is_arr:
-                code = re.sub(free_pattern, f"{var_name}=[];", code)
-            elif is_var:
-                code = re.sub(free_pattern, f"{var_name}='';", code)
-            elif is_int:
-                code = re.sub(free_pattern, f"{var_name}=0;", code)
+                if is_arr:
+                    code = re.sub(free_pattern, f"{var_name}=[];", code)
+                elif is_var:
+                    code = re.sub(free_pattern, f"{var_name}='';", code)
+                elif is_int:
+                    code = re.sub(free_pattern, f"{var_name}=0;", code)
 
         return code
 
@@ -979,6 +1047,10 @@ def transpile_smash(code):
     # Copy code
     # ---------------------------------------------------    
     original_code = code
+
+    # Object handling
+    # --------------------------------------------------- 
+    code = detect_object_access(code)
     
     # Custom smash keyword extractions/replacements
     # ---------------------------------------------------  

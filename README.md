@@ -419,6 +419,34 @@ if (count > 10) {
 }
 ```
 
+### Objects
+
+Smash supports simple objects.
+
+```
+let config = {
+    host: "localhost",
+    port: 8080,
+    timeout: 3.14
+};
+let db = {
+    name: "mydb",
+    port: 5432
+};
+
+// You must assign it as var to access it:
+
+let isp = config.host;
+let db = db.name;
+
+if(db == "mydb") {
+	echo "Yes mydb database is correct";
+	echo "My ISP is: " + isp;
+}
+```
+
+> NOTE:  Be careful of complex nested objects, it might not work as expected.
+
 ### Functions
 
 - Keep functions simple.
