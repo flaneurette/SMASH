@@ -452,6 +452,8 @@ if(db == "mydb") {
 
 > NOTE: To avoid confusion, associative array access is not allowed on objects i.e. `config[port]`
 
+> NOTE: Object destructuring is not possible (yet) i.e. `let {host, port} = config;`
+
 ### Functions
 
 - Keep functions simple.

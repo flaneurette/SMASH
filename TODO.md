@@ -1,24 +1,3 @@
-## Object Literals / Associative Arrays
-
-```
-let config = {
-    host: "localhost",
-    port: 8080,
-    user: "admin"
-};
-
-echo config.host;       // localhost
-echo config["port"];    // 8080
-```
-
-Bash associative arrays:
-```
-declare -A config
-config[host]="localhost"
-config[port]=8080
-echo ${config[host]}
-```
-
 ## Destructuring
 
 ```
