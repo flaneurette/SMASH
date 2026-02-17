@@ -21,9 +21,9 @@ Smash is a modern JavaScript-style shell scripting language that transpiles dire
         smash <script.smash> -test              Show generated code without running
         smash <script.smash> -emit mytool.sh    Build tool generator
         smash -v                                Show version
-        smash -h                                   Show this help
+        smash -h                                Show this help
     
-    Features:
+    Features:    
      JavaScript-like syntax for shell scripts
      All Linux commands work (pipes, redirects, everything)
      Transpiles to bash (works everywhere)
