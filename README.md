@@ -435,7 +435,7 @@ let db = {
     port: 5432
 };
 
-// You must assign it as var to access it:
+// You must assign a var/let/const to access it:
 
 let isp = config.host;
 let db = db.name;
