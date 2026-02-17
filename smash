@@ -1792,12 +1792,12 @@ def run_smash(filename, debug=False, dry_run=False, emit=False, emit_file=False)
 def show_help():
     """Display help message"""
     print("""
-                                    █            
-         ▄▄▄   ▄▄▄▄▄   ▄▄▄    ▄▄▄   █ ▄▄         
-        █   ▀  █ █ █  ▀   █  █   ▀  █▀  █        
-         ▀▀▀▄  █ █ █  ▄▀▀▀█   ▀▀▀▄  █   █        
-   █    ▀▄▄▄▀  █ █ █  ▀▄▄▀█  ▀▄▄▄▀  █   █   
-    
+    ------------------------------------
+        ▄▄▄   ▄▄▄▄▄   ▄▄▄    ▄▄▄   █ ▄▄
+        █  ▀  █ █ █  ▀   █  █   ▀  █▀  █
+        ▀▀▀▄  █ █ █  ▄▀▀▀█   ▀▀▀▄  █   █
+    █  ▀▄▄▄▀  █ █ █  ▀▄▄▀█  ▀▄▄▄▀  █   █     
+    ------------------------------------  
     SMASH v{VERSION} - JavaScript-style shell scripting
     
     Installation:
@@ -1806,10 +1806,10 @@ def show_help():
     sudo apt install smash
 
     Usage:
-        <script.smash>            		        Run a SMASH script
+        ./<script.smash>            		        Run a SMASH script
         smash <script.smash>            		Run a SMASH script
         smash <script.smash> -debug     		Show generated bash code
-        smash <script.smash> -test      		Show generated code without running
+        smash <script.smash> -test      		Show generated code
 		smash <script.smash> -emit mytool.sh    Build tool generator
         smash -v								Show version
         smash -h                   				Show this help
