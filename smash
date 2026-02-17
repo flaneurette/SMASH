@@ -1801,6 +1801,7 @@ def show_help():
     SMASH v{VERSION} - JavaScript-style shell scripting
     
     Installation:
+    
     sudo add-apt-repository ppa:flaneurette/smash
     sudo apt update
     sudo apt install smash
