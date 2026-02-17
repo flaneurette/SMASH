@@ -1815,24 +1815,10 @@ def show_help():
         smash -h                   				Show this help
     
     Features:
-     JavaScript-like syntax for shell scripts
-     All Linux commands work (pipes, redirects, everything)
-     Transpiles to bash (works everywhere)
-     No dependencies except Python 3 and bash
-    
-    Example script.smash:
-        
-        let name = "world";
-        
-        if (name == "world") {{
-            echo "Hello, " + name + "!";
-        }}
-        
-        function greet(name) {{
-            echo "Hello, " + name;
-        }}
-        
-        greet("SMASH");
+     - JavaScript-like syntax for shell scripts
+     - All Linux commands work (pipes, redirects, everything)
+     - Transpiles to bash (works everywhere)
+     - No dependencies except Python 3 and bash
     
     Learn more: https://github.com/flaneurette/smash
     Report bugs: https://github.com/flaneurette/smash/issues
