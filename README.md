@@ -3,7 +3,6 @@
 Smash is a modern JavaScript-style shell scripting language that transpiles directly to Bash.
 
 <sup>
-```
      _____   _    _   _____   _____ _       _
     |     | | \  / | |     | |     | |     |    
     |_____  |  \/  | |_____| |_____  |_____|    
@@ -29,8 +28,6 @@ Smash is a modern JavaScript-style shell scripting language that transpiles dire
      All Linux commands work (pipes, redirects, everything)
      Transpiles to bash (works everywhere)
      No dependencies except Python 3 and bash
-     
-```
 </sup>
 
 Tired of Bash's 1970s syntax? Write shell scripts with modern JavaScript-like syntax that transpiles to bash.
