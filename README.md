@@ -72,8 +72,6 @@ Generated bash code
 Executed by bash
 ```
 
-> Smash is not a full-blown JavaScript interpreter. It is a small, controlled JavaScript-inspired DSL interpeter, designed specifically for shell scripting.
-
 ## Features
 
 - JavaScript-like syntax. Familiar to millions of developers
