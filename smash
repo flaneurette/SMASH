@@ -1801,7 +1801,6 @@ def show_help():
     """)
     
     print("""
-    
     SMASH v{VERSION} - JavaScript-style shell scripting
     
     Installation:
