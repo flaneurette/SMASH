@@ -1798,6 +1798,9 @@ def show_help():
           |*|      |*|     |*      |*|     |    
     |_____|*|      |*|     |*|_____|*|     |___.flaneurette'26
     
+    """)
+    print("""
+    
     SMASH v{VERSION} - JavaScript-style shell scripting
     
     Installation:
