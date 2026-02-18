@@ -4,10 +4,10 @@ Smash is a modern JavaScript-style shell scripting language that transpiles dire
 
 ```
      _____   _    _   _____   _____ _       _
-    |     |*| \  / |*|     |*|     |*|     |    
-    |_____ *|  \/  |*|_____|*|_____ * _____|    
-          |*|      |*|     |*      |*|     |    
-    |_____|*|      |*|     |*|_____|*|     |___.flaneurette'26
+    |     | | \  / | |     | |     | |     |    
+    |_____  |  \/  | |_____| |_____  |_____|    
+          | |      | |     |       | |     |    
+    |_____| |      | |     | |_____| |     |____.flaneurette'26
     
     Installation:
 	
