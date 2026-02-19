@@ -1954,7 +1954,7 @@ def run_smash(filename, debug=False, dry_run=False, emit=False, emit_file=False)
 def show_help():
     """Display help message"""
     print(r"""
-     _____   _    _   _____   _____  _       _
+     _____   _    _   _____   _____ _       +
     |     | | \  / | |     | |     | |     |    
     |_____  |  \/  | |_____| |_____  |_____|    
           | |      | |     |       | |     |    
@@ -1984,6 +1984,7 @@ def show_help():
      - All Linux commands work (pipes, redirects, everything)
      - Transpiles to bash (works everywhere)
      - No dependencies except Python 3 and bash
+     - For JSON support: sudo apt-get install jq
     
     Learn more: https://github.com/flaneurette/smash
     Report bugs: https://github.com/flaneurette/smash/issues
