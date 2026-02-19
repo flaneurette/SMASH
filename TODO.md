@@ -1,15 +1,3 @@
-## String Methods
-
-```
-str.startsWith("http");
-str.endsWith(".log");
-str.includes("error");
-str.trim();
-str.replace("old", "new");
-str.replaceAll("old", "new");
-str.repeat(3);
-```
-
 ## Number Methods
 
 ```
