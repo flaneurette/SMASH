@@ -30,7 +30,7 @@ let data = JSON.parse(response,jq=null);
 echo data.name;
 
 // detect if jq is present, then let user give custom jq command:
-let jq = ('echo "$response"' | jq -r '.name');
+let jq = $('echo "$response"' | jq -r '.name');
 let data = JSON.parse(response,jq);
 echo data.name;
 

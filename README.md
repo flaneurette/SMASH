@@ -452,6 +452,24 @@ if(db == "mydb") {
 
 <sup>NOTE: Object destructuring is not possible (yet) i.e. `let {host, port} = config;`, and probably won't be, as variable assignment suffices for simple tasks.</sup>
 
+
+### JSON Object literals
+
+Smash support *some* JSON. Like simple JSON, that is passed to `jq` under the hood. 
+
+```
+// Assigning a var/const is required
+// It can also be a response text, or resullt from wget/curl etc.
+
+let str = '{"name": "Alice"}';
+
+const response = JSON.parse(str);
+
+echo response.name; 
+// prints: "Alice"
+```
+
+
 ### Functions
 
 - Keep functions simple.

@@ -667,6 +667,25 @@ def transpile_smash(code):
             code = code.replace(match.group(0), new_command)
 
         return code
+ 
+    def find_json_first(name, code):
+        find = r'(var|let|const)\s+' + name + r'\s*=\s*JSON\.parse\((.*)\)\s*;'
+        matches = re.finditer(find, code)
+        
+        # re.finditer returns an iterator, it's always truthy!
+        # you need to get the first match manually
+        first = next(matches, None)
+        
+        if first:
+            code = re.sub(find,'\n',code)
+            return first.group(2).strip('"\'')
+        
+        return False
+
+    def remove_json(name, code):
+        find = r'(var|let|const)\s+' + name + r'\s*=\s*JSON\.parse\((.*)\)\s*;'
+        code = re.sub(find,'\n',code)
+        return code
         
     def detect_object_access(code):
         # First replace all JS objects with Bash associative arrays
@@ -681,15 +700,27 @@ def transpile_smash(code):
         for match in re.finditer(pat1, code):
             obj = match.group(2)
             key = match.group(3)
-            new_command = f'echo "${{{obj}[{key}]}}"'
-            code = code.replace(match.group(0), new_command)
+            json_result = find_json_first(obj, code)
+            if json_result:
+                new_command = f'echo $(echo "${json_result}" | jq -r .{key})'
+                code = code.replace(match.group(0), new_command)
+                code = remove_json(obj,code)
+            else:
+                new_command = f'echo "${{{obj}[{key}]}}"'
+                code = code.replace(match.group(0), new_command)
         
         # Handle print(obj.key)
         for match in re.finditer(pat2, code):
             obj = match.group(1)
             key = match.group(2)
-            new_command = f'echo "${{{obj}[{key}]}}"'
-            code = code.replace(match.group(0), new_command)
+            json_result = find_json_first(obj, code)
+            if json_result:
+                new_command = f'echo $(echo "${json_result}" | jq -r .{key})'
+                code = code.replace(match.group(0), new_command)
+                code = remove_json(obj,code)
+            else:     
+                new_command = f'echo "${{{obj}[{key}]}}"'
+                code = code.replace(match.group(0), new_command)
         
         code = find_object_declarations(code)
         
