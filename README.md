@@ -409,7 +409,7 @@ Examples:
 ```
 #!/usr/bin/env smash
 
-let files     = ["a.txt", "b.txt", "c.txt", "test.log"];
+let files   = ["a.txt", "b.txt", "c.txt", "test.log"];
 let arr     = ['a','b','c']; // Array creation
 arr.push('d');               // Push value unto array
 echo arr.length;             // Array length
