@@ -188,6 +188,10 @@ def transpile_smash(code):
     # String concatenation: "text" + var + "more"
     # Strategy: Find all echo statements with + operators and rebuild them
     def fix_echo_concat(match):
+        
+        if re.search(r'\s+awk\s+', match.group(0)):
+            return match.group(0)
+            
         parts = match.group(1).split('+')
         result = []
         for i, part in enumerate(parts):
@@ -729,6 +733,9 @@ def transpile_smash(code):
         # Find all string methods first.
         code = string_methods(code)
         
+        # Maths
+        code = math_functions(code)
+        
         # Pre-fixing code as smash thinks it's object access... when it sees this: string.value, even if we mean: array.length
         code = re.sub(r'(\w+)\.length', r'${#\1[@]}', code)  
         
@@ -755,25 +762,95 @@ def transpile_smash(code):
                 return f'[[ "${var}" == *{val}* ]]'
             
             elif method == "trim":
-                return f'{var}=$(echo "${var}" | sed "s/^[[:space:]]*//;s/[[:space:]]*$//")'
-            
+                return var + '=$(echo "$' + var + '" | sed "s/^[[:space:]]*//;s/[[:space:]]*$//")'
+
             elif method == "replace":
                 old = args.split(',')[0].strip().strip('"\'')
                 new = args.split(',')[1].strip().strip('"\'')
-                return f'{var}=$(echo "${var}" | sed "s/{old}/{new}/")'
-            
+                return var + '=$(echo "$' + var + '" | sed "s/' + old + '/' + new + '/")'
+
             elif method == "replaceAll":
                 old = args.split(',')[0].strip().strip('"\'')
                 new = args.split(',')[1].strip().strip('"\'')
-                return f'{var}=$(echo "${var}" | sed "s/{old}/{new}/g")'
-            
+                return var + '=$(echo "$' + var + '" | sed "s/' + old + '/' + new + '/g")'
+
             elif method == "repeat":
-                return f'{var}=$(printf "${var}%.0s" $(seq 1 {args}))'
+                return var + '=$(printf "$' + var + '%.0s" $(seq 1 ' + args + '))'
             
             return m.group(0)  # no match, return original
         
         return f.sub(replace, code)
         
+    def math_functions(code):
+        
+        global FLOAT_PRECISION
+
+        f1 = re.compile(r'(let|var|const)\s+(\w+)\s*=\s*(parseInt|parseFloat|Math\.floor|Math\.ceil|Math\.round|Math\.abs)\(([^)]*)\)\s*;?')
+        f2 = re.compile(r'(parseInt|parseFloat|Math\.floor|Math\.ceil|Math\.round|Math\.abs)\(([^)]*)\)\s*;?')
+        
+        def replace(m):
+            
+            global FLOAT_PRECISION
+            
+            name = m.group(2)
+            method = m.group(3)
+            args = m.group(4) 
+            val = args.strip().strip('"\'')
+
+            is_literal = not re.match(r'^\w+$', val) or args.strip().startswith(('"', "'"))
+    
+            if method == "parseInt":
+                if is_literal:
+                    return f'{name}={re.sub("[^0-9]", "", val)}'
+                return f'{name}=$(( ${{{val}%%.*}} ))'
+            elif method == "parseFloat":
+                if is_literal:
+                    return f'{name}=$(printf "%.{FLOAT_PRECISION}f" "{val}")'
+                return  f'{name}=$(printf "%.{FLOAT_PRECISION}f" "${{{val}//[^0-9.-]/}}" 2>/dev/null || echo "0.00")'
+            elif method == "Math.floor":
+                return f'{name}=$(echo "$' + val + '" | awk \'{print int($1)}\')'
+            elif method == "Math.ceil":
+                return f'{name}=$(echo "$' + val + '" | awk \'{print ($1==int($1))?$1:int($1) + 1}\')\n'
+            elif method == "Math.round":
+                return f'{name}=$(printf "%.0f" "$' + val + '")'
+            elif method == "Math.abs":
+                return f'{name}=${{{val}#-}}'
+                
+            return m.group(0)  # no match, return original
+
+        def replace2(m):
+            
+            global FLOAT_PRECISION
+            
+            method = m.group(1)
+            args = m.group(2) 
+            val = args.strip().strip('"\'')
+            is_literal = not re.match(r'^\w+$', val) or args.strip().startswith(('"', "'"))
+            
+            if method == "parseInt":
+                if is_literal:
+                    return f'{re.sub("[^0-9]", "", val)}'
+                return f'$(( ${{{val}%%.*}} ))'  
+            elif method == "parseFloat":
+                if is_literal:
+                    return f'$(printf "%.{FLOAT_PRECISION}f" "{val}")'
+                return  f'$(printf "%.{FLOAT_PRECISION}f" "${{{val}//[^0-9.-]/}}" 2>/dev/null || echo "0.00")'
+            elif method == "Math.floor":
+                return '$(echo "$' + val + '" | awk \'{print int($1)}\')'
+            elif method == "Math.ceil":
+                return f'$(echo "$' + val + '" | awk \'{print ($1==int($1))?$1:int($1) + 1}\')'
+            elif method == "Math.round":
+                return f'$(printf "%.0f" "$' + val + '")'
+            elif method == "Math.abs":
+                return f'${{{val}#-}}'
+                
+            return m.group(0)  # no match, return original
+            
+        code = f1.sub(replace, code)
+        code = f2.sub(replace2, code)
+        
+        return code
+            
     def alias_bird(code):
         # Alias of `break`
         alias_pattern = r'free\s+bird;'
@@ -1127,13 +1204,17 @@ def transpile_smash(code):
     # ---------------------------------------------------    
     original_code = code
 
+    # Custom smash keyword extractions/replacements
+    # ---------------------------------------------------  
+    code = alias_keywords(code) # allow `echo` alias: document.write, print, etc. 
+
     # Object handling
     # --------------------------------------------------- 
     code = detect_object_access(code)
     
     # Custom smash keyword extractions/replacements
     # ---------------------------------------------------  
-    code = alias_keywords(code) # allow `echo` alias: document.write, print, etc. 
+    
     code = code_birds(code) # smash keyword: `free bird;`
     code = let_it_be(code) # smash keyword: `let it be;`
     code = what_if(code, original_code) # what if reporting
@@ -1426,7 +1507,7 @@ def transpile_smash(code):
         convert_variable_assignment,
         code
     ) 
- 
+
     # Else if, else, if.
     # ---------------------------------------------------
     
@@ -1738,7 +1819,7 @@ def transpile_smash(code):
     # Remove accidental "let ((...))"
     code = re.sub(r'\blet\s+\(\(', '((', code)
     code = re.sub(r'if\s*\((\[\[(.*)]])\)\s*\{', r'if \1; then', code)
-    
+        
     # Remove unmatched birds, better to remove it than accidentally trigger a service/restart/stop signal! (as it's passed directly to GNU/Linux)
     code = re.sub(r'(let|var|const)\s+\w+\s*=\s*(run|free)\s+bird\s*([a-zA-Z0-9]+)\s{0,3};', '', code)
     code = re.sub(r'(run|free)\s+bird\s*([a-zA-Z0-9]+)\s{0,3};', '', code)
@@ -1749,7 +1830,8 @@ def transpile_smash(code):
     
     # Match echo statements with concatenation
     code = re.sub(r'echo\s+(.+?\+.+?)(?:;|\n|$)', fix_echo_concat, code, flags=re.MULTILINE)
-    
+    # Fix: ceil awk generates stray " before newline (known issue, root cause unknown)
+    code = re.sub(r'\'\)"', '\')\n', code)    
     # Remove trailing semicolons (bash doesn't strictly need them)
     # code = re.sub(r';(\s*)$', r'\1', code, flags=re.MULTILINE)
     
