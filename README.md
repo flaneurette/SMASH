@@ -387,7 +387,7 @@ Math.round(x);    // 43
 Math.abs(-5);     // 5
 ```
 
-> NOTE: While it works for basic maths operations, bash isn't a very good math processor, so don't rely on it for very involved maths.
+> NOTE: While it works for basic maths operations, Bash isn't intended as a Math processor, so don't rely on it for very involved maths.
 
 ### Array operations
 
