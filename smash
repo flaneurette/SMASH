@@ -1792,7 +1792,7 @@ def run_smash(filename, debug=False, dry_run=False, emit=False, emit_file=False)
 def show_help():
     """Display help message"""
     print("""
-     _____   _    _   _____   _____ _       _
+     _____   _    _   _____   _____ _       _+
     |     | | \  / | |     | |     | |     |    
     |_____  |  \/  | |_____| |_____  |_____|    
           | |      | |     |       | |     |    
