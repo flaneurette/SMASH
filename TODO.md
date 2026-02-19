@@ -1,15 +1,3 @@
-## Number Methods
-
-```
-let x = "42.5";
-parseInt(x);      // 42
-parseFloat(x);    // 42.5
-Math.floor(x);    // 42
-Math.ceil(x);     // 43
-Math.round(x);    // 43
-Math.abs(-5);     // 5
-```
-
 ## Async/Await
 
 ```
