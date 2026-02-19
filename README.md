@@ -373,6 +373,21 @@ echo $str6;
 echo $str7;
 ```
 
+### Number Methods
+
+Smash supports a few common number methods.
+
+```
+let x = "42.5";
+parseInt(x);      // 42
+parseFloat(x);    // 42.5
+Math.floor(x);    // 42
+Math.ceil(x);     // 43
+Math.round(x);    // 43
+Math.abs(-5);     // 5
+```
+
+> NOTE: While it works for basic maths operations, bash isn't a very good math processor, so don't rely on it for very involved maths.
 
 ### Array operations
 
