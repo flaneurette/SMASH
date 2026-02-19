@@ -1,5 +1,5 @@
 ## String Methods
- 
+
 ```
 str.startsWith("http");
 str.endsWith(".log");
