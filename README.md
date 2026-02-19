@@ -457,6 +457,12 @@ if(db == "mydb") {
 
 Smash support *some* JSON. Like simple JSON, that is passed to `jq` under the hood. 
 
+Supported functions: 
+
+`JSON.parse(str);`
+
+Example:
+
 ```
 #!/usr/bin/env smash
 
