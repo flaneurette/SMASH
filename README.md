@@ -459,7 +459,7 @@ Smash support *some* JSON. Like simple JSON, that is passed to `jq` under the ho
 
 ```
 // Assigning a var/const is required
-// It can also be a response text, or resullt from wget/curl etc.
+// It can also be a response text, or result from wget/curl etc.
 
 let str = '{"name": "Alice"}';
 

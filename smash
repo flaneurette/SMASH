@@ -721,7 +721,14 @@ def transpile_smash(code):
             else:     
                 new_command = f'echo "${{{obj}[{key}]}}"'
                 code = code.replace(match.group(0), new_command)
-        
+
+        # Pre-fix array.length, as smash thinks it's object access... we need to have dedicated function for this, as more string functions can be used later.
+        code = re.sub(
+            r'(\w+)\.length',
+            r'${#\1[@]}',
+            code
+        )
+    
         code = find_object_declarations(code)
         
         return code
