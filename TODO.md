@@ -22,27 +22,6 @@ Math.round(x);    // 43
 Math.abs(-5);     // 5
 ```
 
-## JSON Support
-
-```
-// Parse JSON
-let data = JSON.parse(response,jq=null);
-echo data.name;
-
-// detect if jq is present, then let user give custom jq command:
-let jq = $('echo "$response"' | jq -r '.name');
-let data = JSON.parse(response,jq);
-echo data.name;
-
-// Stringify
-let json = JSON.stringify(obj);
-```
-
-Use `jq` under the hood:
-```
-data=$(echo "$response" | jq -r '.name')
-```
-
 ## Async/Await
 
 ```

@@ -65,8 +65,7 @@ def transpile_smash(code):
         COMMENT_START_PATTERN = re.compile(r'^\s*(#|//|\/\*|\*\/)')
         ECHO_START_PATTERN = re.compile(r'^\s*(echo|print)\s+')
         RESERVED1 = re.compile(r'\b(var|let|const)\s+\b(' + ESCAPED_RESERVED + r')\b')
-        RESERVED2 = re.compile(r'\b(' + ESCAPED_RESERVED + r')\s*(\w+)\s*=\s*(\[|[^;])\s*(' + ESCAPED_RESERVED + r')\b')
-        
+
         lines = code.split('\n')
         
         for line in lines:
@@ -81,10 +80,6 @@ def transpile_smash(code):
                 
             # Search illegal keyword assignments and mistakes.
             if RESERVED1.search(line):
-                print("Parsed line failed:" + line)
-                return True
-
-            if RESERVED2.search(line):
                 print("Parsed line failed:" + line)
                 return True
 
@@ -683,7 +678,7 @@ def transpile_smash(code):
         return False
 
     def remove_json(name, code):
-        find = r'(var|let|const)\s+' + name + r'\s*=\s*JSON\.parse\((.*)\)\s*;'
+        find = r'(var|let|const)\s+' + name + r'\s*=\s*JSON\.parse\(([^)]*)\)\s*;'
         code = re.sub(find,'\n',code)
         return code
         
@@ -722,17 +717,63 @@ def transpile_smash(code):
                 new_command = f'echo "${{{obj}[{key}]}}"'
                 code = code.replace(match.group(0), new_command)
 
-        # Pre-fix array.length, as smash thinks it's object access... we need to have dedicated function for this, as more string functions can be used later.
-        code = re.sub(
-            r'(\w+)\.length',
-            r'${#\1[@]}',
-            code
-        )
-    
+        # Pre-fix array.length, as smash thinks it's object access...
+        code = pre_fixing(code)
+
         code = find_object_declarations(code)
         
         return code
+        
+    def pre_fixing(code):
+        
+        # Find all string methods first.
+        code = string_methods(code)
+        
+        # Pre-fixing code as smash thinks it's object access... when it sees this: string.value, even if we mean: array.length
+        code = re.sub(r'(\w+)\.length', r'${#\1[@]}', code)  
+        
+        return code
 
+    def string_methods(code):
+        f = re.compile(r'(\w+)\.(startsWith|endsWith|includes|trim|replace|replaceAll|repeat)\(([^)]*)\)\s*;?')
+        
+        def replace(m):
+            var = m.group(1)
+            method = m.group(2)
+            args = m.group(3)
+            
+            if method == "startsWith":
+                val = args.strip('"\'')
+                return f'[[ "${var}" == {val}* ]]'
+            
+            elif method == "endsWith":
+                val = args.strip('"\'')
+                return f'[[ "${var}" == *{val} ]]'
+            
+            elif method == "includes":
+                val = args.strip('"\'')
+                return f'[[ "${var}" == *{val}* ]]'
+            
+            elif method == "trim":
+                return f'{var}=$(echo "${var}" | sed "s/^[[:space:]]*//;s/[[:space:]]*$//")'
+            
+            elif method == "replace":
+                old = args.split(',')[0].strip().strip('"\'')
+                new = args.split(',')[1].strip().strip('"\'')
+                return f'{var}=$(echo "${var}" | sed "s/{old}/{new}/")'
+            
+            elif method == "replaceAll":
+                old = args.split(',')[0].strip().strip('"\'')
+                new = args.split(',')[1].strip().strip('"\'')
+                return f'{var}=$(echo "${var}" | sed "s/{old}/{new}/g")'
+            
+            elif method == "repeat":
+                return f'{var}=$(printf "${var}%.0s" $(seq 1 {args}))'
+            
+            return m.group(0)  # no match, return original
+        
+        return f.sub(replace, code)
+        
     def alias_bird(code):
         # Alias of `break`
         alias_pattern = r'free\s+bird;'
@@ -1696,7 +1737,8 @@ def transpile_smash(code):
     # ---------------------------------------------------
     # Remove accidental "let ((...))"
     code = re.sub(r'\blet\s+\(\(', '((', code)
-
+    code = re.sub(r'if\s*\((\[\[(.*)]])\)\s*\{', r'if \1; then', code)
+    
     # Remove unmatched birds, better to remove it than accidentally trigger a service/restart/stop signal! (as it's passed directly to GNU/Linux)
     code = re.sub(r'(let|var|const)\s+\w+\s*=\s*(run|free)\s+bird\s*([a-zA-Z0-9]+)\s{0,3};', '', code)
     code = re.sub(r'(run|free)\s+bird\s*([a-zA-Z0-9]+)\s{0,3};', '', code)
@@ -1829,13 +1871,12 @@ def run_smash(filename, debug=False, dry_run=False, emit=False, emit_file=False)
     
 def show_help():
     """Display help message"""
-    print("""
-     _____   _    _   _____   _____ _       _+
+    print(r"""
+     _____   _    _   _____   _____  _       _
     |     | | \  / | |     | |     | |     |    
     |_____  |  \/  | |_____| |_____  |_____|    
           | |      | |     |       | |     |    
     |_____| |      | |     | |_____| |     |____.flaneurette'26
-    
     """)
     
     print("""

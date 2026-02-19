@@ -327,8 +327,50 @@ echo "Hello, " + name + "!";
 str.substring(0,5);
 str.split(",");
 str.toUpperCase();
-str.toLowerCase() 
+str.toLowerCase();
+str.startsWith("http");
+str.endsWith(".log");
+str.includes("error");
+str.trim();
+str.replace("old", "new");
+str.replaceAll("old", "new");
+str.repeat(3);
 ```
+
+Examples:
+
+```
+let str = "http is a protocol";
+let str2 = "there is an error in error.log";
+let str3 = "this is an error!";
+let str4 = " hello world  ";
+let str5 = "the old is is now new";
+let str6 = "the old way was old";
+let str7 = "7";
+
+if(str.startsWith("http")) {
+	echo $str;
+}
+
+if(str2.endsWith(".log")) {
+	echo $str2;
+}
+
+if(str3.includes("error")) {
+	echo $str3;
+}
+
+str4.trim();
+str5.replace("old", "new");
+str6.replaceAll("old", "new");
+str7.repeat(3);
+
+echo $str4;
+echo $str5;
+echo $str6;
+echo $str7;
+```
+
 
 ### Array operations
 
