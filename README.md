@@ -340,6 +340,8 @@ str.repeat(3);
 Examples:
 
 ```
+#!/usr/bin/env smash
+
 let str = "http is a protocol";
 let str2 = "there is an error in error.log";
 let str3 = "this is an error!";
