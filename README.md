@@ -93,7 +93,7 @@ sudo apt install smash
 smash -v
 ```
 
-## Optional
+### Optional
 
 If you need `JSON` support, then Smash requires `jq`
 
