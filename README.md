@@ -455,7 +455,7 @@ if(db == "mydb") {
 
 ### JSON Object literals
 
-Smash supports *some* JSON, that is passed to `jq` under the hood. 
+Smash supports *some* JSON, that is passed to `jq` under the hood. If you do not have `jq` then install it first: `sudo apt-get install jq`
 
 Example:
 
