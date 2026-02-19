@@ -461,7 +461,7 @@ Smash support *some* JSON. Like simple JSON, that is passed to `jq` under the ho
 #!/usr/bin/env smash
 
 
-let str = '{"name": "Alice"}'; 		// Assigning a var or const is required.
+let str = '{"name": "Alice"}'; 		// Assigning a var/const is required.
 									// It can also be a response text, or result from wget/curl etc.
 
 const response = JSON.parse(str); 	// "parse JSON text"
