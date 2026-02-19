@@ -463,7 +463,7 @@ Example:
 #!/usr/bin/env smash
 
 let str = '{"name": "Alice"}'; 		// Assigning a var/const is required.
-									// The value can also be a response text, or result from wget/curl etc.
+									// The value can also be a result from wget/curl etc.
 const response = JSON.parse(str); 	
 
 echo response.name; 				// Prints: "Alice"
