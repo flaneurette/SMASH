@@ -74,6 +74,8 @@ Executed by bash
 
 ## Features
 
+> NOTE: Smash is designed for typical shell scripting tasks, not complex algorithms. Keep nesting shallow and don't expect full JavaScript compatibility.
+
 - JavaScript-like syntax. Familiar to millions of developers
 - All Linux commands work. Pipes, redirects, grep, awk, everything
 - Transpiles to bash. Works everywhere bash works
