@@ -65,7 +65,7 @@ Smash is a runtime transpiler, it converts your Smash syntax to bash, instantly 
 ```
 Your Smash code
       |
-Python transpiler
+Python transpiler (regex based, no AST.)
       |
 Generated bash code
       |
@@ -961,7 +961,7 @@ x += foo();
 > Rule of thumb: if you can do it simplistically/procedurally, then do it. Smash is not a full fledged OOPL.
 
 #### What Smash Is Not
-
+- Not a AST parser (perhaps in the future it might!)
 - Not a JS interpreter
 - Not ECMAScript compliant
 - Not a browser runtime
