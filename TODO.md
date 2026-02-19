@@ -29,7 +29,7 @@ Math.abs(-5);     // 5
 let data = JSON.parse(response,jq=null);
 echo data.name;
 
-// detect is jq is present, then let user give custom jq command:
+// detect if jq is present, then let user give custom jq command:
 let jq = ('echo "$response"' | jq -r '.name');
 let data = JSON.parse(response,jq);
 echo data.name;
