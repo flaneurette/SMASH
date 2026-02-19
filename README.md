@@ -455,11 +455,7 @@ if(db == "mydb") {
 
 ### JSON Object literals
 
-Smash supports *some* JSON. Like simple JSON, that is passed to `jq` under the hood. 
-
-Supported functions: 
-
-`JSON.parse(str);`
+Smash supports *some* JSON, that is passed to `jq` under the hood. 
 
 Example:
 
