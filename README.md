@@ -455,7 +455,7 @@ if(db == "mydb") {
 
 ### JSON Object literals
 
-Smash supports *some* JSON, that is passed to `jq` under the hood. If you do not have `jq` then install it first: `sudo apt-get install jq`
+Smash supports *some* JSON, that is passed to `jq` under the hood. 
 
 Example:
 
@@ -469,6 +469,7 @@ const response = JSON.parse(str); 	// "parse JSON text"
 echo response.name; 				// prints: "Alice"
 ```
 
+If you do not have `jq` then install it first: `sudo apt-get install jq`
 
 ### Functions
 
