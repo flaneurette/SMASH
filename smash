@@ -268,15 +268,17 @@ def transpile_smash(code):
         return '\n'.join(result)
 
     def text_interpolation(code):
+        global FLOAT_PRECISION
         # First, handle variable assignments with backticks separately
         # Pattern: let var = `...` or var = `...`
         def assignment_repl(match):
+            global FLOAT_PRECISION
             varname = match.group(1)
             content = match.group(2)
             
             # Apply all the same transformations but DON'T wrap in quotes
             content = re.sub(r'(?:n|\(int\))\s*\{(\w+)\}', r'$(( ${\1//[^0-9]/} ))', content)
-            content = re.sub(r'(?:f|\(float\))\s*\{(\w+)\}', r'$(printf "%.2f" ${\1//[^0-9.-]/} 2>/dev/null || echo "0.00")', content)
+            content = re.sub(r'(?:f|\(float\))\s*\{(\w+)\}',lambda m: f'$(printf "%.{FLOAT_PRECISION}f" "${{{m.group(1)}//[^0-9.-]/}}" 2>/dev/null || echo "0.00")',content)
             content = re.sub(r'(?:s|\(string\))\s*\{(\w+)\}', r'${\1}', content)
             content = re.sub(r'(?:u|\(upper\))\s*\{(\w+)\}', r'${\1^^}', content)
             content = re.sub(r'(?:l|\(lower\))\s*\{(\w+)\}', r'${\1,,}', content)
@@ -292,11 +294,12 @@ def transpile_smash(code):
         
         # Then handle regular backtick interpolation (in echo, etc.)
         def repl(match):
+            global FLOAT_PRECISION
             content = match.group(1)
             
             # Same transformations but WITH quotes
             content = re.sub(r'(?:n|\(int\))\s*\{(\w+)\}', r'$(( ${\1//[^0-9]/} ))', content)
-            content = re.sub(r'(?:f|\(float\))\s*\{(\w+)\}', r'$(printf "%.2f" ${\1//[^0-9.-]/} 2>/dev/null || echo "0.00")', content)
+            content = re.sub(r'(?:f|\(float\))\s*\{(\w+)\}',lambda m: f'$(printf "%.{FLOAT_PRECISION}f" "${{{m.group(1)}//[^0-9.-]/}}" 2>/dev/null || echo "0.00")', content)
             content = re.sub(r'(?:s|\(string\))\s*\{(\w+)\}', r'${\1}', content)
             content = re.sub(r'(?:u|\(upper\))\s*\{(\w+)\}', r'${\1^^}', content)
             content = re.sub(r'(?:l|\(lower\))\s*\{(\w+)\}', r'${\1,,}', content)
@@ -1091,7 +1094,29 @@ def transpile_smash(code):
         )
         
         return code
+
+    def clean_output(code):
         
+        # Fix: let x = $(...) -> x=$(...)
+        code = re.sub(r'\blet\s+(\w+)\s*=\s*(\$\(.*?\))', r'\1=\2', code)
+        
+        # Fix: ${$var} double dollar -> ${var}
+        code = re.sub(r'\$\{\$(\w+)\}', r'${\1}', code)
+        
+        # Fix: awk echo -> awk print
+        code = re.sub(r"(awk\s+'\{)echo\s+", r'\1print ', code)
+        
+        # Fix: echo "[WARN] warning" -> echo "[WARN] $warning"
+        code = re.sub(r'echo "\[WARN\]\s+(\w+)"', r'echo "[WARN] $\1"', code)
+        code = re.sub(r'echo "\[ERROR\]\s+(\w+)"', r'echo "[ERROR] $\1"', code)
+        code = re.sub(r'echo "\[INFO\]\s+(\w+)"', r'echo "[INFO] $\1"', code)
+        code = re.sub(r'echo "\[DEBUG\]\s+(\w+)"', r'echo "[DEBUG] $\1"', code)
+        
+        # Fix: echo ok -> echo $ok (bare variable names after echo)
+        code = re.sub(r'\becho\s+(?!\$|"|\'|\[)(\w+)', r'echo $\1', code)
+        
+        return code
+    
     def transpile_date_function(code):
         """Convert date("format") to bash date commands"""
         # Preset formats (shortcuts)
@@ -1881,6 +1906,7 @@ def transpile_smash(code):
     code = '\n'.join(result)
     
     # Heal known mangled patterns
+    code = clean_output(code)
     code = heal_code(code)
     
     return code
