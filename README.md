@@ -30,7 +30,7 @@ Smash is a modern JavaScript-style shell scripting language that transpiles dire
      Transpiles to bash (works everywhere)
      No dependencies except Python 3 and bash
 	 Optional JSON support: sudo apt-get install jq
-```
+``` 
 
 Tired of Bash's 1970s syntax? Write shell scripts with modern JavaScript-like syntax that transpiles to bash.
 
