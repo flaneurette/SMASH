@@ -34,7 +34,7 @@ Smash is a modern JavaScript-style shell scripting language that transpiles dire
 
 Tired of Bash's 1970s syntax? Write shell scripts with modern JavaScript-like syntax that transpiles to bash.
 
-## Smash scripting example
+## Smash scripting example 
 
 ```
 #!/usr/bin/env smash
