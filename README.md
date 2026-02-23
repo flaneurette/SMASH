@@ -184,6 +184,8 @@ let remove_file = $(rm -f /tmp/test.log);
 ```
 #!/usr/bin/env smash
 
+// enable logging to a file.
+
 "use logging /home/admin/app.log";
 
 console.log("Application started");
