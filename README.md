@@ -177,7 +177,7 @@ doWork(); 			 // Do your work here...
 free bird $nginx;    // Automatically runs: systemctl stop nginx
 ```
 
-For more information, see the section on `run bird` and `free bird` in this README.
+For more information, see the section on `run bird` and `free bird` in this README, which are `Smash Exotics`
 
 ### Console
 
