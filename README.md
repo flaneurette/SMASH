@@ -50,11 +50,11 @@ let today = date("time");
 if (mem_usage > 90) {    
     let warning = today + " - WARNING: Memory usage is " + mem_usage + "%";
     echo `{warning}`;
-    console.warn(warning);
+    console.warn(warning); 	// write message to disk.log
 } else {
     let ok = today + " - Memory usage: " + mem_usage + "% (OK)";
     echo `{ok}`;
-    console.log(ok);
+    console.log(ok); 		// write message to disk.log
 }
 ```
 
