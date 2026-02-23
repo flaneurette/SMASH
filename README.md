@@ -258,6 +258,9 @@ echo `User: d{name}`;           // String dirname
 ```
 #!/usr/bin/env smash
 
+// enable logging to a file.
+"use logging /home/admin/app.log";
+
 // Readable format
 let readable = date("D, M d, y");  // Thursday, February 12, 2026
 
@@ -522,12 +525,12 @@ let db = {
     port: 5432
 };
 
-// You must assign a var/let/const to access it:
+// You *must* explicitly assign a var/let/const to access it:
 
 let isp = config.host;
-let db = db.name;
+let dab = db.name;
 
-if(db == "mydb") {
+if(dab == "mydb") {
     echo "Yes mydb database is correct";
     echo "My ISP is: " + isp;
 }
