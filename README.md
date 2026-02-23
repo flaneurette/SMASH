@@ -147,18 +147,6 @@ Possible flags/pragmas to set:
                         // By default, dangerous commands are not allowed. Use with caution.
 ```
 
-### Elevated commands
-
-By default, some risky commands cannot be used. This prevents severe accidental issues. You'll need to set a pragma for it to bypass security:
-
-```
-#!/usr/bin/env smash
-
-"use unsafe"; 
-
-let remove_file = $(rm -f /tmp/test.log);
-```
-
 ### Bash commands
 
 You can give Bash direct commands like so: `$(expression);`
@@ -178,6 +166,18 @@ free bird $nginx;    // Automatically runs: systemctl stop nginx
 ```
 
 For more information, see the section on `run bird` and `free bird` in this README, which are `Smash Exotics`
+
+### Elevated commands
+
+By default, some risky commands cannot be used. This prevents severe accidental issues. You'll need to set a pragma for it to bypass security:
+
+```
+#!/usr/bin/env smash
+
+"use unsafe"; 
+
+let remove_file = $(rm -f /tmp/test.log);
+```
 
 ### Console
 
