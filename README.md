@@ -159,6 +159,26 @@ By default, some risky commands cannot be used. This prevents severe accidental 
 let remove_file = $(rm -f /tmp/test.log);
 ```
 
+### Bash commands
+
+You can give Bash direct commands like so: `$(expression);`
+
+Example: 
+
+```
+let mem = $(free | grep Mem | awk '{print int($3/$2 * 100)}');
+```
+
+Fore more fine-grained control use `run bird` which has a final `free bird` command to close it.
+
+```
+let nginx = run bird $(systemctl start nginx);
+doWork(); 			 // Do your work here...
+free bird $nginx;    // Automatically runs: systemctl stop nginx
+```
+
+For more information, see the section on `run bird` and `free bird` in this README.
+
 ### Console
 
 ```
