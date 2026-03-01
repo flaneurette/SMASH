@@ -614,11 +614,11 @@ Key Points:
 ```
 | Syntax                 | Meaning              |
 | ---------------------- | -------------------- |
-| `for (let x of arr)`   | iterate array values |
-| `for (let x in arr)`   | same as `of`         |
-| `for (x in arr)`       | same as `of`         |
-| `for (let f in *.log)` | iterate glob results |
-| `arr.forEach()`        | same as `of`         |
+| for (let x of arr)     | iterate array values |
+| for (let x in arr)     | same as `of`         |
+| for (x in arr)         | same as `of`         |
+| for (let f in *.log)   | iterate glob results |
+| arr.forEach()          | same as `of`         |
 ```
 
 Example:
