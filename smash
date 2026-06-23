@@ -1438,11 +1438,12 @@ def transpile_smash(code):
     code = array_spread(code)
     
     # Array declarations: let arr = ["a", "b", "c"]
+    # FIX: using dotall flag.
     code = re.sub(
-        r'(let|const|var)\s+(\w+)\s*=\s*\[(.*?)\]',
+        r'(let|const|var)\s+(\w+)\s*=\s*\[\s*([\s\S]*?)\s*\]',  # Added \s* inside brackets
         lambda m: f"{m.group(2)}=({convert_array_elements(m.group(3))})",
         code,
-        flags=re.MULTILINE
+        flags=re.DOTALL  # This makes . match newlines (we use [\s\S] so DOTALL isn't strictly needed)
     )
     
     # Array access: arr[0]
