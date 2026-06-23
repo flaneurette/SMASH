@@ -2,12 +2,29 @@
 
 "use pipefail";
 
-cd /
+let mysql_user = 'admin';
+let mysql_pass = '';
 
-$(mkdir -p migration);
+cd /
+$(mkdir -p migration/compressed);
+$(mkdir -p migration/firewall);
+$(mkdir -p migration/databases);
 
 echo `Starting to migrate and backup the server...`;
+echo `-----------------------------------------------------------------`;
+echo `Starting to backup firewall...`;
 
+// Save firewall
+let iptables = $(iptables-save > migration/firewall/iptables.txt);
+let ipset = $(ipset save > migration/firewall/ipset.txt); 
+echo `------------------------------------------------------------ done!`;
+
+echo `Starting to backup database...`;
+// Save database
+let databases = $(mysqldump -u "$mysql_user" -p "$mysql_pass" --all-databases --single-transaction --routines --triggers > "migration/databases/databases.sql");
+echo `------------------------------------------------------------ done!`;
+
+// Compress folders
 let files = [
     'var/www/',
     'etc/letsencrypt/',
@@ -27,6 +44,6 @@ let files = [
 
 files.forEach(f => {
     echo `Making backup of: $f`;
-    tar -czvf "migration/$(basename "$f").tar.gz" "$f";
-    echo `------------------------------------ done!`;
+    tar -czvf "migration/compressed/$(basename "$f").tar.gz" "$f";
+    echo `---------------------------------------------------------done!`;
 });
