@@ -113,7 +113,7 @@ def transpile_smash(code):
             r':rem-semi:\s*;': '',
             r':rem-par-open:\s*\(': '',
             r':rem-par-closed:\s*\)': '',
-            r':rem-par-semi:\s*\);': '',
+            r':rem-par-semi:\s*\)': '',
         }
 
         for marker, replacement in markers.items():
@@ -1479,7 +1479,9 @@ def transpile_smash(code):
     # Array.forEach(f => {echo "File:" + f;});
     # NOTE: The ;; is required, as it's stripped later. Do not remove.
     code = re.sub(
-        r'(\w+)\.forEach\(.*(\w+)\s*=\s*>\s*{([^.*]+)}',
+        # FIX: RegEx was too greedy.
+        # r'(\w+)\.forEach\(.*(\w+)\s*=\s*>\s*{([^.*]+)}',
+        r'(\w+)\.forEach\(\s*(\w+)\s*=>\s*\{([^}]*)\s*\}',
         r'for \2 in "${\1[@]}";; do\n \3 \ndone:rem-par-semi:',
         code
     )
