@@ -47,3 +47,6 @@ files.forEach(f => {
     tar -czvf "migration/compressed/$(basename "$f").tar.gz" "$f";
     echo `---------------------------------------------------------done!`;
 });
+
+// Finally, make a tarball for all files
+tar -czvf "migration.tar.gz" "migration/";
