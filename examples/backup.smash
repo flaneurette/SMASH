@@ -1,0 +1,32 @@
+#!/usr/bin/env smash
+
+"use pipefail";
+
+cd /
+
+$(mkdir -p migration);
+
+echo `Starting to migrate and backup the server...`;
+
+let files = [
+    'var/www/',
+    'etc/letsencrypt/',
+    'etc/apache2/',
+    'etc/crontab',
+    'etc/cron.d/',
+    'var/spool/cron/crontabs/',
+    'etc/php/',
+    'etc/unbound/',
+    'etc/tailscale/',
+    'etc/headscale/',
+    'etc/postfix/',
+    'etc/dovecot/',
+    'var/mail/',
+    'etc/ssh/'
+];
+
+files.forEach(f => {
+    echo `Making backup of: $f`;
+    tar -czvf "migration/$(basename "$f").tar.gz" "$f";
+    echo `------------------------------------ done!`;
+});
