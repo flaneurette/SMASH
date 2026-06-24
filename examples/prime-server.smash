@@ -130,24 +130,30 @@ let systemd = [
 files.forEach(f => {
     let name = f[0];
     let path = f[2];
+    let chwn = s[1];
     echo `Restoring: $name`;
     tar -xzvf "migration/compressed/$(basename "$name").tar.gz" -C "$path";
+    chown -R $chwn $path
     echo `---------------------------------------------------------done!`;
 });
 
 configs.forEach(p => {
     let name = f[0];
     let path = f[2];
+    let chwn = s[1];
     echo `Restoring: $name`;
     tar -xzvf "migration/configs/$(basename "$name").tar.gz" -C "$path";
+    chown -R $chwn $path
     echo `---------------------------------------------------------done!`;
 });
 
 systemd.forEach(s => {
     let name = s[0];
     let path = s[2];
+    let chwn = s[1];
     echo `Restoring: $name`;
     tar -xzvf "migration/systemd/$(basename "$name").tar.gz" -C "$path";
+    chown $chwn $path
     chmod +x $path
     echo `---------------------------------------------------------done!`;
 });
@@ -163,6 +169,7 @@ systemctl start systemd-resolved.service
 
 // Make sure all html folders are www-data.
 chown -R www-data:www-data var/www/
+chmod 0755 -r var/www/
 
 // Final update
 sudo apt update
