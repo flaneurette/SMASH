@@ -121,10 +121,10 @@ let files = [
 
 // Custom systemd services, if you have them. If not, you can remove it.
 let systemd = [
-    'auth-watcher|root:root|etc/systemd/system/auth-watcher.service',
-    'unbound-tailscale|root:root|etc/systemd/system/unbound-tailscale.service',
-    'iptables-restore-onboot|root:root|etc/systemd/system/iptables-restore-onboot.service',
-    'disable-ipv6|root:root|etc/systemd/system/disable-ipv6.service'
+    'auth-watcher.service|root:root|etc/systemd/system/auth-watcher.service',
+    'unbound-tailscale.service|root:root|etc/systemd/system/unbound-tailscale.service',
+    'iptables-restore-onboot.service|root:root|etc/systemd/system/iptables-restore-onboot.service',
+    'disable-ipv6.service|root:root|etc/systemd/system/disable-ipv6.service'
 ];
 
 files.forEach(f => {
@@ -158,17 +158,14 @@ systemd.forEach(s => {
     tar -xzvf "migration/systemd/$(basename "$name").tar.gz" -C "$path";
     chown $chwn $path
     chmod +x $path
+    systemctl start $name
     echo `---------------------------------------------------------done!`;
 });
 
 // Finally, finish priming.
 enable unattended-upgrades
-start unattended-upgrades
 sudo a2enmod headers ssl rewrite expires deflate proxy proxy_http proxy_wstunnel
 sudo a2enconf security security-headers
-
-// Systemd services we know about...
-systemctl start systemd-resolved.service
 
 // Make sure all html folders are www-data.
 chown -R www-data:www-data var/www/
@@ -178,10 +175,13 @@ chmod 0755 -r var/www/
 sudo apt update
 sudo apt autoremove -y
 
+// Systemd services we know about...
+systemctl start systemd-resolved.service
+
 // Next steps
 echo `Finished priming.`;
 echo `------------------------------------------------------------------ `;
-echo `Final manual step 0: install and configure tailscale/headscale manually. Too complex.`;
+echo `Final manual step 0: install and configure tailscale/headscale manually. Too complex to automate reliably.`;
 echo `Final manual step 1: enable all your vhosts: a2ensite <domainname>`;
 echo `Final manual step 2: install MySQL: sudo apt install -y mysql-server`;
 echo `Final manual step 3: chmod all cron files, i.e.: chmod +x /etc/cron.daily/00logwatch`;
