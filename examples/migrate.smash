@@ -81,24 +81,27 @@ let systemd = [
 ];
 
 files.forEach(f => {
-    let name = f[0];
-    let path = f[2];
+    let a = f.split('|');
+    let name = a[0];
+    let path = a[2];
     echo `Making backup of: $name`;
     tar -czvf "migration/compressed/$(basename "$name").tar.gz" "$path";
     echo `---------------------------------------------------------done!`;
 });
 
 configs.forEach(p => {
-    let name = f[0];
-    let path = f[2];
+    let a = p.split('|');
+    let name = a[0];
+    let path = a[2];
     echo `Making backup of: $name`;
     tar -czvf "migration/configs/$(basename "$name").tar.gz" "$path";
     echo `---------------------------------------------------------done!`;
 });
 
 systemd.forEach(s => {
-    let name = s[0];
-    let path = s[2];
+    let a = s.split('|');
+    let name = a[0];
+    let path = a[2];
     echo `Making backup of: $name`;
     tar -czvf "migration/systemd/$(basename "$name").tar.gz" "$path";
     echo `---------------------------------------------------------done!`;

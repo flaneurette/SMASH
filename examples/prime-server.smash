@@ -36,7 +36,7 @@ apt install -y apache2 apache2-utils libapache2-mod-evasive libapache2-mod-qos
 apt install -y certbot python3-certbot-apache
 apt install -y curl wget git htop unzip nano net-tools logwatch
 apt install -y postfix dovecot-core dovecot-imapd dovecot-lmtpd
-apt install -y tailscale headscale unbound fail2ban lynis opendkim
+apt install -y unbound fail2ban lynis opendkim
 apt install -y libpam-pwquality mailutils jq
 apt install -y apparmor apparmor-utils auditd ssh-audit apt-listchanges libpam-tmpdir
 
@@ -128,9 +128,10 @@ let systemd = [
 ];
 
 files.forEach(f => {
-    let name = f[0];
-    let path = f[2];
-    let chwn = s[1];
+    let a = f.split('|');
+    let name = a[0];
+    let path = a[2];
+    let chwn = a[1];
     echo `Restoring: $name`;
     tar -xzvf "migration/compressed/$(basename "$name").tar.gz" -C "$path";
     chown -R $chwn $path
@@ -138,9 +139,10 @@ files.forEach(f => {
 });
 
 configs.forEach(p => {
-    let name = f[0];
-    let path = f[2];
-    let chwn = s[1];
+    let a = p.split('|');
+    let name = a[0];
+    let path = a[2];
+    let chwn = a[1];
     echo `Restoring: $name`;
     tar -xzvf "migration/configs/$(basename "$name").tar.gz" -C "$path";
     chown -R $chwn $path
@@ -148,9 +150,10 @@ configs.forEach(p => {
 });
 
 systemd.forEach(s => {
-    let name = s[0];
-    let path = s[2];
-    let chwn = s[1];
+    let a = s.split('|');
+    let name = a[0];
+    let path = a[2];
+    let chwn = a[1];
     echo `Restoring: $name`;
     tar -xzvf "migration/systemd/$(basename "$name").tar.gz" -C "$path";
     chown $chwn $path
