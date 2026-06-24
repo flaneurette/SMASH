@@ -80,10 +80,10 @@ let files = [
 
 // Custom systemd services, if you have them. If not, you can remove it.
 let systemd = [
-    'auth-watcher|root:root|etc/systemd/system/auth-watcher.service',
-    'unbound-tailscale|root:root|etc/systemd/system/unbound-tailscale.service',
-    'iptables-restore-onboot|root:root|etc/systemd/system/iptables-restore-onboot.service',
-    'disable-ipv6|root:root|etc/systemd/system/disable-ipv6.service'
+    'auth-watcher.service|root:root|etc/systemd/system/auth-watcher.service',
+    'unbound-tailscale.service|root:root|etc/systemd/system/unbound-tailscale.service',
+    'iptables-restore-onboot.service|root:root|etc/systemd/system/iptables-restore-onboot.service',
+    'disable-ipv6.service|root:root|etc/systemd/system/disable-ipv6.service'
 ];
 
 // bin scripts

@@ -86,7 +86,6 @@ let configs = [
 // Compress folders
 let files = [
     'apt|root:root|etc/apt/',
-    'root|root:root|root/',
     'home|root:root|home/',
     'websites|www-data:www-data|var/www/',
     'logs|root:syslog|var/log/',
@@ -211,7 +210,7 @@ systemd.forEach(s => {
     let chwn = a[1];
     echo `Restoring: $name`;
     cd /
-    tar -xzvf "migration/systemd/$(basename "$name").tar.gz";
+    cp migration/systemd/system/$name $path 
     chown $chwn $path
     chmod +x $path
     systemctl start $name
