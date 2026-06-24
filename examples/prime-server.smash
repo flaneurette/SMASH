@@ -5,6 +5,7 @@
 # Also, make sure all files exist. Required: migration.tar.gz
 
 "use pipefail";
+"use unsafe";
 
 let mysql_user = 'admin';
 let mysql_pass = '';
