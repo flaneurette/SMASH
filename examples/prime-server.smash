@@ -80,7 +80,7 @@ let configs = [
     'mailname|root:root|etc/mailname',
     'aliases|root:root|etc/aliases',
     'aliasesdb|root:root|etc/aliases.db',
-    'hostname|root:root|etc/hostname',
+    'hostname|root:root|etc/hostname'
 ];
 
 // Compress folders
@@ -127,12 +127,62 @@ let systemd = [
     'disable-ipv6.service|root:root|etc/systemd/system/disable-ipv6.service'
 ];
 
+// bin scripts
+let bin = [
+    'auth_monitor.sh|root:root|usr/local/bin/auth_monitor.sh',
+    'auth_watcher.sh|root:root|usr/local/bin/auth_watcher.sh',
+    'block.sh|root:root|usr/local/bin/block.sh',
+    'block_persistent_attackers.sh|root:root|usr/local/bin/block_persistent_attackers.sh',
+    'firewall|root:root|usr/local/bin/firewall',
+    'occ|root:root|usr/local/bin/occ',
+    'service-watchdog.sh|root:root|usr/local/bin/service-watchdog.sh',
+    'unbound-prepost-tailscale.sh|root:root|usr/local/bin/unbound-prepost-tailscale.sh',
+    'vps-audit.sh|root:root|usr/local/bin/vps-audit.sh'
+];
+
+// sbin scripts
+let sbin = [
+    'backup-data.sh|root:root|usr/local/sbin/backup-data.sh',
+    'backup-server.sh|root:root|usr/local/sbin/backup-server.sh',
+    'certs.sh|root:root|usr/local/sbin/certs.sh',
+    'check-iptables.sh|root:root|usr/local/sbin/check-iptables.sh',
+    'iptables-restore-onboot.sh|root:root|usr/local/sbin/iptables-restore-onboot.sh',
+    'mail-certs.sh|root:root|usr/local/sbin/mail-certs.sh',
+    'package-backups.sh|root:root|usr/local/sbin/package-backups.sh',
+    'tailscale-watch.sh|root:root|usr/local/sbin/tailscale-watch.sh'
+];
+
+bin.forEach(b => {
+    let a = b.split('|');
+    let name = a[0];
+    let path = a[2];
+    echo `Restoring: $name`;
+    cd /
+    touch $path
+    cp migration/bin/$name $path 
+    chmod 0755 $path
+    echo `---------------------------------------------------------done!`;
+});
+
+sbin.forEach(sb => {
+    let a = sb.split('|');
+    let name = a[0];
+    let path = a[2];
+    echo `Restoring: $name`;
+    cd /
+    touch $path
+    cp migration/sbin/$name $path 
+    chmod 0755 $path
+    echo `---------------------------------------------------------done!`;
+});
+
 files.forEach(f => {
     let a = f.split('|');
     let name = a[0];
     let path = a[2];
     let chwn = a[1];
     echo `Restoring: $name`;
+    cd /
     tar -xzvf "migration/compressed/$(basename "$name").tar.gz" -C "$path";
     chown -R $chwn $path
     echo `---------------------------------------------------------done!`;
@@ -144,6 +194,7 @@ configs.forEach(p => {
     let path = a[2];
     let chwn = a[1];
     echo `Restoring: $name`;
+    cd /
     tar -xzvf "migration/configs/$(basename "$name").tar.gz" -C "$path";
     chown -R $chwn $path
     echo `---------------------------------------------------------done!`;
@@ -155,6 +206,7 @@ systemd.forEach(s => {
     let path = a[2];
     let chwn = a[1];
     echo `Restoring: $name`;
+    cd /
     tar -xzvf "migration/systemd/$(basename "$name").tar.gz" -C "$path";
     chown $chwn $path
     chmod +x $path
@@ -163,29 +215,29 @@ systemd.forEach(s => {
 });
 
 // Finally, finish priming.
-enable unattended-upgrades
 sudo a2enmod headers ssl rewrite expires deflate proxy proxy_http proxy_wstunnel
 sudo a2enconf security security-headers
 
 // Make sure all html folders are www-data.
 chown -R www-data:www-data var/www/
-chmod 0755 -r var/www/
+
+// Default 0755, change if needed...
+chmod 0755 -R var/www/
 
 // Final update
 sudo apt update
 sudo apt autoremove -y
 
-// Systemd services we know about...
+// Systemd resolver
 systemctl start systemd-resolved.service
+systemctl daemon-reload
 
 // Next steps
 echo `Finished priming.`;
 echo `------------------------------------------------------------------ `;
 echo `Final manual step 0: install and configure tailscale/headscale manually. Too complex to automate reliably.`;
 echo `Final manual step 1: enable all your vhosts: a2ensite <domainname>`;
-echo `Final manual step 2: install MySQL: sudo apt install -y mysql-server`;
+echo `Final manual step 2: install MySQL manually: sudo apt install -y mysql-server`;
 echo `Final manual step 3: chmod all cron files, i.e.: chmod +x /etc/cron.daily/00logwatch`;
 echo `Final manual step 4: chmod all users files in bin and sbin, i.e.: chmod +x /usr/local/bin/security-check.sh`;
-echo `Final manual step 5: reload systemd: sudo systemctl daemon-reload`;
-echo `Final manual step 6: enable any systemd scripts, i.e.: sudo systemctl enable iptables-restore-onboot.service`;
 echo `Final manual step 7: restart all services, or reboot. (recommended)`;

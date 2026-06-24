@@ -6,11 +6,15 @@ let mysql_user = 'admin';
 let mysql_pass = '';
 
 cd /
-$(mkdir -p migration/compressed);
-$(mkdir -p migration/firewall);
-$(mkdir -p migration/databases);
-$(mkdir -p migration/configs);
-$(mkdir -p migration/systemd);
+mkdir -p migration/compressed
+mkdir -p migration/firewall
+mkdir -p migration/databases
+mkdir -p migration/configs
+mkdir -p migration/systemd
+mkdir -p migration/bin
+mkdir -p migration/sbin
+chmod 0755 migration/bin
+chmod 0755 migration/sbin
 
 echo `Starting to migrate and backup the server...`;
 echo `-----------------------------------------------------------------`;
@@ -80,6 +84,31 @@ let systemd = [
     'disable-ipv6|root:root|etc/systemd/system/disable-ipv6.service'
 ];
 
+// bin scripts
+let bin = [
+    'auth_monitor.sh|root:root|usr/local/bin/auth_monitor.sh',
+    'auth_watcher.sh|root:root|usr/local/bin/auth_watcher.sh',
+    'block.sh|root:root|usr/local/bin/block.sh',
+    'block_persistent_attackers.sh|root:root|usr/local/bin/block_persistent_attackers.sh',
+    'firewall|root:root|usr/local/bin/firewall',
+    'occ|root:root|usr/local/bin/occ',
+    'service-watchdog.sh|root:root|usr/local/bin/service-watchdog.sh',
+    'unbound-prepost-tailscale.sh|root:root|usr/local/bin/unbound-prepost-tailscale.sh',
+    'vps-audit.sh|root:root|usr/local/bin/vps-audit.sh'
+];
+
+// sbin scripts
+let sbin = [
+    'backup-data.sh|root:root|usr/local/sbin/backup-data.sh',
+    'backup-server.sh|root:root|usr/local/sbin/backup-server.sh',
+    'certs.sh|root:root|usr/local/sbin/certs.sh',
+    'check-iptables.sh|root:root|usr/local/sbin/check-iptables.sh',
+    'iptables-restore-onboot.sh|root:root|usr/local/sbin/iptables-restore-onboot.sh',
+    'mail-certs.sh|root:root|usr/local/sbin/mail-certs.sh',
+    'package-backups.sh|root:root|usr/local/sbin/package-backups.sh',
+    'tailscale-watch.sh|root:root|usr/local/sbin/tailscale-watch.sh'
+];
+
 files.forEach(f => {
     let a = f.split('|');
     let name = a[0];
@@ -94,6 +123,7 @@ configs.forEach(p => {
     let name = a[0];
     let path = a[2];
     echo `Making backup of: $name`;
+    cd /
     tar -czvf "migration/configs/$(basename "$name").tar.gz" "$path";
     echo `---------------------------------------------------------done!`;
 });
@@ -103,7 +133,32 @@ systemd.forEach(s => {
     let name = a[0];
     let path = a[2];
     echo `Making backup of: $name`;
+    cd /
     tar -czvf "migration/systemd/$(basename "$name").tar.gz" "$path";
+    echo `---------------------------------------------------------done!`;
+});
+
+bin.forEach(b => {
+    let a = b.split('|');
+    let name = a[0];
+    let path = a[2];
+    echo `Making backup of: $name`;
+    cd /
+    touch migration/bin/$name
+    cp -v $path migration/bin/$name
+    chmod 0755 migration/bin/$name
+    echo `---------------------------------------------------------done!`;
+});
+
+sbin.forEach(b => {
+    let a = b.split('|');
+    let name = a[0];
+    let path = a[2];
+    echo `Making backup of: $name`;
+    cd /
+    touch migration/sbin/$name
+    cp -v $path migration/sbin/$name
+    chmod 0755 migration/sbin/$name
     echo `---------------------------------------------------------done!`;
 });
 
