@@ -62,11 +62,12 @@ sudo systemctl mask netfilter-persistent
 sudo apt remove -y netfilter-persistent iptables-persistent
 echo "flush ruleset" >> /etc/nftables.conf
 sudo apt-mark hold nftables
-sudo apt purge nftables
+sudo apt purge -y nftables
 
 // Restore firewall
-iptables-restore < migration/firewall/iptables.txt
+sudo apt install ipset
 ipset restore < migration/firewall/ipset.txt
+iptables-restore < migration/firewall/iptables.txt
 
 echo `------------------------------------------------------------ done!`;
 

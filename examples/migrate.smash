@@ -10,7 +10,7 @@ mkdir -p migration/compressed
 mkdir -p migration/firewall
 mkdir -p migration/databases
 mkdir -p migration/configs
-mkdir -p migration/systemd
+mkdir -p migration/systemd/system
 mkdir -p migration/bin
 mkdir -p migration/sbin
 chmod 0755 -R migration
