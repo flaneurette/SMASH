@@ -72,9 +72,9 @@ ipset restore < migration/firewall/ipset.txt
 echo `------------------------------------------------------------ done!`;
 
 let configs = [
-    'custom-sysctl|root:root|etc/sysctl.d/99-custom.conf',
-    'harden-sysctl|root:root|etc/sysctl.d/99-harden.conf',
-    'harden-tailscale|root:root|/etc/sysctl.d/99-tailscale.conf',
+    'customsysctl|root:root|etc/sysctl.d/99-custom.conf',
+    'hardensysctl|root:root|etc/sysctl.d/99-harden.conf',
+    'hardentailscale|root:root|/etc/sysctl.d/99-tailscale.conf',
     'issue|root:root|etc/issue',
     'issuenet|root:root|etc/issue.net',
     'resolv|root:root|etc/resolv.conf',
@@ -184,7 +184,7 @@ files.forEach(f => {
     let chwn = a[1];
     echo `Restoring: $name`;
     cd /
-    tar -xzvf "migration/compressed/$(basename "$name").tar.gz" -C "$path";
+    tar -xzvf "migration/compressed/$(basename "$name").tar.gz";
     chown -R $chwn $path
     echo `---------------------------------------------------------done!`;
 });
@@ -210,7 +210,7 @@ systemd.forEach(s => {
     let chwn = a[1];
     echo `Restoring: $name`;
     cd /
-    tar -xzvf "migration/systemd/$(basename "$name").tar.gz" -C "$path";
+    tar -xzvf "migration/systemd/$(basename "$name").tar.gz";
     chown $chwn $path
     chmod +x $path
     systemctl start $name

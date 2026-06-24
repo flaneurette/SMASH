@@ -30,13 +30,16 @@ let databases = $(mysqldump -u "$mysql_user" -p "$mysql_pass" --all-databases --
 echo `------------------------------------------------------------ done!`;
 
 let configs = [
+    'custom-sysctl|root:root|etc/sysctl.d/99-custom.conf',
+    'harden-sysctl|root:root|etc/sysctl.d/99-harden.conf',
+    'harden-tailscale|root:root|etc/sysctl.d/99-tailscale.conf',
     'issue|root:root|etc/issue',
     'issuenet|root:root|etc/issue.net',
     'resolv|root:root|etc/resolv.conf',
     'mailname|root:root|etc/mailname',
     'aliases|root:root|etc/aliases',
     'aliasesdb|root:root|etc/aliases.db',
-    'hostname|root:root|etc/hostname',
+    'hostname|root:root|etc/hostname'
 ];
 
 // Compress folders
