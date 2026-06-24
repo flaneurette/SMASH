@@ -1,6 +1,6 @@
 #!/usr/bin/env smash
 # Usage: run as root.
-# WARNING! requires *migration.smash* to have ran first on the old server, 
+# WARNING! requires *migrate.smash* to have ran first on the old server, 
 # and the /migration/ folder to exist on the new server!
 # Also, make sure all files exist. Required: migration.tar.gz
 
