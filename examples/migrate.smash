@@ -14,7 +14,7 @@ $(mkdir -p migration/systemd);
 
 echo `Starting to migrate and backup the server...`;
 echo `-----------------------------------------------------------------`;
-echo `Starting to mbackup firewall...`;
+echo `Starting to backup firewall...`;
 
 // Save firewall
 let iptables = $(iptables-save > migration/firewall/iptables.txt);
@@ -27,10 +27,6 @@ let databases = $(mysqldump -u "$mysql_user" -p "$mysql_pass" --all-databases --
 echo `------------------------------------------------------------ done!`;
 
 let configs = [
-    'aptsources|root:root|/etc/apt/sources.list.d/',
-    'passwd|root:root|etc/passwd',
-    'shadow|root:shadow|etc/shadow',
-    'gshadow|root:root|etc/gshadow',
     'issue|root:root|etc/issue',
     'issuenet|root:root|etc/issue.net',
     'resolv|root:root|etc/resolv.conf',
@@ -42,6 +38,7 @@ let configs = [
 
 // Compress folders
 let files = [
+    'apt|root:root|etc/apt/',
     'root|root:root|root/',
     'home|root:root|home/',
     'websites|www-data:www-data|var/www/',
