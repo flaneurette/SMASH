@@ -13,8 +13,7 @@ mkdir -p migration/configs
 mkdir -p migration/systemd
 mkdir -p migration/bin
 mkdir -p migration/sbin
-chmod 0755 migration/bin
-chmod 0755 migration/sbin
+chmod 0755 -R migration
 
 echo `Starting to migrate and backup the server...`;
 echo `-----------------------------------------------------------------`;
@@ -114,6 +113,7 @@ files.forEach(f => {
     let name = a[0];
     let path = a[2];
     echo `Making backup of: $name`;
+    cd /
     tar -czvf "migration/compressed/$(basename "$name").tar.gz" "$path";
     echo `---------------------------------------------------------done!`;
 });
