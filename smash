@@ -114,11 +114,22 @@ def transpile_smash(code):
             r':rem-par-open:\s*\(': '',
             r':rem-par-closed:\s*\)': '',
             r':rem-par-semi:\s*\)': '',
+            # FIX for array indices *within* forEach loop:
+            r'];\s*\ndone:rem-par-semi:': ']}\n',
+            r']\s*\ndone:rem-par-semi:': ']}\n',
+            r'\ndone:rem-par-semi:': '\ndone;',          
         }
 
         for marker, replacement in markers.items():
             code = re.sub(marker, replacement, code)
         
+        # FIX: incomplete code 
+        code = re.sub(
+            r'(let|var|const)\s+(\w+)\s*=\s+\$\{',
+            r'\2=${',
+            code
+        )
+                    
         # At the end, do proper interpolation
         # ---------------------------------------------------
         # Interpolation
@@ -1434,6 +1445,15 @@ def transpile_smash(code):
     # Arrays
     # ---------------------------------------------------
 
+    # Array access: arr[0];
+    # This is tricky - need to distinguish from declaration
+    # Only convert if NOT in a declaration context
+    code = re.sub(
+        r'(\w+)\[(\d+)\];',
+        r'${\1[\2]}',
+        code
+    )
+    
     # Array spread ...arr
     code = array_spread(code)
     
@@ -1444,15 +1464,6 @@ def transpile_smash(code):
         lambda m: f"{m.group(2)}=({convert_array_elements(m.group(3))})",
         code,
         flags=re.DOTALL  # This makes . match newlines (we use [\s\S] so DOTALL isn't strictly needed)
-    )
-    
-    # Array access: arr[0]
-    # This is tricky - need to distinguish from declaration
-    # Only convert if NOT in a declaration context
-    code = re.sub(
-        r'(\w+)\[(\d+)\]',
-        r'${\1[\2]}',
-        code
     )
     
     # Array.length (see: Numeric equality)
@@ -1482,7 +1493,7 @@ def transpile_smash(code):
     code = re.sub(
         # FIX: RegEx was too greedy.
         # r'(\w+)\.forEach\(.*(\w+)\s*=\s*>\s*{([^.*]+)}',
-        r'(\w+)\.forEach\(\s*(\w+)\s*=>\s*\{([^}]*)\s*\}',
+        r'(\w+)\.forEach\(\s*(\w+)\s*=>\s*\{([\s\S]*?)\s*\}\s*\)\s*;',
         r'for \2 in "${\1[@]}";; do\n \3 \ndone:rem-par-semi:',
         code
     )
@@ -1505,7 +1516,21 @@ def transpile_smash(code):
       
     # Array.slice()
     code = array_slice(code)
-    
+
+    # FIX: str.split must come before var assignments...
+    # Str.split
+    def split_repl(match):
+        var = match.group(1)
+        delim = match.group(2)
+        return f'IFS="{delim}" read -ra parts <<< "${var}"'
+
+    # Str.split array assignment
+    code = re.sub(
+        r'\blet\s+(\w+)\s*=\s*(\w+)\.split\(\s*[\'\"]([^\'\"]+)[\'\"]\s*\)\s*;?',
+        lambda m: f'IFS="{m.group(3)}" read -ra {m.group(1)} <<< "${m.group(2)}"',
+        code
+    )
+
     # Variables
     # ---------------------------------------------------
     
@@ -1816,19 +1841,6 @@ def transpile_smash(code):
     code = re.sub(
         r'(\w+)\.(substring|substr)\(\s*(\d+)\s*,\s*(\d+)\s*\)',
         r'${\1:\3:\4}',
-        code
-    )
-
-    # Str.split
-    def split_repl(match):
-        var = match.group(1)
-        delim = match.group(2)
-        return f'IFS="{delim}" read -ra parts <<< "${var}"'
-
-    # Str.split array assignment
-    code = re.sub(
-        r'\blet\s+(\w+)\s*=\s*(\w+)\.split\(\s*[\'"]([^\'"]+)[\'"]\s*\)\s*;?',
-        lambda m: f'IFS="{m.group(3)}" read -ra {m.group(1)} <<< "${m.group(2)}"',
         code
     )
 

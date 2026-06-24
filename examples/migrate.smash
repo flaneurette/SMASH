@@ -1,0 +1,111 @@
+#!/usr/bin/env smash
+
+"use pipefail";
+
+let mysql_user = 'admin';
+let mysql_pass = '';
+
+cd /
+$(mkdir -p migration/compressed);
+$(mkdir -p migration/firewall);
+$(mkdir -p migration/databases);
+$(mkdir -p migration/configs);
+$(mkdir -p migration/systemd);
+
+echo `Starting to migrate and backup the server...`;
+echo `-----------------------------------------------------------------`;
+echo `Starting to mbackup firewall...`;
+
+// Save firewall
+let iptables = $(iptables-save > migration/firewall/iptables.txt);
+let ipset = $(ipset save > migration/firewall/ipset.txt); 
+echo `------------------------------------------------------------ done!`;
+
+echo `Starting to backup database...`;
+// Save database
+let databases = $(mysqldump -u "$mysql_user" -p "$mysql_pass" --all-databases --single-transaction --routines --triggers > "migration/databases/databases.sql");
+echo `------------------------------------------------------------ done!`;
+
+let configs = [
+    'aptsources|root:root|/etc/apt/sources.list.d/',
+    'passwd|root:root|etc/passwd',
+    'shadow|root:shadow|etc/shadow',
+    'gshadow|root:root|etc/gshadow',
+    'issue|root:root|etc/issue',
+    'issuenet|root:root|etc/issue.net',
+    'resolv|root:root|etc/resolv.conf',
+    'mailname|root:root|etc/mailname',
+    'aliases|root:root|etc/aliases',
+    'aliasesdb|root:root|etc/aliases.db',
+    'hostname|root:root|etc/hostname',
+];
+
+// Compress folders
+let files = [
+    'root|root:root|root/',
+    'home|root:root|home/',
+    'websites|www-data:www-data|var/www/',
+    'logs|root:syslog|var/log/',
+    'backups|root:root|var/backups/',
+    'sbin|root:root|usr/local/sbin/',
+    'bin|root:root|usr/local/bin/',
+    'letsencrypt|root:root|etc/letsencrypt/',
+    'apache2|root:root|etc/apache2/',
+    'mysql|root:root|etc/mysql/',
+    'crondaily|root:root|etc/cron.daily/',
+    'cronhourly|root:root|etc/cron.hourly/',
+    'cronweekly|root:root|etc/cron.weekly/',
+    'cronmonthly|root:root|etc/cron.monthly/',
+    'cronyearly|root:root|etc/cron.yearly/',
+    'crontab|root:root|etc/crontab',
+    'crond|root:root|etc/cron.d/',
+    'logrotate|root:root|etc/logrotate.d/',
+    'crontabs|root:root|var/spool/cron/crontabs/',
+    'fail2ban|root:root|etc/fail2ban/',
+    'iptables|root:root|etc/iptables/',
+    'php|root:root|etc/php/',
+    'unbound|root:root|etc/unbound/',
+    'tailscale|root:root|etc/tailscale/',
+    'headscale|root:root|etc/headscale/',
+    'postfix|root:root|etc/postfix/',
+    'dovecot|root:root|etc/dovecot/',
+    'opendkim|opendkim:opendkim|etc/opendkim/',
+    'dkimkeys|root:root|etc/dkimkeys/',
+    'mail|root:mail|var/mail/',
+    'ssh|root:root|etc/ssh/'
+];
+
+// Custom systemd services, if you have them. If not, you can remove it.
+let systemd = [
+    'auth-watcher|root:root|etc/systemd/system/auth-watcher.service',
+    'unbound-tailscale|root:root|etc/systemd/system/unbound-tailscale.service',
+    'iptables-restore-onboot|root:root|etc/systemd/system/iptables-restore-onboot.service',
+    'disable-ipv6|root:root|etc/systemd/system/disable-ipv6.service'
+];
+
+files.forEach(f => {
+    let name = f[0];
+    let path = f[2];
+    echo `Making backup of: $name`;
+    tar -czvf "migration/compressed/$(basename "$name").tar.gz" "$path";
+    echo `---------------------------------------------------------done!`;
+});
+
+configs.forEach(p => {
+    let name = f[0];
+    let path = f[2];
+    echo `Making backup of: $name`;
+    tar -czvf "migration/configs/$(basename "$name").tar.gz" "$path";
+    echo `---------------------------------------------------------done!`;
+});
+
+systemd.forEach(s => {
+    let name = s[0];
+    let path = s[2];
+    echo `Making backup of: $name`;
+    tar -czvf "migration/systemd/$(basename "$name").tar.gz" "$path";
+    echo `---------------------------------------------------------done!`;
+});
+
+// Finally, make a tarball for all files
+tar -czvf "migration.tar.gz" "migration/";
