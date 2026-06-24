@@ -10,35 +10,6 @@
 let mysql_user = 'admin';
 let mysql_pass = '';
 
-cd /
-
-// Disable unnecessary services first
-sudo systemctl disable avahi-daemon
-sudo systemctl disable cups
-sudo systemctl disable bluetooth
-sudo apt remove -y ubuntu-kernel-accessories ubuntu-standard
-sudo apt autoremove -y
-sudo apt remove -y eatmydata telnet inetutils-telnet swaks webalizer bpfcc-tools bpftrace bpfmon strace trace-cmd apport 
-sudo apt remove -y snapd modemmanager tnftp procmail rmail ruby-net-telnet arp-scan xclip sosreport 
-sudo apt remove -y lxd-agent-loader lxd-installer multipath-tools
-sudo apt remove -y bpfcc-tools bpftrace bpfmon bpfcc-lua
-sudo apt-mark hold bpfcc-tools bpftrace bpfmon
-sudo apt autoremove -y
-
-// Prime server with software packages
-apt install -y software-properties-common unattended-upgrades apt-listchanges 
-apt install -y ca-certificates lsb-release apt-transport-https
-apt install -y apache2 apache2-utils libapache2-mod-evasive libapache2-mod-qos
-apt install -y certbot python3-certbot-apache
-apt install -y curl wget git htop unzip nano net-tools logwatch
-apt install -y postfix dovecot-core dovecot-imapd dovecot-lmtpd
-apt install -y unbound fail2ban lynis opendkim
-apt install -y libpam-pwquality mailutils jq
-apt install -y apparmor apparmor-utils auditd ssh-audit apt-listchanges libpam-tmpdir
-
-add-apt-repository ppa:ondrej/php -y
-apt install -y php8.4-cli php8.4-fpm php8.4-mysql php8.4-redis php8.4-curl php8.4-mbstring php8.4-xml php8.4-zip php8.4-intl php8.4-soap php8.4-bcmath php8.4-gd php8.4-imagick imagemagick php8.4-common php8.4-json php8.4-ldap php8.4-pgsql php8.4-sqlite3 php8.4-xdebug php8.4-bz2   
-
 // Untar the migration tarball.
 cd /
 ls -la
@@ -71,6 +42,33 @@ iptables-restore < migration/firewall/iptables.txt
 
 echo `------------------------------------------------------------ done!`;
 
+// Disable unnecessary services first
+sudo systemctl disable avahi-daemon
+sudo systemctl disable cups
+sudo systemctl disable bluetooth
+sudo apt remove -y ubuntu-kernel-accessories ubuntu-standard
+sudo apt autoremove -y
+sudo apt remove -y eatmydata telnet inetutils-telnet swaks webalizer bpfcc-tools bpftrace bpfmon strace trace-cmd apport 
+sudo apt remove -y snapd modemmanager tnftp procmail rmail ruby-net-telnet arp-scan xclip sosreport 
+sudo apt remove -y lxd-agent-loader lxd-installer multipath-tools
+sudo apt remove -y bpfcc-tools bpftrace bpfmon bpfcc-lua
+sudo apt-mark hold bpfcc-tools bpftrace bpfmon
+sudo apt autoremove -y
+
+// Prime server with software packages
+sudo apt install -y software-properties-common unattended-upgrades apt-listchanges 
+sudo apt install -y ca-certificates lsb-release apt-transport-https
+sudo apt install -y apache2 apache2-utils libapache2-mod-evasive libapache2-mod-qos
+sudo apt install -y certbot python3-certbot-apache
+sudo apt install -y curl wget git htop unzip nano net-tools logwatch
+sudo apt install -y postfix dovecot-core dovecot-imapd dovecot-lmtpd
+sudo apt install -y unbound fail2ban lynis opendkim
+sudo apt install -y libpam-pwquality mailutils jq
+sudo apt install -y apparmor apparmor-utils auditd ssh-audit apt-listchanges libpam-tmpdir
+
+add-apt-repository ppa:ondrej/php -y
+sudo apt install -y php8.4 php8.4-cli php8.4-common php8.4-fpm php8.4-mysql php8.4-redis php8.4-curl php8.4-mbstring php8.4-xml php8.4-zip php8.4-intl php8.4-soap php8.4-bcmath php8.4-gd php8.4-imagick imagemagick php8.4-common php8.4-json php8.4-ldap php8.4-pgsql php8.4-sqlite3 php8.4-xdebug php8.4-bz2   
+
 let configs = [
     'customsysctl|root:root|etc/sysctl.d/99-custom.conf',
     'hardensysctl|root:root|etc/sysctl.d/99-harden.conf',
@@ -88,6 +86,7 @@ let configs = [
 let files = [
     'apt|root:root|etc/apt/',
     'home|root:root|home/',
+    'root|root:root|root/',
     'websites|www-data:www-data|var/www/',
     'logs|root:syslog|var/log/',
     'backups|root:root|var/backups/',
@@ -228,6 +227,12 @@ chown -R www-data:www-data var/www/
 // Default 0755, change if needed...
 chmod 0755 -R var/www/
 
+// Apache configs
+sudo a2dismod mpm_event
+sudo a2dismod mpm_worker
+sudo a2enmod mpm_prefork
+sudo a2enmod php8.4
+
 // Final update
 sudo apt update
 sudo apt autoremove -y
@@ -235,6 +240,10 @@ sudo apt autoremove -y
 // Systemd resolver
 systemctl start systemd-resolved.service
 systemctl daemon-reload
+sudo systemctl restart apache2
+echo `------------------------------------------------------------------ `;
+journalctl -n 10
+echo `------------------------------------------------------------------ `;
 
 // Next steps
 echo `Finished priming.`;
