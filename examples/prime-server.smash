@@ -45,7 +45,7 @@ cd /
 ls -la
 mkdir -p migration
 chmod 0755 migration
-tar -xzvf migration.tar.gz -C migration
+tar -xzvf migration.tar.gz
 
 echo `Starting to restore the server...`;
 echo `-----------------------------------------------------------------`;
@@ -72,8 +72,8 @@ ipset restore < migration/firewall/ipset.txt
 echo `------------------------------------------------------------ done!`;
 
 let configs = [
-    'custom-sysctl|root:root|/etc/sysctl.d/99-custom.conf',
-    'harden-sysctl|root:root|/etc/sysctl.d/99-harden.conf',
+    'custom-sysctl|root:root|etc/sysctl.d/99-custom.conf',
+    'harden-sysctl|root:root|etc/sysctl.d/99-harden.conf',
     'harden-tailscale|root:root|/etc/sysctl.d/99-tailscale.conf',
     'issue|root:root|etc/issue',
     'issuenet|root:root|etc/issue.net',
@@ -242,5 +242,4 @@ echo `Final manual step 0: install and configure tailscale/headscale manually. T
 echo `Final manual step 1: enable all your vhosts: a2ensite <domainname>`;
 echo `Final manual step 2: install MySQL manually: sudo apt install -y mysql-server`;
 echo `Final manual step 3: chmod all cron files, i.e.: chmod +x /etc/cron.daily/00logwatch`;
-echo `Final manual step 4: chmod all users files in bin and sbin, i.e.: chmod +x /usr/local/bin/security-check.sh`;
-echo `Final manual step 7: restart all services, or reboot. (recommended)`;
+echo `Final manual step 5: restart all services, or reboot. (recommended)`;
