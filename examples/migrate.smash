@@ -139,9 +139,9 @@ systemd.forEach(s => {
     let path = a[2];
     echo `Making backup of: $name`;
     cd /
-    touch migration/systemd/$name
-    cp -v $path migration/systemd/$name
-    chmod 0755 migration/systemd/$name
+    touch migration/systemd/system/$name
+    cp -v $path migration/systemd/system/$name
+    chmod 0755 migration/systemd/system/$name
     echo `---------------------------------------------------------done!`;
 });
 

@@ -39,7 +39,6 @@ apt install -y apparmor apparmor-utils auditd ssh-audit apt-listchanges libpam-t
 add-apt-repository ppa:ondrej/php -y
 apt install -y php8.4-cli php8.4-fpm php8.4-mysql php8.4-redis php8.4-curl php8.4-mbstring php8.4-xml php8.4-zip php8.4-intl php8.4-soap php8.4-bcmath php8.4-gd php8.4-imagick imagemagick php8.4-common php8.4-json php8.4-ldap php8.4-pgsql php8.4-sqlite3 php8.4-xdebug php8.4-bz2   
 
-
 // Untar the migration tarball.
 cd /
 ls -la
@@ -116,9 +115,11 @@ let files = [
     'dovecot|root:root|etc/dovecot/',
     'opendkim|opendkim:opendkim|etc/opendkim/',
     'dkimkeys|root:root|etc/dkimkeys/',
-    'mail|root:mail|var/mail/',
-    'ssh|root:root|etc/ssh/'
+    'mail|root:mail|var/mail/'
 ];
+
+// Optional ssh, but requires new keys.
+// ssh|root:root|etc/ssh/
 
 // Custom systemd services, if you have them. If not, you can remove it.
 let systemd = [
