@@ -12,33 +12,17 @@ let mysql_pass = '';
 cd /
 
 // Disable unnecessary services first
-sudo apt remove ubuntu-kernel-accessories
-sudo apt autoremove -y
 sudo systemctl disable avahi-daemon
 sudo systemctl disable cups
 sudo systemctl disable bluetooth
+sudo apt remove -y ubuntu-kernel-accessories ubuntu-standard
+sudo apt autoremove -y
 sudo apt remove -y eatmydata telnet inetutils-telnet swaks webalizer bpfcc-tools bpftrace bpfmon strace trace-cmd apport 
 sudo apt remove -y snapd modemmanager tnftp procmail rmail ruby-net-telnet arp-scan xclip sosreport 
 sudo apt remove -y lxd-agent-loader lxd-installer multipath-tools
-sudo apt remove bpfcc-tools bpftrace bpfmon bpfcc-lua
+sudo apt remove -y bpfcc-tools bpftrace bpfmon bpfcc-lua
 sudo apt-mark hold bpfcc-tools bpftrace bpfmon
-sudo apt remove ubuntu-kernel-accessories
-sudo apt remove ubuntu-standard
-sudo apt autoremove
-
-// Disable nftables
-sudo systemctl stop nftables
-sudo systemctl disable nftables
-sudo update-alternatives --set iptables /usr/sbin/iptables-legacy
-sudo update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
-sudo nft flush ruleset
-sudo iptables-restore < /etc/iptables/rules.v4
-sudo systemctl disable netfilter-persistent
-sudo systemctl mask netfilter-persistent
-sudo apt remove netfilter-persistent iptables-persistent
-echo "flush ruleset" >> /etc/nftables.conf
-sudo apt-mark hold nftables
-sudo apt purge nftables
+sudo apt autoremove -y
 
 sudo apt update
 sudo apt upgrade -y
@@ -66,9 +50,24 @@ echo `Starting to restore the server...`;
 echo `-----------------------------------------------------------------`;
 echo `Starting to restore firewall...`;
 
-// Save firewall
-let iptables = $(iptables-restore < migration/firewall/iptables.txt);
-let ipset = $(ipset restore < migration/firewall/ipset.txt); 
+// Disable nftables
+sudo systemctl stop nftables
+sudo systemctl disable nftables
+sudo update-alternatives --set iptables /usr/sbin/iptables-legacy
+sudo update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+sudo nft flush ruleset
+sudo iptables-restore < /etc/iptables/rules.v4
+sudo systemctl disable netfilter-persistent
+sudo systemctl mask netfilter-persistent
+sudo apt remove -y netfilter-persistent iptables-persistent
+echo "flush ruleset" >> /etc/nftables.conf
+sudo apt-mark hold nftables
+sudo apt purge nftables
+
+// Restore firewall
+iptables-restore < migration/firewall/iptables.txt
+ipset restore < migration/firewall/ipset.txt
+
 echo `------------------------------------------------------------ done!`;
 
 let configs = [
@@ -149,6 +148,7 @@ systemd.forEach(s => {
     let path = s[2];
     echo `Restoring: $name`;
     tar -xzvf "migration/systemd/$(basename "$name").tar.gz" -C "$path";
+    chmod +x $path
     echo `---------------------------------------------------------done!`;
 });
 
