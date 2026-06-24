@@ -124,7 +124,9 @@ configs.forEach(p => {
     let path = a[2];
     echo `Making backup of: $name`;
     cd /
-    tar -czvf "migration/configs/$(basename "$name").tar.gz" "$path";
+    touch migration/configs/$name
+    cp -v $path migration/configs/$name
+    chmod 0755 migration/configs/$name
     echo `---------------------------------------------------------done!`;
 });
 
@@ -134,7 +136,9 @@ systemd.forEach(s => {
     let path = a[2];
     echo `Making backup of: $name`;
     cd /
-    tar -czvf "migration/systemd/$(basename "$name").tar.gz" "$path";
+    touch migration/systemd/$name
+    cp -v $path migration/systemd/$name
+    chmod 0755 migration/systemd/$name
     echo `---------------------------------------------------------done!`;
 });
 

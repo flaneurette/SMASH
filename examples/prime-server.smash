@@ -195,8 +195,10 @@ configs.forEach(p => {
     let chwn = a[1];
     echo `Restoring: $name`;
     cd /
-    tar -xzvf "migration/configs/$(basename "$name").tar.gz" -C "$path";
-    chown -R $chwn $path
+    touch $path
+    cp migration/configs/$name $path 
+    chown $chwn $path
+    chmod 0755 $path
     echo `---------------------------------------------------------done!`;
 });
 
