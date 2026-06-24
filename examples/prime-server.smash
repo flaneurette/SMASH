@@ -25,11 +25,6 @@ sudo apt remove -y bpfcc-tools bpftrace bpfmon bpfcc-lua
 sudo apt-mark hold bpfcc-tools bpftrace bpfmon
 sudo apt autoremove -y
 
-sudo apt update
-sudo apt upgrade -y
-sudo apt dist-upgrade -y
-sudo apt autoremove -y
-
 // Prime server with software packages
 apt install -y software-properties-common unattended-upgrades apt-listchanges 
 apt install -y ca-certificates lsb-release apt-transport-https
