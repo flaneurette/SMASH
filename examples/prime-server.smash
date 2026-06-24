@@ -1,8 +1,12 @@
 #!/usr/bin/env smash
 # Usage: run as root.
-# WARNING! requires *migrate.smash* to have ran first on the old server, 
+# WARNING! 
+# Requires *migrate.smash* to have ran first on the old server, 
 # and the /migration/ folder to exist on the new server!
 # Also, make sure all files exist. Required: migration.tar.gz
+# WARNING! 
+# The script assumes you have already generated new server keys.
+# If not, then do so first as password login will be disabled.
 
 "use pipefail";
 "use unsafe";

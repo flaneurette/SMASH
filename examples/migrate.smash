@@ -39,7 +39,9 @@ let configs = [
     'mailname|root:root|etc/mailname',
     'aliases|root:root|etc/aliases',
     'aliasesdb|root:root|etc/aliases.db',
-    'hostname|root:root|etc/hostname'
+    'hostname|root:root|etc/hostname',
+    'sshd_config|root:root|etc/ssh/sshd_config',
+    'sshd_config.d|root:root|etc/ssh/sshd_config.d'
 ];
 
 // Compress folders
