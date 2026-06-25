@@ -97,7 +97,7 @@ sudo dpkg -i smash_1.3-0_all.deb
 smash -v
 ```
 
-Or use the Ubuntu PPA (does not have the lastest version!)
+Or use the Ubuntu PPA (does not have the latest version!)
 
 ```
 sudo add-apt-repository ppa:flaneurette/smash
