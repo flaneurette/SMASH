@@ -12,11 +12,9 @@ $(mkdir -p migration/databases);
 
 echo `Starting to migrate and backup the server...`;
 echo `-----------------------------------------------------------------`;
-<<<<<<< HEAD
+
 echo `Starting to mbackup firewall...`;
-=======
 echo `Starting to backup firewall...`;
->>>>>>> d3dbde7895df9e70d076798e821e9e180b22b0ee
 
 // Save firewall
 let iptables = $(iptables-save > migration/firewall/iptables.txt);
@@ -53,8 +51,4 @@ files.forEach(f => {
 });
 
 // Finally, make a tarball for all files
-<<<<<<< HEAD
 tar -czvf "migration.tar.gz" "migration/";
-=======
-tar -czvf "migration.tar.gz" "migration/";
->>>>>>> d3dbde7895df9e70d076798e821e9e180b22b0ee
