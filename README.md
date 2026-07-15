@@ -38,23 +38,15 @@ Tired of Bash's 1970s syntax? Write shell scripts with modern JavaScript-like sy
 
 ```
 #!/usr/bin/env smash
-// File: server-info.smash
 
 "use strict";
-"use logging /var/log/disk.log";
 
-// Check server memory
 let mem_usage = $(free | grep Mem | awk '{print int($3/$2 * 100)}');
-let today = date("time");
 
-if (mem_usage > 90) {    
-    let warning = today + " - WARNING: Memory usage is " + mem_usage + "%";
-    echo `{warning}`;
-    console.warn(warning); 	// write message to disk.log
+if (mem_usage > 90) {
+    echo "  WARNING: Memory usage is " + mem_usage + "%";
 } else {
-    let ok = today + " - Memory usage: " + mem_usage + "% (OK)";
-    echo `{ok}`;
-    console.log(ok); 		// write message to disk.log
+    echo "  Memory usage: " + mem_usage + "% (OK)";
 }
 ```
 
