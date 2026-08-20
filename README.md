@@ -8,12 +8,6 @@ Smash is a modern JavaScript-style shell scripting language that transpiles dire
     |_____  |  \/  | |_____| |_____  |_____|    
           | |      | |     |       | |     |    
     |_____| |      | |     | |_____| |     |____.flaneurette'26
-    
-    Installation:
-	
-    sudo add-apt-repository ppa:flaneurette/smash
-    sudo apt update
-    sudo apt install smash
 
     Usage:
         ./<script.smash>                        Run a Smash script
@@ -86,15 +80,6 @@ wget https://github.com/flaneurette/SMASH/raw/refs/heads/main/builds/smash_1.3-0
 sudo dpkg -i smash_1.3-0_all.deb
 
 3. Run SMASH
-smash -v
-```
-
-Or use the Ubuntu PPA (does not have the latest version!)
-
-```
-sudo add-apt-repository ppa:flaneurette/smash
-sudo apt update
-sudo apt install smash
 smash -v
 ```
 
