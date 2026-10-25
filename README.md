@@ -1031,34 +1031,31 @@ The beauty: You get modern syntax, but it runs as plain bash everywhere!
 
 ## FAQ
 
-Q: Do I need to install anything?  
+Q: Do I need to install anything?
 A: Just Python 3 (usually pre- installed) and bash (definitely pre- installed on Linux/Mac).
 
-Q: Does it work on my system?  
+Q: Does it work on my system?
 A: If you have bash, yes. Linux, macOS, WSL, BSD, anywhere bash runs.
 
-Q: Is it slow?  
+Q: Is it slow?
 A: The transpilation is instant (milliseconds). The execution speed is identical to bash because it IS bash.
 
-Q: Can I mix Smash and bash?  
+Q: Can I mix Smash and bash?
 A: Yes! Any bash command works in Smash. You can gradually migrate scripts.
 
-Q: What about errors?  
+Q: What about errors?
 A: Smash shows bash errors directly. Use `-debug` to see the generated bash code.
 
-Q: Is this production- ready?  
+Q: Is this production- ready?
 A: v1.0-1 is experimental. Use for new projects, automation scripts. Test thoroughly for critical systems.
 
-Q: Why not just use Python/Node?  
+Q: Why not just use Python/Node?
 A: Those are great for complex logic. Smash is for shell scripts - when you need to glue Linux commands together. You still want pipes, redirects, and instant access to all CLI tools.
 
 ## License
 
 MIT License - see [LICENSE](LICENSE) file for details.
 
-## Acknowledgments
-
-Flaneurette, Claude AI, and contributors.
 
 ## Links
 
@@ -1066,7 +1063,3 @@ Flaneurette, Claude AI, and contributors.
 - Issues: https://github.com/flaneurette/smash/issues
 - Discussions: https://github.com/flaneurette/smash/discussions
 
---- 
-
-
-Made with ❤️ and frustration with bash syntax.
